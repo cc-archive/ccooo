@@ -1,0 +1,30 @@
+<errormail:Stack type="Win32">
+<errormail:StackInfo pos="0" ip="0x7C81EB33" rel="0x0001EB33" ordinal="RaiseException+0x00000052" name="kernel32.dll" path="C:\WINDOWS\system32\"/>
+<errormail:StackInfo pos="1" ip="0x63DB32F7" rel="0x000032F7" name="msci_uno.dll" path="C:\Arquivos de programas\OpenOffice.org 2.1\program\"/>
+<errormail:StackInfo pos="2" ip="0x63DB14B5" rel="0x000014B5" name="msci_uno.dll" path="C:\Arquivos de programas\OpenOffice.org 2.1\program\"/>
+<errormail:StackInfo pos="3" ip="0x63DB1A9A" rel="0x00001A9A" name="msci_uno.dll" path="C:\Arquivos de programas\OpenOffice.org 2.1\program\"/>
+<errormail:StackInfo pos="4" ip="0x63DB1B0D" rel="0x00001B0D" name="msci_uno.dll" path="C:\Arquivos de programas\OpenOffice.org 2.1\program\"/>
+<errormail:StackInfo pos="5" ip="0x653D837C" rel="0x0005837C" ordinal="component_getFactory+0x000313F3" name="fwk680mi.dll" path="C:\Arquivos de programas\OpenOffice.org 2.1\program\"/>
+<errormail:StackInfo pos="6" ip="0x6097564D" rel="0x0000564D" ordinal="Ordinal163+0x00000011" name="tl680mi.dll" path="C:\Arquivos de programas\OpenOffice.org 2.1\program\"/>
+<errormail:StackInfo pos="7" ip="0x6028391E" rel="0x0006391E" ordinal="Ordinal4484+0x00000026" name="vcl680mi.dll" path="C:\Arquivos de programas\OpenOffice.org 2.1\program\"/>
+<errormail:StackInfo pos="8" ip="0x6097564D" rel="0x0000564D" ordinal="Ordinal163+0x00000011" name="tl680mi.dll" path="C:\Arquivos de programas\OpenOffice.org 2.1\program\"/>
+<errormail:StackInfo pos="9" ip="0x602DD902" rel="0x000BD902" ordinal="Ordinal5581+0x0000039E" name="vcl680mi.dll" path="C:\Arquivos de programas\OpenOffice.org 2.1\program\"/>
+<errormail:StackInfo pos="10" ip="0x60222451" rel="0x00002451" ordinal="Ordinal851+0x00000016" name="vcl680mi.dll" path="C:\Arquivos de programas\OpenOffice.org 2.1\program\"/>
+<errormail:StackInfo pos="11" ip="0x60348303" rel="0x00128303" ordinal="Ordinal3189+0x0001022B" name="vcl680mi.dll" path="C:\Arquivos de programas\OpenOffice.org 2.1\program\"/>
+<errormail:StackInfo pos="12" ip="0x60348566" rel="0x00128566" ordinal="Ordinal3189+0x0001048E" name="vcl680mi.dll" path="C:\Arquivos de programas\OpenOffice.org 2.1\program\"/>
+<errormail:StackInfo pos="13" ip="0x77D28709" rel="0x00008709" ordinal="GetDC+0x00000072" name="USER32.dll" path="C:\WINDOWS\system32\"/>
+<errormail:StackInfo pos="14" ip="0x77D287EB" rel="0x000087EB" ordinal="GetDC+0x00000154" name="USER32.dll" path="C:\WINDOWS\system32\"/>
+<errormail:StackInfo pos="15" ip="0x77D289A5" rel="0x000089A5" ordinal="GetWindowLongW+0x00000127" name="USER32.dll" path="C:\WINDOWS\system32\"/>
+<errormail:StackInfo pos="16" ip="0x77D289E8" rel="0x000089E8" ordinal="DispatchMessageW+0x0000000F" name="USER32.dll" path="C:\WINDOWS\system32\"/>
+<errormail:StackInfo pos="17" ip="0x60339A5D" rel="0x00119A5D" ordinal="Ordinal3189+0x00001985" name="vcl680mi.dll" path="C:\Arquivos de programas\OpenOffice.org 2.1\program\"/>
+<errormail:StackInfo pos="18" ip="0x602D790C" rel="0x000B790C" ordinal="Ordinal4404+0x00000510" name="vcl680mi.dll" path="C:\Arquivos de programas\OpenOffice.org 2.1\program\"/>
+<errormail:StackInfo pos="19" ip="0x602D7966" rel="0x000B7966" ordinal="Ordinal4404+0x0000056A" name="vcl680mi.dll" path="C:\Arquivos de programas\OpenOffice.org 2.1\program\"/>
+<errormail:StackInfo pos="20" ip="0x602D7A4F" rel="0x000B7A4F" ordinal="Ordinal4404+0x00000653" name="vcl680mi.dll" path="C:\Arquivos de programas\OpenOffice.org 2.1\program\"/>
+<errormail:StackInfo pos="21" ip="0x60252ED9" rel="0x00032ED9" ordinal="Ordinal7468+0x0000003D" name="vcl680mi.dll" path="C:\Arquivos de programas\OpenOffice.org 2.1\program\"/>
+<errormail:StackInfo pos="22" ip="0x6025407C" rel="0x0003407C" ordinal="Ordinal1201+0x0000001E" name="vcl680mi.dll" path="C:\Arquivos de programas\OpenOffice.org 2.1\program\"/>
+<errormail:StackInfo pos="23" ip="0x60388C76" rel="0x00168C76" ordinal="Ordinal1332+0x000002EB" name="vcl680mi.dll" path="C:\Arquivos de programas\OpenOffice.org 2.1\program\"/>
+<errormail:StackInfo pos="24" ip="0x60388D26" rel="0x00168D26" ordinal="Ordinal1333+0x0000001C" name="vcl680mi.dll" path="C:\Arquivos de programas\OpenOffice.org 2.1\program\"/>
+<errormail:StackInfo pos="25" ip="0x00401024" rel="0x00001024" name="soffice.BIN" path="C:\Arquivos de programas\OpenOffice.org 2.1\program\"/>
+<errormail:StackInfo pos="26" ip="0x00401066" rel="0x00001066" name="soffice.BIN" path="C:\Arquivos de programas\OpenOffice.org 2.1\program\"/>
+<errormail:StackInfo pos="27" ip="0x7C816D4F" rel="0x00016D4F" ordinal="RegisterWaitForInputIdle+0x00000049" name="kernel32.dll" path="C:\WINDOWS\system32\"/>
+</errormail:Stack>
