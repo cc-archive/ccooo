@@ -1,9 +1,0 @@
-<errormail:Checksums type="MD5">
-<errormail:Checksum sum="0xD5B83B2FF7918ABFD5E7AA9E03194333" bytes="2486272" file="soffice.BIN"/>
-<errormail:Checksum sum="0x6AFB7CDA040948E3D192BB9837101ABF" bytes="1339392" file="fwk680mi.dll"/>
-<errormail:Checksum sum="0x555089F8382EBF3FF8E889E910D06E3E" bytes="37888" file="msci_uno.dll"/>
-<errormail:Checksum sum="0xAD72A244955E89EBBB8FABF02F8041C6" bytes="1022464" file="kernel32.dll"/>
-<errormail:Checksum sum="0xFE525F6B902C2096697EE8054064F738" bytes="2297856" file="vcl680mi.dll"/>
-<errormail:Checksum sum="0xE0FF28447D1038DE106D1F2FDF851647" bytes="577536" file="USER32.dll"/>
-<errormail:Checksum sum="0x74895FC0673A3C44A9AFAD63DEB47CE6" bytes="397312" file="tl680mi.dll"/>
-</errormail:Checksums>
