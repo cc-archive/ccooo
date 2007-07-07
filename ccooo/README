@@ -1,0 +1,14 @@
+ccOpenOfficeOrg Add-In
+----------------------
+
+0.0.2
+July 07 2007
+
+ccooo Add-In is a tool for supporting the process of licensing documents, allowing the license information to be embedded in OpenOffice.org documents.
+
+Building with NetBeans IDE is a lot easier because it has a native support for ooo Add-Ins creation. Please check if your OpenOffice.Org is the 2.1 version or later. ccooo Add-In may not run properly in other versions.
+
+ccooo Add-In may be installed from the Extension Manager in OpenOffice.Org environment. Add the OXT file located in the distribution directory (./dist) and restart the OpenOffice.Org.
+
+Please report any problems or suggestions to the authors, Cassio Melo <cassio.ufpe@gmail.com> and François Déchelle <francois@dechelle.net>.
+
