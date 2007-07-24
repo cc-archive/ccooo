@@ -28,8 +28,11 @@
 package org.creativecommons.openoffice;
 
 import com.sun.star.awt.MessageBoxButtons;
+import com.sun.star.awt.Point;
 import com.sun.star.awt.Rectangle;
+import com.sun.star.awt.Size;
 import com.sun.star.awt.WindowDescriptor;
+import com.sun.star.awt.XImageButton;
 import com.sun.star.awt.XMessageBox;
 import com.sun.star.beans.XPropertySet;
 import com.sun.star.container.XNameAccess;
@@ -61,9 +64,6 @@ import com.sun.star.text.XTextDocument;
 import com.sun.star.text.XTextViewCursor;
 import com.sun.star.text.XTextViewCursorSupplier;
 import com.sun.star.uno.AnyConverter;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -74,14 +74,31 @@ import org.creativecommons.api.CcRest;
 
 import com.sun.star.awt.XMessageBoxFactory;
 import com.sun.star.awt.XWindowPeer;
-import java.io.File;
+import com.sun.star.drawing.FillStyle;
+import com.sun.star.drawing.LineStyle;
+import com.sun.star.drawing.XDrawPage;
+import com.sun.star.drawing.XDrawPageSupplier;
+import com.sun.star.drawing.XShape;
+import com.sun.star.drawing.XShapes;
+import com.sun.star.lang.XServiceInfo;
+import com.sun.star.presentation.XPresentation;
+import com.sun.star.style.LineSpacing;
+import com.sun.star.style.LineSpacingMode;
+import com.sun.star.text.HoriOrientation;
+import com.sun.star.text.TextContentAnchorType;
+import com.sun.star.text.VertOrientation;
+import com.sun.star.text.WrapTextMode;
+import com.sun.star.text.XTextGraphicObjectsSupplier;
+import com.sun.star.text.XTextRange;
+import org.creativecommons.openoffice.util.PageHelper;
+import org.creativecommons.openoffice.util.ShapeHelper;
 
 /**
  *  The Creative Commons OpenOffice.org AddIn core class.
  * 
  * @author Cassio A. Melo
  * @author Creative Commons
- * @version 0.0.1
+ * @version 0.3.0
  */
 public final class ccooo extends WeakBase
    implements com.sun.star.lang.XServiceInfo,
@@ -96,7 +113,8 @@ public final class ccooo extends WeakBase
         "com.sun.star.frame.ProtocolHandler" };
 
     private XComponentContext mxComponentContext = null;
-    private XTextDocument mxDoc = null;
+    private XTextDocument mxTextDoc = null;
+
     private XMultiServiceFactory mxDocFactory = null;
     private XMultiServiceFactory mxFactory = null;
     private XText mxDocText = null;
@@ -152,7 +170,18 @@ public final class ccooo extends WeakBase
     public String getImplementationName() {
          return m_implementationName;
     }
-
+    
+    public XComponent getCurrentComponent(){
+    return this.xCurrentComponent;
+    }
+    
+    
+    public XMultiServiceFactory getMSFactory() {
+    return (XMultiServiceFactory)UnoRuntime.queryInterface(
+                                XMultiServiceFactory.class, mxRemoteServiceManager);
+        //return this.mxFactory;
+    }
+    
     public boolean supportsService( String sService ) {
         int len = m_serviceNames.length;
 
@@ -245,19 +274,15 @@ public final class ccooo extends WeakBase
             if ( aURL.Path.compareTo("Command0") == 0 )
             {
                 
+                this.updateCurrentComponent();
+                
                  try {
                      Map prop = this.retrieveLicenseMetadata();
 
                      if (!prop.isEmpty()) { // Document is already licensed
-                         
-                         /* // is not working yet..
-                          short answer =  this.createQueryBox(labels.getProperty("document.licensed.querybox.title"),
-                                 labels.getProperty("document.licensed.querybox.text"));*/
-                         
                           short answer =  this.createQueryBox("Warning",
                                   "This document is already licensed. It's not recommended putting different licenses in the same document. \n\nWould you like do proceed anyway? (Only the last license chosen will be valid)");
-                         
-             
+
                          if (answer != 1) {// clicked on Cancel
                             return;
                          }
@@ -268,28 +293,35 @@ public final class ccooo extends WeakBase
                         System.out.println("not available");
                         return;
                     }
-                   // this.xCurrentComponent = this.updateCurrentComponent();
-                   
-                    // query its XTextDocument interface to get the text
-                    mxDoc = (XTextDocument)UnoRuntime.queryInterface(
-                            XTextDocument.class, this.xCurrentComponent);
                     
-                    mxFactory = (XMultiServiceFactory)UnoRuntime.queryInterface(
-                            XMultiServiceFactory.class, mxRemoteServiceManager);
-                    
-                    mxDocFactory = (XMultiServiceFactory)UnoRuntime.queryInterface(
-                            XMultiServiceFactory.class, mxDoc);
-                    
-                    
-                     // get a reference to the body text of the document
-                    mxDocText = mxDoc.getText();
-                 
-                    mxDocCursor = mxDocText.createTextCursor();
- 
-                    // Create the dialog
-                   AddInUI dialog = new AddInUI(this, this.m_xContext);
-                    dialog.createDialog();
 
+                     String service = "";
+                     
+                     XServiceInfo xServiceInfo = (XServiceInfo)UnoRuntime.queryInterface(
+                       XServiceInfo.class, this.xCurrentComponent);
+                     
+                    if (xServiceInfo.supportsService("com.sun.star.sheet.SpreadsheetDocument")) {
+                         System.out.println("Spreadsheet");
+                         service = "Spreadsheet";
+                    }
+                     else if (xServiceInfo.supportsService("com.sun.star.text.TextDocument")) {
+                         System.out.println("Text");
+                         service = "Text";
+                         
+                    } 
+                     else if (xServiceInfo.supportsService("com.sun.star.presentation.PresentationDocument")) {
+                         System.out.println("Presentation");
+                         service = "Presentation";
+                    }
+                     
+                     else if (xServiceInfo.supportsService("com.sun.star.drawing.DrawingDocument")) {
+                         System.out.println("Drawing");
+                         service = "Drawing";
+                    }
+
+                       // Create the dialog
+                       AddInUI dialog = new AddInUI(this, this.m_xContext, service);
+                        dialog.createDialog();
                 } catch (Exception ex) {
                     ex.printStackTrace();
                 }
@@ -299,6 +331,7 @@ public final class ccooo extends WeakBase
             }
         }
     }
+     
 
      /**
      * Creates an infobox with the title and text given
@@ -379,8 +412,9 @@ public final class ccooo extends WeakBase
      * @return XComponent Returns the current component of Desktop object
      *
      */
-     public XComponent updateCurrentComponent (){
+     public void updateCurrentComponent (){
         
+         
          XComponent ret = null;
          Object desktop;
          try {
@@ -388,10 +422,13 @@ public final class ccooo extends WeakBase
              XDesktop xDesktop = (XDesktop)UnoRuntime.queryInterface(XDesktop.class, desktop);
              ret = xDesktop.getCurrentComponent();
              
+             this.xMultiComponentFactory = this.m_xContext.getServiceManager();
+             this.mxFactory = (XMultiServiceFactory) UnoRuntime.queryInterface(XMultiServiceFactory.class, this.xCurrentComponent);
+             
          } catch (com.sun.star.uno.Exception ex) {
              ex.printStackTrace();
          }
-         return ret;
+         this.xCurrentComponent = ret;
 
      }
      
@@ -442,7 +479,7 @@ public final class ccooo extends WeakBase
          
          XDocumentInfo m_xDocumentInfo;
          
-         xCurrentComponent = updateCurrentComponent();
+        updateCurrentComponent();
          
          XDocumentInfoSupplier xDocumentInfoSupplier =
                  (XDocumentInfoSupplier)UnoRuntime.queryInterface(
@@ -520,176 +557,4 @@ public final class ccooo extends WeakBase
         }
      
      }
-
-
-    
-    /**
-     * Creates and inserts an auto-text containing the license
-     *
-     * @param licenseName The License Name.
-     * @param licenseURL The License URL.
-     * @param licenseImgURL The license "button" URL.
-     *
-     */
-    public void createAutoText(String licenseName, String licenseURL, String licenseImgURL){
-        
-        try {
-          
-            // Create a new Auto-Text
-            
-            // Get an XNameAccess interface to all auto text groups from the
-            // document factory
-            XNameAccess xContainer = (XNameAccess) UnoRuntime.queryInterface(
-                    XNameAccess.class, mxFactory.createInstance(
-                    "com.sun.star.text.AutoTextContainer" ) );
-            
-            
-            XAutoTextContainer container = (XAutoTextContainer) UnoRuntime.queryInterface(XAutoTextContainer.class, xContainer);
-            
-            if (xContainer.hasByName("Creative Commons")) {
-                
-                container.removeByName("Creative Commons");
-            }
-            
-            
-            XAutoTextGroup newgroup = container.insertNewByName("Creative Commons");
-            XAutoTextEntry newentry = newgroup.insertNewByName("CC", "CCommons", mxDocCursor);
-            
-            
-            // Get the XSimpleText and XText interfaces of the new autotext block
-            
-            XSimpleText xSimpleText = (XSimpleText) UnoRuntime.queryInterface(XSimpleText.class, newentry);
-            XText xText = (XText) UnoRuntime.queryInterface(XText.class, newentry);
-            
-            
-            // Insert the license image in the autotext
-            this.embedGraphic(this.mxDocFactory,xSimpleText.createTextCursor(),licenseImgURL);
-
-            // Insert a string at the beginning of the autotext block
-            xSimpleText.insertString(xText.getEnd(), "\nThis work is licensed under a "+licenseName+" license.\n"+licenseURL+"\n", false);
-            
-            // Access the autotext group with this name
-            XAutoTextGroup xGroup = (XAutoTextGroup)
-            UnoRuntime.queryInterface(XAutoTextGroup.class,
-                    xContainer.getByName("Creative Commons"));
-            
-            
-            XAutoTextEntry xEntry = ( XAutoTextEntry )
-            UnoRuntime.queryInterface(XAutoTextEntry.class, xGroup.getByName("CC"));
-
-            
-            // get the XModel interface from the component
-            
-            XModel xModel = (XModel)UnoRuntime.queryInterface(XModel.class, xCurrentComponent);
-            
-            // the model knows its controller
-            XController xController = xModel.getCurrentController();
-            
-            // the controller gives us the TextViewCursor
-            // query the viewcursor supplier interface
-            XTextViewCursorSupplier xViewCursorSupplier =
-                    (XTextViewCursorSupplier)UnoRuntime.queryInterface(XTextViewCursorSupplier.class, xController);
-            
-            // get the cursor
-            XTextViewCursor xViewCursor = xViewCursorSupplier.getViewCursor();
-            
-            
-            // Insert the autotext at the cursor
-            xEntry.applyTo(xViewCursor);
-            
-            
-            
-            
-            // To insert the auto-text at the header/footer of the document, uncomment the code below
-            /*
-            XText oObj = null;
-            XPropertySet PropSet;
-            XNameAccess PageStyles = null;
-            XStyle StdStyle = null;
-             
-            XStyleFamiliesSupplier StyleFam = (XStyleFamiliesSupplier)
-            UnoRuntime.queryInterface(XStyleFamiliesSupplier.class, mxDoc);
-            XNameAccess StyleFamNames = StyleFam.getStyleFamilies();
-             
-            // obtains style 'Standard' from style family 'PageStyles'
-             
-            PageStyles = (XNameAccess) AnyConverter.toObject(
-                    new Type(XNameAccess.class),StyleFamNames.getByName("PageStyles"));
-            StdStyle = (XStyle) AnyConverter.toObject(
-                    new Type(XStyle.class),PageStyles.getByName("Standard"));
-             
-            PropSet = (XPropertySet)
-            UnoRuntime.queryInterface( XPropertySet.class, StdStyle);
-             
-            // Choose between header and footer (or both) here
-            // PropSet.setPropertyValue("HeaderIsOn", new Boolean(true));
-            PropSet.setPropertyValue("FooterIsOn", new Boolean(true));
-             
-            oObj = (XText) UnoRuntime.queryInterface(
-                    XText.class, PropSet.getPropertyValue("FooterText"));
-                 // ..or "HeaderText"
-             
-            xEntry.applyTo(oObj);
-             */
-            
-            
-        } catch (Exception e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
-        
-    }
-    
-    
-    /**
-     * Embeds the license "button" into a Textdocument at the given cursor position
-     *
-     * @param xMSF    the factory to create services from
-     * @param xCursor the cursor where to insert the graphic
-     * @param imgURL  URL of the license button
-     *
-     */
-    public void embedGraphic( XMultiServiceFactory xMSF, XTextCursor xCursor, String imgURL) {
-        
-        
-        XNameContainer xBitmapContainer = null;
-        XText xText = xCursor.getText();
-        XTextContent xImage = null;
-        String internalURL = null;
-        
-        try {
-            xBitmapContainer = (XNameContainer) UnoRuntime.queryInterface(
-                    XNameContainer.class, xMSF.createInstance(
-                    "com.sun.star.drawing.BitmapTable"));
-            xImage = (XTextContent) UnoRuntime.queryInterface(
-                    XTextContent.class,     xMSF.createInstance(
-                    "com.sun.star.text.TextGraphicObject"));
-            XPropertySet xProps = (XPropertySet) UnoRuntime.queryInterface(
-                    XPropertySet.class, xImage);
-            
-            // helper-stuff to let OOo create an internal name of the graphic
-            // that can be used later (internal name consists of various checksums)
-            
-            xBitmapContainer.insertByName("imgID", imgURL); 
-
-            Object obj = xBitmapContainer.getByName("imgID");
-            internalURL = AnyConverter.toString(obj);
-            
-            
-            xProps.setPropertyValue("AnchorType",
-                    com.sun.star.text.TextContentAnchorType.AS_CHARACTER);
-            xProps.setPropertyValue("GraphicURL", internalURL);
-            xProps.setPropertyValue("Width", (int) 4000); // original: 88 px
-            xProps.setPropertyValue("Height", (int) 1550); // original: 31 px
-            
-            // inser the graphic at the cursor position
-            xText.insertTextContent(xCursor, xImage, false);
-            
-            // remove the helper-entry
-            xBitmapContainer.removeByName("imgID");
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
 }

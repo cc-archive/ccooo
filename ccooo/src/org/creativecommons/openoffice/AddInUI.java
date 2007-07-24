@@ -71,6 +71,8 @@ public class AddInUI {
     protected String currentId = "";
     protected ccooo addin = null;
     
+    String service = "";
+    
     // TODO put these labels in a properties file
     protected String previousButtonName = "previousbt";
     protected String previousButtonLabel = "< Previous";
@@ -84,10 +86,11 @@ public class AddInUI {
     /**
      * Creates a new instance of AddInUI
      */
-    public AddInUI(ccooo addin, XComponentContext m_xContext) {
+    public AddInUI(ccooo addin, XComponentContext m_xContext, String sv) {
         namesList = new Vector();
         this.addin = addin;
         this.m_xContext = m_xContext;
+        this.service = sv;
     }
     
     
@@ -694,9 +697,27 @@ class OnFinishClick implements XActionListener {
             String licenseURL =  ccooo.ccr.getLicenseUrl();
             String licenseImageURL = ccooo.ccr.getLicenseImageURL();
             
-            this.addin.createAutoText(licenseName,licenseURL, licenseImageURL);
+            
+            if (service.equalsIgnoreCase("spreadsheet")) {
+            
+            } 
+            else if (service.equalsIgnoreCase("text")) {
+                 Writer.createAutoText(addin.getCurrentComponent(), addin.getMSFactory(),licenseName,licenseURL,licenseImageURL);
+            } 
+            else if (service.equalsIgnoreCase("presentation")) {
+                Impress.embedGraphic(addin.getCurrentComponent(), licenseImageURL);
+                Impress.insertLicenseText(addin.getCurrentComponent(), licenseName);
+                
+            }
+            else if (service.equalsIgnoreCase("drawing")) {
+            
+            }
             
             this.addin.insertLicenseMetadata(licenseName,licenseURL);
+            
+           /* this.addin.createAutoText(licenseName,licenseURL, licenseImageURL);
+            
+            */
             
             this.ui.xDialog.endExecute();
             

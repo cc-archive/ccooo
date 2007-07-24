@@ -8,7 +8,7 @@
  *
  */
 
-package org.creativecommons.openoffice;
+package org.creativecommons.openoffice.util;
 
 import java.io.File;
 
