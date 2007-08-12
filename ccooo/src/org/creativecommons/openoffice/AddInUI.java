@@ -427,6 +427,8 @@ public class AddInUI {
         this.currentId = id;
         LicenseField current;
         
+        
+        
         // get the fields related to the class
         List fields = (List)ccooo.ccr.fields(id);
         
@@ -473,8 +475,9 @@ public class AddInUI {
  */
 class OnSelectLicenceClass implements XItemListener {
     
-
+   
     public  OnSelectLicenceClass(){
+   
     }
     
     public void disposing(EventObject e) {
@@ -482,9 +485,37 @@ class OnSelectLicenceClass implements XItemListener {
     
     public void itemStateChanged(ItemEvent e) {
         
-        // Enable next button
-        ((XWindow)UnoRuntime.queryInterface(
+  
+        
+       /* next version!
+        // get the fields related to the class
+        List fields = (List)ccr.fields(id);
+        
+        if (fields.size() == 0) {
+            ((XWindow)UnoRuntime.queryInterface(
+                    XWindow.class, xControlCont.getControl(finishButtonName))).setEnable(true);
+            
+        } else {
+             // Enable next button
+                ((XWindow)UnoRuntime.queryInterface(
                 XWindow.class, xControlCont.getControl(nextButtonName))).setEnable(true);
+        }
+        */
+        
+        
+        /*
+        System.out.println("selected id:" + e.Selected);
+        if (e.Selected==1){//this.licenseClass.equalsIgnoreCase("Public Domain")) {
+            ((XWindow)UnoRuntime.queryInterface(
+                    XWindow.class, xControlCont.getControl(finishButtonName))).setEnable(true);
+            
+          //  currentId = "";
+        } else {*/
+             // Enable next button
+                ((XWindow)UnoRuntime.queryInterface(
+                XWindow.class, xControlCont.getControl(nextButtonName))).setEnable(true);
+       // }
+        
         
         clearLabels();
 
@@ -699,7 +730,8 @@ class OnFinishClick implements XActionListener {
             
             
             if (service.equalsIgnoreCase("spreadsheet")) {
-            
+                Calc.embedGraphic(addin.getCurrentComponent(),licenseImageURL);
+                Calc.insertLicenseText(addin.getCurrentComponent(), licenseName);
             } 
             else if (service.equalsIgnoreCase("text")) {
                  Writer.createAutoText(addin.getCurrentComponent(), addin.getMSFactory(),licenseName,licenseURL,licenseImageURL);
