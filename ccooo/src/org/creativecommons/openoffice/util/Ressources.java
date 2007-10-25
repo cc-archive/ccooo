@@ -20,7 +20,7 @@ public class Ressources {
 			String classPath = System.getProperty("java.class.path");
 			String[] tab = classPath.split(";");
 			for (String s : tab) {
-                            System.err.println("S é: "+s);
+                            System.err.println("S: "+s);
 				int pos;
 				if ((pos = s.indexOf("ccooo.oxt")) != -1 ) {
 					s = s.substring(0, pos + 19/* 9*/);// 19 ???

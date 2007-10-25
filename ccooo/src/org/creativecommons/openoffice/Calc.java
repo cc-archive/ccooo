@@ -56,7 +56,7 @@ public class Calc {
         try {
              XSpreadsheetDocument xSheetDoc = (XSpreadsheetDocument) UnoRuntime.queryInterface(
                                                  XSpreadsheetDocument.class, 
-                                                 xSpreadsheetComponent); // <== tem que ver se o xcomponent é o documento ou componente
+                                                 xSpreadsheetComponent); // <== tem que ver se o xcomponent o documento ou componente
              
              xSpreadsheet = (XSpreadsheet) UnoRuntime.queryInterface(
                              XSpreadsheet.class, 
@@ -128,7 +128,7 @@ public class Calc {
             // xPage = PageHelper.getMasterPageByIndex(xDrawDoc, 0);
               XSpreadsheetDocument xSheetDoc = (XSpreadsheetDocument) UnoRuntime.queryInterface(
                                                  XSpreadsheetDocument.class, 
-                                                 xSpreadsheetComponent); // <== tem que ver se o xcomponent é o documento ou componente
+                                                 xSpreadsheetComponent); // <== tem que ver se o xcomponent o documento ou componente
              
              xSpreadsheet = (XSpreadsheet) UnoRuntime.queryInterface(
                              XSpreadsheet.class, 

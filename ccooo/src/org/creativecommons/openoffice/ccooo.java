@@ -493,7 +493,7 @@ public final class ccooo extends WeakBase
              
              // if XDocumentInfoSupplier had a hasFieldName(String fieldName) we wouldn't have done this...
              
-             // TODO   poderia ter um atributo imutavel indicando se é licenciado ou nao,
+             // TODO   poderia ter um atributo imutavel indicando se licenciado ou nao,
              // assim buscariamos primeiro por esse atributo antes de varrer os fields
              for (short i = 0 ; i < fieldsnum; i++) {
                  String temp  = m_xDocumentInfo.getUserFieldName(i);
