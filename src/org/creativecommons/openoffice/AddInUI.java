@@ -50,10 +50,10 @@ import org.creativecommons.api.LicenseField;
 
 /**
  *  The Creative Commons OpenOffice.org AddIn GUI class.
- * 
- * 
- * 
- * 
+ *
+ *
+ *
+ *
  * @author Cassio A. Melo
  * @author Creative Commons
  * @version 0.0.1
@@ -103,18 +103,18 @@ public class AddInUI {
         /*
           // checar se ja licenciado
                      Map prop = addin.retrieveLicenseMetadata();
-                     
+         
                      //XMessageBoxFactory;
                      XMessageBoxFactory factory = (XMessageBoxFactory)
                      UnoRuntime.queryInterface( XMessageBoxFactory.class,
                              this.xMultiComponentFactory.createInstanceWithContext(
                              "com.sun.star.awt.Toolkit", m_xContext ) );
-                     
+         
                      Rectangle ret = new Rectangle();
-                     
-                     
+         
+         
                      XMessageBox box = factory.createMessageBox(this,ret,"querybox",MessageBoxButtons.BUTTONS_YES_NO,"Title","Document already licensed.\n\nWould you like do proceed anyway?");
-                     
+         
                      box.execute();*/
         
         
@@ -469,24 +469,24 @@ public class AddInUI {
         
     } // end of method selectClass
 //}// end of AddIn class
-
-/**
- * This is the listening class for
- */
-class OnSelectLicenceClass implements XItemListener {
     
-   
-    public  OnSelectLicenceClass(){
-   
-    }
-    
-    public void disposing(EventObject e) {
-    }
-    
-    public void itemStateChanged(ItemEvent e) {
+    /**
+     * This is the listening class for
+     */
+    class OnSelectLicenceClass implements XItemListener {
         
-  
         
+        public  OnSelectLicenceClass(){
+            
+        }
+        
+        public void disposing(EventObject e) {
+        }
+        
+        public void itemStateChanged(ItemEvent e) {
+            
+            
+            
        /* next version!
         // get the fields related to the class
         List fields = (List)ccr.fields(id);
@@ -494,274 +494,271 @@ class OnSelectLicenceClass implements XItemListener {
         if (fields.size() == 0) {
             ((XWindow)UnoRuntime.queryInterface(
                     XWindow.class, xControlCont.getControl(finishButtonName))).setEnable(true);
-            
+        
         } else {
              // Enable next button
                 ((XWindow)UnoRuntime.queryInterface(
                 XWindow.class, xControlCont.getControl(nextButtonName))).setEnable(true);
         }
         */
-        
-        
+            
+            
         /*
         System.out.println("selected id:" + e.Selected);
         if (e.Selected==1){//this.licenseClass.equalsIgnoreCase("Public Domain")) {
             ((XWindow)UnoRuntime.queryInterface(
                     XWindow.class, xControlCont.getControl(finishButtonName))).setEnable(true);
-            
+         
           //  currentId = "";
         } else {*/
-             // Enable next button
-                ((XWindow)UnoRuntime.queryInterface(
-                XWindow.class, xControlCont.getControl(nextButtonName))).setEnable(true);
-       // }
-        
-        
-        clearLabels();
-
-    }
-}
-/**
- *Listening class
- */
-class OnSelectAnswers implements XItemListener {
-    
-    private XControlContainer _xControlCont;
-    
-    private Map answerContainer;
-    private String id;
-    private String comboName;
-    private int number;
-    private Map answerMap;
-    private AddInUI ui;
-    
-    public  OnSelectAnswers(XControlContainer xControlCont, String comboName, String id, Map aMap, Map answers, int number, AddInUI ui){
-        this._xControlCont = xControlCont;
-        this.comboName = comboName;
-        this.answerContainer = answers;
-        this.id = id; // id da pergutna
-        this.number = number;
-        this.ui = ui;
-        this.answerMap = new HashMap();
-        
-        Iterator keys = aMap.keySet().iterator();
-        
-        while (keys.hasNext()) {
-            String current = (String)keys.next();
-            
-            this.answerMap.put(aMap.get(current), current);
-            
-        }
-    }
-    
-    
-    public void disposing(EventObject e) {
-    }
-    
-    public void itemStateChanged(ItemEvent e) {
-        
-        XTextComponent t = (XTextComponent)UnoRuntime.queryInterface(
-                XTextComponent.class, _xControlCont.getControl(this.comboName));
-        
-        
-        this.answerContainer.put(this.id, this.answerMap.get(t.getText()));
-        
-        // Number of answers must be the same of the number of questions to enable finish button
-        if (this.answerContainer.size() == this.number) {
-            
-            // Enable "Finish" button
+            // Enable next button
             ((XWindow)UnoRuntime.queryInterface(
-                    XWindow.class, this._xControlCont.getControl(this.ui.finishButtonName))).setEnable(true);
+                    XWindow.class, xControlCont.getControl(nextButtonName))).setEnable(true);
+            // }
+            
+            
+            clearLabels();
+            
         }
     }
-}
-
-
-
-class OnNextClick implements XActionListener {
-    
- 
-    private XPropertySet _xPSetDialog;
-
-    
-    public  OnNextClick(XPropertySet xPSetDialog){
-       
-        this._xPSetDialog = xPSetDialog;
-      
+    /**
+     *Listening class
+     */
+    class OnSelectAnswers implements XItemListener {
         
-    }
-    
-    public void actionPerformed(ActionEvent a ) {
+        private XControlContainer _xControlCont;
         
-        try {
-            int step = ((Integer) this._xPSetDialog.getPropertyValue("Step")).intValue();
+        private Map answerContainer;
+        private String id;
+        private String comboName;
+        private int number;
+        private Map answerMap;
+        private AddInUI ui;
+        
+        public  OnSelectAnswers(XControlContainer xControlCont, String comboName, String id, Map aMap, Map answers, int number, AddInUI ui){
+            this._xControlCont = xControlCont;
+            this.comboName = comboName;
+            this.answerContainer = answers;
+            this.id = id; // id da pergutna
+            this.number = number;
+            this.ui = ui;
+            this.answerMap = new HashMap();
             
-            // current step
-            if (step == 1) {
+            Iterator keys = aMap.keySet().iterator();
+            
+            while (keys.hasNext()) {
+                String current = (String)keys.next();
                 
-                XTextComponent t = (XTextComponent)UnoRuntime.queryInterface(
-                        XTextComponent.class, xControlCont.getControl("Class"));
-                selectClass(ccooo.ccr.getLicenseId(t.getText()));
-                
-                this._xPSetDialog.setPropertyValue("Step", ++step);
-                
-                // Enable Previous Button
-                ((XWindow)UnoRuntime.queryInterface(
-                        XWindow.class, xControlCont.getControl(previousButtonName))).setEnable(true);
-                
-                // Disable next button
-                ((XWindow)UnoRuntime.queryInterface(
-                        XWindow.class, xControlCont.getControl(nextButtonName))).setEnable(false);
+                this.answerMap.put(aMap.get(current), current);
                 
             }
-            
-        } catch (com.sun.star.lang.IllegalArgumentException ex) {
-            ex.printStackTrace();
-        } catch (WrappedTargetException ex) {
-            ex.printStackTrace();
-        } catch (UnknownPropertyException ex) {
-            ex.printStackTrace();
-        } catch (PropertyVetoException ex) {
-            ex.printStackTrace();
         }
         
-    }
-    
-    public void disposing(EventObject e ) {
-    }
-}
-
-
-class OnCancelClick implements XActionListener {
-    
-   
-    private XPropertySet _xPSetDialog;
-
-    
-    public  OnCancelClick(XPropertySet xPSetDialog){
-   
-        this._xPSetDialog = xPSetDialog;
-    
-    }
-    
-    public void actionPerformed(ActionEvent a ) {
-        Object dialog;
-        xDialog.endExecute();
-    }
-    
-    
-    public void disposing(EventObject e ) {
-    }
-}
-
-
-class OnPreviousClick implements XActionListener {
-    
-    private XControlContainer _xControlCont;
-    private XPropertySet _xPSetDialog;
-    private AddInUI ui;
-    
-    public  OnPreviousClick(XControlContainer xControlCont, XPropertySet xPSetDialog, AddInUI ui){
-        this._xControlCont = xControlCont;
-        this._xPSetDialog = xPSetDialog;
-        this.ui = ui;
         
-    }
-    
-    public void actionPerformed(ActionEvent a ) {
-        int step;
-        try {
+        public void disposing(EventObject e) {
+        }
+        
+        public void itemStateChanged(ItemEvent e) {
             
-            step = ((Integer) this._xPSetDialog.getPropertyValue("Step")).intValue();
+            XTextComponent t = (XTextComponent)UnoRuntime.queryInterface(
+                    XTextComponent.class, _xControlCont.getControl(this.comboName));
             
-            // current step
-            if (step == 2) {
+            
+            this.answerContainer.put(this.id, this.answerMap.get(t.getText()));
+            
+            // Number of answers must be the same of the number of questions to enable finish button
+            if (this.answerContainer.size() == this.number) {
                 
-                this._xPSetDialog.setPropertyValue("Step", --step);
-                
-                System.out.println("STEP: "+step);
-                
-                // Disable Previous Button
+                // Enable "Finish" button
                 ((XWindow)UnoRuntime.queryInterface(
-                        XWindow.class, this._xControlCont.getControl(this.ui.previousButtonName))).setEnable(false);
-                
-                // Enable next button
-                ((XWindow)UnoRuntime.queryInterface(
-                        XWindow.class, this._xControlCont.getControl(this.ui.nextButtonName))).setEnable(true);
-                
-                // Disable finish
-                ((XWindow)UnoRuntime.queryInterface(
-                        XWindow.class, this._xControlCont.getControl(this.ui.finishButtonName))).setEnable(false);
-                
+                        XWindow.class, this._xControlCont.getControl(this.ui.finishButtonName))).setEnable(true);
             }
-        } catch (Exception ex) {
-            ex.printStackTrace();
         }
     }
     
-    public void disposing(EventObject e ) {
-    }
-}
-
-
-class OnFinishClick implements XActionListener {
     
     
-    private ccooo addin;
-    private AddInUI ui;
-    
-    public  OnFinishClick(ccooo addin, AddInUI ui){
+    class OnNextClick implements XActionListener {
         
         
-        this.addin = addin;
-        this.ui = ui;
+        private XPropertySet _xPSetDialog;
         
-    }
-    
-    public void actionPerformed(ActionEvent a ) {
-        try {
+        
+        public  OnNextClick(XPropertySet xPSetDialog){
             
-            // retrieve the Document for the issued license
-            ccooo.ccr.issue(this.ui.currentId, this.ui.answers, "en");
-            
-            String licenseName = ccooo.ccr.getLicenseName();
-            String licenseURL =  ccooo.ccr.getLicenseUrl();
-            String licenseImageURL = ccooo.ccr.getLicenseImageURL();
+            this._xPSetDialog = xPSetDialog;
             
             
-            if (service.equalsIgnoreCase("spreadsheet")) {
-                Calc.embedGraphic(addin.getCurrentComponent(),licenseImageURL);
-                Calc.insertLicenseText(addin.getCurrentComponent(), licenseName);
-            } 
-            else if (service.equalsIgnoreCase("text")) {
-                 Writer.createAutoText(addin.getCurrentComponent(), addin.getMSFactory(),licenseName,licenseURL,licenseImageURL);
-            } 
-            else if (service.equalsIgnoreCase("presentation")) {
-                Impress.embedGraphic(addin.getCurrentComponent(), licenseImageURL);
-                Impress.insertLicenseText(addin.getCurrentComponent(), licenseName);
+        }
+        
+        public void actionPerformed(ActionEvent a ) {
+            
+            try {
+                int step = ((Integer) this._xPSetDialog.getPropertyValue("Step")).intValue();
                 
+                // current step
+                if (step == 1) {
+                    
+                    XTextComponent t = (XTextComponent)UnoRuntime.queryInterface(
+                            XTextComponent.class, xControlCont.getControl("Class"));
+                    selectClass(ccooo.ccr.getLicenseId(t.getText()));
+                    
+                    this._xPSetDialog.setPropertyValue("Step", ++step);
+                    
+                    // Enable Previous Button
+                    ((XWindow)UnoRuntime.queryInterface(
+                            XWindow.class, xControlCont.getControl(previousButtonName))).setEnable(true);
+                    
+                    // Disable next button
+                    ((XWindow)UnoRuntime.queryInterface(
+                            XWindow.class, xControlCont.getControl(nextButtonName))).setEnable(false);
+                    
+                }
+                
+            } catch (com.sun.star.lang.IllegalArgumentException ex) {
+                ex.printStackTrace();
+            } catch (WrappedTargetException ex) {
+                ex.printStackTrace();
+            } catch (UnknownPropertyException ex) {
+                ex.printStackTrace();
+            } catch (PropertyVetoException ex) {
+                ex.printStackTrace();
             }
-            else if (service.equalsIgnoreCase("drawing")) {
             
+        }
+        
+        public void disposing(EventObject e ) {
+        }
+    }
+    
+    
+    class OnCancelClick implements XActionListener {
+        
+        
+        private XPropertySet _xPSetDialog;
+        
+        
+        public  OnCancelClick(XPropertySet xPSetDialog){
+            
+            this._xPSetDialog = xPSetDialog;
+            
+        }
+        
+        public void actionPerformed(ActionEvent a ) {
+            Object dialog;
+            xDialog.endExecute();
+        }
+        
+        
+        public void disposing(EventObject e ) {
+        }
+    }
+    
+    
+    class OnPreviousClick implements XActionListener {
+        
+        private XControlContainer _xControlCont;
+        private XPropertySet _xPSetDialog;
+        private AddInUI ui;
+        
+        public  OnPreviousClick(XControlContainer xControlCont, XPropertySet xPSetDialog, AddInUI ui){
+            this._xControlCont = xControlCont;
+            this._xPSetDialog = xPSetDialog;
+            this.ui = ui;
+            
+        }
+        
+        public void actionPerformed(ActionEvent a ) {
+            int step;
+            try {
+                
+                step = ((Integer) this._xPSetDialog.getPropertyValue("Step")).intValue();
+                
+                // current step
+                if (step == 2) {
+                    
+                    this._xPSetDialog.setPropertyValue("Step", --step);
+                    
+                    System.out.println("STEP: "+step);
+                    
+                    // Disable Previous Button
+                    ((XWindow)UnoRuntime.queryInterface(
+                            XWindow.class, this._xControlCont.getControl(this.ui.previousButtonName))).setEnable(false);
+                    
+                    // Enable next button
+                    ((XWindow)UnoRuntime.queryInterface(
+                            XWindow.class, this._xControlCont.getControl(this.ui.nextButtonName))).setEnable(true);
+                    
+                    // Disable finish
+                    ((XWindow)UnoRuntime.queryInterface(
+                            XWindow.class, this._xControlCont.getControl(this.ui.finishButtonName))).setEnable(false);
+                    
+                }
+            } catch (Exception ex) {
+                ex.printStackTrace();
             }
+        }
+        
+        public void disposing(EventObject e ) {
+        }
+    }
+    
+    
+    class OnFinishClick implements XActionListener {
+        
+        
+        private ccooo addin;
+        private AddInUI ui;
+        
+        public  OnFinishClick(ccooo addin, AddInUI ui){
             
-            this.addin.insertLicenseMetadata(licenseName,licenseURL);
             
+            this.addin = addin;
+            this.ui = ui;
+            
+        }
+        
+        public void actionPerformed(ActionEvent a ) {
+            try {
+                
+                // retrieve the Document for the issued license
+                ccooo.ccr.issue(this.ui.currentId, this.ui.answers, "en");
+                
+                String licenseName = ccooo.ccr.getLicenseName();
+                String licenseURL =  ccooo.ccr.getLicenseUrl();
+                String licenseImageURL = ccooo.ccr.getLicenseImageURL();
+                
+                
+                if (service.equalsIgnoreCase("spreadsheet")) {
+                    Calc.embedGraphic(addin.getCurrentComponent(),licenseImageURL);
+                    Calc.insertLicenseText(addin.getCurrentComponent(), licenseName);
+                } else if (service.equalsIgnoreCase("text")) {
+                    Writer.createAutoText(addin.getCurrentComponent(), addin.getMSFactory(),licenseName,licenseURL,licenseImageURL);
+                } else if (service.equalsIgnoreCase("presentation")) {
+                    Impress.embedGraphic(addin.getCurrentComponent(), licenseImageURL);
+                    Impress.insertLicenseText(addin.getCurrentComponent(), licenseName);
+                    
+                } else if (service.equalsIgnoreCase("drawing")) {
+                    
+                }
+                
+                this.addin.insertLicenseMetadata(licenseName,licenseURL);
+                
            /* this.addin.createAutoText(licenseName,licenseURL, licenseImageURL);
             
             */
-            
-            this.ui.xDialog.endExecute();
-            
-        } catch (IOException ex) {
-            ex.printStackTrace();
+                
+                this.ui.xDialog.endExecute();
+                
+            } catch (IOException ex) {
+                ex.printStackTrace();
+            }
+        }
+        
+        public void disposing(EventObject e ) {
         }
     }
     
-    public void disposing(EventObject e ) {
-    }
-}
-
-
+    
 }
 

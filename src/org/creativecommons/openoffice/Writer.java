@@ -64,8 +64,8 @@ public class Writer {
             
               mxDocFactory = (XMultiServiceFactory)UnoRuntime.queryInterface(
                     XMultiServiceFactory.class, mxTextDoc);*/
-              
-              
+            
+            
             
             xBitmapContainer = (XNameContainer) UnoRuntime.queryInterface(
                     XNameContainer.class, mxDocFactory.createInstance(
@@ -79,8 +79,8 @@ public class Writer {
             // helper-stuff to let OOo create an internal name of the graphic
             // that can be used later (internal name consists of various checksums)
             
-            xBitmapContainer.insertByName("imgID", imgURL); 
-
+            xBitmapContainer.insertByName("imgID", imgURL);
+            
             Object obj = xBitmapContainer.getByName("imgID");
             internalURL = AnyConverter.toString(obj);
             
@@ -101,7 +101,7 @@ public class Writer {
         }
     }
     
-       /**
+    /**
      * Create and insert an auto-text containing the license
      *
      * @param licenseName The License Name.
@@ -139,7 +139,7 @@ public class Writer {
             XNameAccess xContainer = (XNameAccess) UnoRuntime.queryInterface(
                     XNameAccess.class, xRemoteServiceFactory.createInstance(
                     "com.sun.star.text.AutoTextContainer" ) );
-
+            
             
             XAutoTextContainer container = (XAutoTextContainer) UnoRuntime.queryInterface(XAutoTextContainer.class, xContainer);
             
@@ -161,7 +161,7 @@ public class Writer {
             
             // Insert the license image in the autotext
             embedGraphic(mxDocFactory,xSimpleText.createTextCursor(),licenseImgURL);
-
+            
             // Insert a string at the beginning of the autotext block
             xSimpleText.insertString(xText.getEnd(), "\nThis work is licensed under a "+licenseName+" license.\n"+licenseURL+"\n", false);
             
@@ -173,7 +173,7 @@ public class Writer {
             
             XAutoTextEntry xEntry = ( XAutoTextEntry )
             UnoRuntime.queryInterface(XAutoTextEntry.class, xGroup.getByName("CC"));
-
+            
             
             // get the XModel interface from the component
             

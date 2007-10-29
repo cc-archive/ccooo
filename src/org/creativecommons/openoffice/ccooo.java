@@ -95,31 +95,30 @@ import org.creativecommons.openoffice.util.ShapeHelper;
 
 /**
  *  The Creative Commons OpenOffice.org AddIn core class.
- * 
+ *
  * @author Cassio A. Melo
  * @author Creative Commons
  * @version 0.3.0
  */
 public final class ccooo extends WeakBase
-   implements com.sun.star.lang.XServiceInfo,
-              com.sun.star.frame.XDispatchProvider,
-              com.sun.star.lang.XInitialization,
-              com.sun.star.frame.XDispatch
-{
+        implements com.sun.star.lang.XServiceInfo,
+        com.sun.star.frame.XDispatchProvider,
+        com.sun.star.lang.XInitialization,
+        com.sun.star.frame.XDispatch {
     private final XComponentContext m_xContext;
     private com.sun.star.frame.XFrame m_xFrame;
     private static final String m_implementationName = ccooo.class.getName();
     private static final String[] m_serviceNames = {
         "com.sun.star.frame.ProtocolHandler" };
-
+    
     private XComponentContext mxComponentContext = null;
     private XTextDocument mxTextDoc = null;
-
+    
     private XMultiServiceFactory mxDocFactory = null;
     private XMultiServiceFactory mxFactory = null;
     private XText mxDocText = null;
     private XTextCursor mxDocCursor = null;
-
+    
     private XComponent xCurrentComponent = null;
     protected XMultiComponentFactory xMultiComponentFactory = null;
     protected XMultiComponentFactory mxRemoteServiceManager = null;
@@ -127,124 +126,117 @@ public final class ccooo extends WeakBase
     
     Properties labels = new Properties();
     
-
-   public static CcRest ccr = new CcRest();
-   
-      
+    
+    public static CcRest ccr = new CcRest();
+    
+    
     /**
      * Constructs a new instance
      *
      * @param context the XComponentContext
      */
-    public ccooo( XComponentContext context )
-    {
-
+    public ccooo( XComponentContext context ) {
+        
         m_xContext = context;
         try {
             mxRemoteServiceManager = this.getRemoteServiceManager();
             // get the service manager from the component context
-        this.xMultiComponentFactory = this.m_xContext.getServiceManager();
-        
-           
+            this.xMultiComponentFactory = this.m_xContext.getServiceManager();
+            
+            
         } catch (Exception ex) {
             ex.printStackTrace();
         }
     };
-
+    
     // Generated method stubs
     public static XSingleComponentFactory __getComponentFactory( String sImplementationName ) {
         XSingleComponentFactory xFactory = null;
-
+        
         if ( sImplementationName.equals( m_implementationName ) )
             xFactory = Factory.createComponentFactory(ccooo.class, m_serviceNames);
         return xFactory;
     }
-
+    
     public static boolean __writeRegistryServiceInfo( XRegistryKey xRegistryKey ) {
         return Factory.writeRegistryServiceInfo(m_implementationName,
-                                                m_serviceNames,
-                                                xRegistryKey);
+                m_serviceNames,
+                xRegistryKey);
     }
-
+    
     // com.sun.star.lang.XServiceInfo:
     public String getImplementationName() {
-         return m_implementationName;
+        return m_implementationName;
     }
     
     public XComponent getCurrentComponent(){
-    return this.xCurrentComponent;
+        return this.xCurrentComponent;
     }
     
     
     public XMultiServiceFactory getMSFactory() {
-    return (XMultiServiceFactory)UnoRuntime.queryInterface(
-                                XMultiServiceFactory.class, mxRemoteServiceManager);
+        return (XMultiServiceFactory)UnoRuntime.queryInterface(
+                XMultiServiceFactory.class, mxRemoteServiceManager);
         //return this.mxFactory;
     }
     
     public boolean supportsService( String sService ) {
         int len = m_serviceNames.length;
-
+        
         for( int i=0; i < len; i++) {
             if (sService.equals(m_serviceNames[i]))
                 return true;
         }
         return false;
     }
-
+    
     public String[] getSupportedServiceNames() {
         return m_serviceNames;
     }
-
+    
     // com.sun.star.frame.XDispatchProvider:
     public com.sun.star.frame.XDispatch queryDispatch( com.sun.star.util.URL aURL,
-                                                       String sTargetFrameName,
-                                                       int iSearchFlags )
-    {
-        if ( aURL.Protocol.compareTo("org.creativecommons.openoffice.ccooo:") == 0 )
-        {
+            String sTargetFrameName,
+            int iSearchFlags ) {
+        if ( aURL.Protocol.compareTo("org.creativecommons.openoffice.ccooo:") == 0 ) {
             if ( aURL.Path.compareTo("Command0") == 0 )
                 return this;
         }
         return null;
     }
-
+    
     // com.sun.star.frame.XDispatchProvider:
     public com.sun.star.frame.XDispatch[] queryDispatches(
-         com.sun.star.frame.DispatchDescriptor[] seqDescriptors )
-    {
+            com.sun.star.frame.DispatchDescriptor[] seqDescriptors ) {
         int nCount = seqDescriptors.length;
         com.sun.star.frame.XDispatch[] seqDispatcher =
-            new com.sun.star.frame.XDispatch[seqDescriptors.length];
-
-        for( int i=0; i < nCount; ++i )
-        {
+                new com.sun.star.frame.XDispatch[seqDescriptors.length];
+        
+        for( int i=0; i < nCount; ++i ) {
             seqDispatcher[i] = queryDispatch(seqDescriptors[i].FeatureURL,
-                                             seqDescriptors[i].FrameName,
-                                             seqDescriptors[i].SearchFlags );
+                    seqDescriptors[i].FrameName,
+                    seqDescriptors[i].SearchFlags );
         }
         return seqDispatcher;
     }
-
+    
     // com.sun.star.lang.XInitialization:
     public void initialize( Object[] object )
-        throws com.sun.star.uno.Exception
-    {
-        if ( object.length > 0 )
-        {
+    throws com.sun.star.uno.Exception {
+        if ( object.length > 0 ) {
             /*try {*/
-               
-          
+            
+            
               /* String file = Ressources.getFile(AddInConstants.LANGUAGE_FILE_NAME);
                System.out.println("file:" +file);
                 labels.load(new FileInputStream(new File(file)));*/
-                
-                
+            
+            
             
             m_xFrame = (com.sun.star.frame.XFrame)UnoRuntime.queryInterface(
-                com.sun.star.frame.XFrame.class, object[0]);
-             this.AddOnLoadDocumentListener();
-             
+                    com.sun.star.frame.XFrame.class, object[0]);
+            this.AddOnLoadDocumentListener();
+            
             /* } catch (FileNotFoundException ex) {
                 ex.printStackTrace();
             } catch (IOException ex) {
@@ -253,75 +245,68 @@ public final class ccooo extends WeakBase
         }
     }
     public void addStatusListener( com.sun.star.frame.XStatusListener xControl,
-                                    com.sun.star.util.URL aURL )
-    {
+            com.sun.star.util.URL aURL ) {
         // add your own code here
     }
-
+    
     public void removeStatusListener( com.sun.star.frame.XStatusListener xControl,
-                                       com.sun.star.util.URL aURL )
-    {
+            com.sun.star.util.URL aURL ) {
         // add your own code here
     }
     
     // End of generated method stubs
     // com.sun.star.frame.XDispatch:
-     public void dispatch( com.sun.star.util.URL aURL,
-                           com.sun.star.beans.PropertyValue[] aArguments )
-    {
-         if ( aURL.Protocol.compareTo("org.creativecommons.openoffice.ccooo:") == 0 )
-        {
-            if ( aURL.Path.compareTo("Command0") == 0 )
-            {
+    public void dispatch( com.sun.star.util.URL aURL,
+            com.sun.star.beans.PropertyValue[] aArguments ) {
+        if ( aURL.Protocol.compareTo("org.creativecommons.openoffice.ccooo:") == 0 ) {
+            if ( aURL.Path.compareTo("Command0") == 0 ) {
                 
                 this.updateCurrentComponent();
                 
-                 try {
-                     Map prop = this.retrieveLicenseMetadata();
-
-                     if (!prop.isEmpty()) { // Document is already licensed
-                          short answer =  this.createQueryBox("Warning",
-                                  "This document is already licensed. It's not recommended putting different licenses in the same document. \n\nWould you like do proceed anyway? (Only the last license chosen will be valid)");
-
-                         if (answer != 1) {// clicked on Cancel
+                try {
+                    Map prop = this.retrieveLicenseMetadata();
+                    
+                    if (!prop.isEmpty()) { // Document is already licensed
+                        short answer =  this.createQueryBox("Warning",
+                                "This document is already licensed. It's not recommended putting different licenses in the same document. \n\nWould you like do proceed anyway? (Only the last license chosen will be valid)");
+                        
+                        if (answer != 1) {// clicked on Cancel
                             return;
-                         }
-                     
-                     }
-
+                        }
+                        
+                    }
+                    
                     if (mxRemoteServiceManager == null) {
                         System.out.println("not available");
                         return;
                     }
                     
-
-                     String service = "";
-                     
-                     XServiceInfo xServiceInfo = (XServiceInfo)UnoRuntime.queryInterface(
-                       XServiceInfo.class, this.xCurrentComponent);
-                     
+                    
+                    String service = "";
+                    
+                    XServiceInfo xServiceInfo = (XServiceInfo)UnoRuntime.queryInterface(
+                            XServiceInfo.class, this.xCurrentComponent);
+                    
                     if (xServiceInfo.supportsService("com.sun.star.sheet.SpreadsheetDocument")) {
-                         System.out.println("Spreadsheet");
-                         service = "Spreadsheet";
+                        System.out.println("Spreadsheet");
+                        service = "Spreadsheet";
+                    } else if (xServiceInfo.supportsService("com.sun.star.text.TextDocument")) {
+                        System.out.println("Text");
+                        service = "Text";
+                        
+                    } else if (xServiceInfo.supportsService("com.sun.star.presentation.PresentationDocument")) {
+                        System.out.println("Presentation");
+                        service = "Presentation";
                     }
-                     else if (xServiceInfo.supportsService("com.sun.star.text.TextDocument")) {
-                         System.out.println("Text");
-                         service = "Text";
-                         
-                    } 
-                     else if (xServiceInfo.supportsService("com.sun.star.presentation.PresentationDocument")) {
-                         System.out.println("Presentation");
-                         service = "Presentation";
+                    
+                    else if (xServiceInfo.supportsService("com.sun.star.drawing.DrawingDocument")) {
+                        System.out.println("Drawing");
+                        service = "Drawing";
                     }
-                     
-                     else if (xServiceInfo.supportsService("com.sun.star.drawing.DrawingDocument")) {
-                         System.out.println("Drawing");
-                         service = "Drawing";
-                    }
-
-                       // Create the dialog
-                       AddInUI dialog = new AddInUI(this, this.m_xContext, service);
-                        dialog.createDialog();
+                    
+                    // Create the dialog
+                    AddInUI dialog = new AddInUI(this, this.m_xContext, service);
+                    dialog.createDialog();
                 } catch (Exception ex) {
                     ex.printStackTrace();
                 }
@@ -331,36 +316,36 @@ public final class ccooo extends WeakBase
             }
         }
     }
-     
-
-     /**
+    
+    
+    /**
      * Creates an infobox with the title and text given
      *
      * @param title The title of the dialog.
      * @param msg The text of the dialog.
      *
      */
-     private void createInfoBox(String title, String msg){
-         XMessageBoxFactory factory;
-         try {
-             factory = (XMessageBoxFactory) UnoRuntime.queryInterface(XMessageBoxFactory.class, this.xMultiComponentFactory.createInstanceWithContext("com.sun.star.awt.Toolkit", m_xContext));
-             
-             Rectangle ret = new Rectangle();
-             WindowDescriptor wd;
-             
-             XWindowPeer parent = (XWindowPeer)UnoRuntime.queryInterface(
-                     XWindowPeer.class, m_xFrame.getContainerWindow());
-             //This document is already licensed.\n\nWould you like do proceed anyway?"
-             XMessageBox box = factory.createMessageBox(parent,ret,"infobox",MessageBoxButtons.BUTTONS_OK,title,msg);
-             
-             box.execute();
-         } catch (com.sun.star.uno.Exception ex) {
-             ex.printStackTrace();
-         }
-     
-     }
-     
-     /**
+    private void createInfoBox(String title, String msg){
+        XMessageBoxFactory factory;
+        try {
+            factory = (XMessageBoxFactory) UnoRuntime.queryInterface(XMessageBoxFactory.class, this.xMultiComponentFactory.createInstanceWithContext("com.sun.star.awt.Toolkit", m_xContext));
+            
+            Rectangle ret = new Rectangle();
+            WindowDescriptor wd;
+            
+            XWindowPeer parent = (XWindowPeer)UnoRuntime.queryInterface(
+                    XWindowPeer.class, m_xFrame.getContainerWindow());
+            //This document is already licensed.\n\nWould you like do proceed anyway?"
+            XMessageBox box = factory.createMessageBox(parent,ret,"infobox",MessageBoxButtons.BUTTONS_OK,title,msg);
+            
+            box.execute();
+        } catch (com.sun.star.uno.Exception ex) {
+            ex.printStackTrace();
+        }
+        
+    }
+    
+    /**
      * Creates a querybox with the title and text given
      *
      * @param title The title of the dialog.
@@ -369,31 +354,31 @@ public final class ccooo extends WeakBase
      * @return short Returns the answer code of the querybox (1 - OK , 0 - Cancel)
      *
      */
-      private short createQueryBox(String title, String msg){
-         XMessageBoxFactory factory;
-         try {
-             factory = (XMessageBoxFactory) UnoRuntime.queryInterface(XMessageBoxFactory.class, this.xMultiComponentFactory.createInstanceWithContext("com.sun.star.awt.Toolkit", m_xContext));
-             
-             Rectangle ret = new Rectangle();
-             WindowDescriptor wd;
-             
-             XWindowPeer parent = (XWindowPeer)UnoRuntime.queryInterface(
-                     XWindowPeer.class, m_xFrame.getContainerWindow());
-             // TODO put listeners to the OK and Cancel buttons!
-             XMessageBox box = factory.createMessageBox(parent,ret,"querybox",MessageBoxButtons.BUTTONS_OK_CANCEL,title,msg);
-             
-             return box.execute();
-
-         } catch (com.sun.star.uno.Exception ex) {
-             ex.printStackTrace();
-         }
-         
-         return -1; // Fail
-     
-     }
-     
+    private short createQueryBox(String title, String msg){
+        XMessageBoxFactory factory;
+        try {
+            factory = (XMessageBoxFactory) UnoRuntime.queryInterface(XMessageBoxFactory.class, this.xMultiComponentFactory.createInstanceWithContext("com.sun.star.awt.Toolkit", m_xContext));
+            
+            Rectangle ret = new Rectangle();
+            WindowDescriptor wd;
+            
+            XWindowPeer parent = (XWindowPeer)UnoRuntime.queryInterface(
+                    XWindowPeer.class, m_xFrame.getContainerWindow());
+            // TODO put listeners to the OK and Cancel buttons!
+            XMessageBox box = factory.createMessageBox(parent,ret,"querybox",MessageBoxButtons.BUTTONS_OK_CANCEL,title,msg);
+            
+            return box.execute();
+            
+        } catch (com.sun.star.uno.Exception ex) {
+            ex.printStackTrace();
+        }
+        
+        return -1; // Fail
+        
+    }
     
-     /**
+    
+    /**
      *  Get the remote office context
      */
     private XMultiComponentFactory getRemoteServiceManager()
@@ -404,36 +389,36 @@ public final class ccooo extends WeakBase
         }
         return mxRemoteServiceManager;
     }
-     
-     /**
+    
+    /**
      * Updates the Desktop current component in case of opening, creating or swapping
      * to other document
      *
      * @return XComponent Returns the current component of Desktop object
      *
      */
-     public void updateCurrentComponent (){
+    public void updateCurrentComponent(){
         
-         
-         XComponent ret = null;
-         Object desktop;
-         try {
-             desktop = mxRemoteServiceManager.createInstanceWithContext("com.sun.star.frame.Desktop", mxComponentContext);         
-             XDesktop xDesktop = (XDesktop)UnoRuntime.queryInterface(XDesktop.class, desktop);
-             ret = xDesktop.getCurrentComponent();
-             
-             this.xMultiComponentFactory = this.m_xContext.getServiceManager();
-             this.mxFactory = (XMultiServiceFactory) UnoRuntime.queryInterface(XMultiServiceFactory.class, this.xCurrentComponent);
-             
-         } catch (com.sun.star.uno.Exception ex) {
-             ex.printStackTrace();
-         }
-         this.xCurrentComponent = ret;
-
-     }
-     
-     
-     /**
+        
+        XComponent ret = null;
+        Object desktop;
+        try {
+            desktop = mxRemoteServiceManager.createInstanceWithContext("com.sun.star.frame.Desktop", mxComponentContext);
+            XDesktop xDesktop = (XDesktop)UnoRuntime.queryInterface(XDesktop.class, desktop);
+            ret = xDesktop.getCurrentComponent();
+            
+            this.xMultiComponentFactory = this.m_xContext.getServiceManager();
+            this.mxFactory = (XMultiServiceFactory) UnoRuntime.queryInterface(XMultiServiceFactory.class, this.xCurrentComponent);
+            
+        } catch (com.sun.star.uno.Exception ex) {
+            ex.printStackTrace();
+        }
+        this.xCurrentComponent = ret;
+        
+    }
+    
+    
+    /**
      * Inserts the license name and the license URL into the document's metadata
      *
      * @param licenseName The License Name.
@@ -467,54 +452,54 @@ public final class ccooo extends WeakBase
         }
         
     }
-     
-     /**
+    
+    /**
      * Retrieve the license properties from the document's metadata
      *
      * @return Map Returns a map containing the license properties
      *
      */
-     public Map retrieveLicenseMetadata (){
-         Map licenseProp = new HashMap();
-         
-         XDocumentInfo m_xDocumentInfo;
-         
+    public Map retrieveLicenseMetadata(){
+        Map licenseProp = new HashMap();
+        
+        XDocumentInfo m_xDocumentInfo;
+        
         updateCurrentComponent();
-         
-         XDocumentInfoSupplier xDocumentInfoSupplier =
-                 (XDocumentInfoSupplier)UnoRuntime.queryInterface(
-                 XDocumentInfoSupplier.class, xCurrentComponent);
-         
-         m_xDocumentInfo = xDocumentInfoSupplier.getDocumentInfo();
-         
-         try {
-             
-             short fieldsnum = m_xDocumentInfo.getUserFieldCount();
-             
-             // if XDocumentInfoSupplier had a hasFieldName(String fieldName) we wouldn't have done this...
-             
-             // TODO   poderia ter um atributo imutavel indicando se licenciado ou nao,
-             // assim buscariamos primeiro por esse atributo antes de varrer os fields
-             for (short i = 0 ; i < fieldsnum; i++) {
-                 String temp  = m_xDocumentInfo.getUserFieldName(i);
-                     
-                     if (temp.startsWith(AddInConstants.CC_METADATA_IDENTIFIER)) {
-                        licenseProp.put(temp.substring(AddInConstants.CC_METADATA_IDENTIFIER.length()),m_xDocumentInfo.getUserFieldValue(i));
-                     }
-             }
-
-             
-         } catch (com.sun.star.lang.ArrayIndexOutOfBoundsException ex) {
-             ex.printStackTrace();
-         }
-         return licenseProp;
-     }
-     
-     /**
+        
+        XDocumentInfoSupplier xDocumentInfoSupplier =
+                (XDocumentInfoSupplier)UnoRuntime.queryInterface(
+                XDocumentInfoSupplier.class, xCurrentComponent);
+        
+        m_xDocumentInfo = xDocumentInfoSupplier.getDocumentInfo();
+        
+        try {
+            
+            short fieldsnum = m_xDocumentInfo.getUserFieldCount();
+            
+            // if XDocumentInfoSupplier had a hasFieldName(String fieldName) we wouldn't have done this...
+            
+            // TODO   poderia ter um atributo imutavel indicando se licenciado ou nao,
+            // assim buscariamos primeiro por esse atributo antes de varrer os fields
+            for (short i = 0 ; i < fieldsnum; i++) {
+                String temp  = m_xDocumentInfo.getUserFieldName(i);
+                
+                if (temp.startsWith(AddInConstants.CC_METADATA_IDENTIFIER)) {
+                    licenseProp.put(temp.substring(AddInConstants.CC_METADATA_IDENTIFIER.length()),m_xDocumentInfo.getUserFieldValue(i));
+                }
+            }
+            
+            
+        } catch (com.sun.star.lang.ArrayIndexOutOfBoundsException ex) {
+            ex.printStackTrace();
+        }
+        return licenseProp;
+    }
+    
+    /**
      * Add a listener to the openoffice to be triggered when OnLoad events occur
      *
      */
-     private void AddOnLoadDocumentListener(){
+    private void AddOnLoadDocumentListener(){
         Object xGlobalBroadCaster;
         
         try {
@@ -529,17 +514,17 @@ public final class ccooo extends WeakBase
                     // for all events in ooo this check happen...
                     // would be nice if it had an OnLoadListener interface, wouldn't it?
                     if (oEvent.EventName.equalsIgnoreCase("OnLoad")) {
-
+                        
                         Map licenseProps = retrieveLicenseMetadata();
                         if (!licenseProps.isEmpty()) {
                             String body ="This work is licensed under a Creative Commons License. \n\n";
                             Set list = licenseProps.entrySet();
                             Iterator it = list.iterator();
-                         
+                            
                             while (it.hasNext()) {
-                               Entry temp = (Entry) it.next();
-                               body += temp.getKey()+": "+temp.getValue()+"\n";
-                               //System.out.println(temp.getKey() + " -> "+temp.getValue());
+                                Entry temp = (Entry) it.next();
+                                body += temp.getKey()+": "+temp.getValue()+"\n";
+                                //System.out.println(temp.getKey() + " -> "+temp.getValue());
                             }
                             
                             createInfoBox("Creative Commons Licensed Document",body);
@@ -551,10 +536,10 @@ public final class ccooo extends WeakBase
                     System.out.println("On Dispose");
                 }
             });
-         
-         } catch (Exception ex) {
+            
+        } catch (Exception ex) {
             ex.printStackTrace();
         }
-     
-     }
+        
+    }
 }

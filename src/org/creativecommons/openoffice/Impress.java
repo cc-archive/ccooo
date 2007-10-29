@@ -41,13 +41,13 @@ public class Impress {
     public Impress() {
     }
     
-   
+    
     
     public static void embedGraphic(XComponent xDrawComponent,  String imgURL) {
-         XDrawPage xPage = null;
+        XDrawPage xPage = null;
         
         XNameContainer xBitmapContainer = null;
-
+        
         String internalURL = null;
         
         XMultiServiceFactory xPresentationFactory = null;
@@ -75,8 +75,8 @@ public class Impress {
             // helper-stuff to let OOo create an internal name of the graphic
             // that can be used later (internal name consists of various checksums)
             
-            xBitmapContainer.insertByName("imgID", imgURL); 
-
+            xBitmapContainer.insertByName("imgID", imgURL);
+            
             Object obj = xBitmapContainer.getByName("imgID");
             internalURL = AnyConverter.toString(obj);
             
@@ -92,7 +92,7 @@ public class Impress {
             xProps.setPropertyValue("VertOrient", 6000); */
             
             // inser the graphic at the cursor position
-
+            
             xPage.add(xGraphicShape);
             // remove the helper-entry
             xBitmapContainer.removeByName("imgID");
@@ -102,47 +102,47 @@ public class Impress {
     }
     
     public static void insertLicenseText(XComponent xDrawDoc, String licenseName){
-      XDrawPage xPage;
-         
-         try {
-             //XDrawPage xPage = PageHelper.getDrawPageByIndex( xDrawDoc, 0 );	
-             xPage = PageHelper.getMasterPageByIndex(xDrawDoc, 0);
-             
-             
-             XShapes xShapes = (XShapes)
-             UnoRuntime.queryInterface( XShapes.class, xPage );
-             
-             
-             XShape xRectangle;
-             XPropertySet xTextPropSet, xShapePropSet;
-             LineSpacing  aLineSpacing = new LineSpacing();
-             aLineSpacing.Mode = LineSpacingMode.PROP;
-             
-             
-             
-             // first shape
-             xRectangle = ShapeHelper.createShape( xDrawDoc,
-                     new Point(15500, 19600 ),
-                     new Size( 15000, 1500 ),
-                     "com.sun.star.drawing.RectangleShape" );
-             xShapes.add( xRectangle );
-             xShapePropSet = (XPropertySet)
-             UnoRuntime.queryInterface( XPropertySet.class, xRectangle );
-             
-             
-             xShapePropSet.setPropertyValue("TextAutoGrowHeight", true);
-             xShapePropSet.setPropertyValue("TextAutoGrowWidth", true);
-             xShapePropSet.setPropertyValue("LineStyle", LineStyle.NONE);
-             xShapePropSet.setPropertyValue("FillStyle", FillStyle.NONE);
-             
-             // first paragraph
-             xTextPropSet =
-                     ShapeHelper.addPortion( xRectangle, licenseName/*"This work is licensed under a Creative Commons license"*/, false );
-             xTextPropSet.setPropertyValue( "CharColor", new Integer( 0x000000 ) );
-
-            } catch (Exception ex) {
-             ex.printStackTrace();
-         }
+        XDrawPage xPage;
+        
+        try {
+            //XDrawPage xPage = PageHelper.getDrawPageByIndex( xDrawDoc, 0 );
+            xPage = PageHelper.getMasterPageByIndex(xDrawDoc, 0);
+            
+            
+            XShapes xShapes = (XShapes)
+            UnoRuntime.queryInterface( XShapes.class, xPage );
+            
+            
+            XShape xRectangle;
+            XPropertySet xTextPropSet, xShapePropSet;
+            LineSpacing  aLineSpacing = new LineSpacing();
+            aLineSpacing.Mode = LineSpacingMode.PROP;
+            
+            
+            
+            // first shape
+            xRectangle = ShapeHelper.createShape( xDrawDoc,
+                    new Point(15500, 19600 ),
+                    new Size( 15000, 1500 ),
+                    "com.sun.star.drawing.RectangleShape" );
+            xShapes.add( xRectangle );
+            xShapePropSet = (XPropertySet)
+            UnoRuntime.queryInterface( XPropertySet.class, xRectangle );
+            
+            
+            xShapePropSet.setPropertyValue("TextAutoGrowHeight", true);
+            xShapePropSet.setPropertyValue("TextAutoGrowWidth", true);
+            xShapePropSet.setPropertyValue("LineStyle", LineStyle.NONE);
+            xShapePropSet.setPropertyValue("FillStyle", FillStyle.NONE);
+            
+            // first paragraph
+            xTextPropSet =
+                    ShapeHelper.addPortion( xRectangle, licenseName/*"This work is licensed under a Creative Commons license"*/, false );
+            xTextPropSet.setPropertyValue( "CharColor", new Integer( 0x000000 ) );
+            
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
     }
     
 }
