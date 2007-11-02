@@ -29,7 +29,7 @@
             </prop>
             <prop oor:name="Title" oor:type="xs:string">
               <value/>
-              <value xml:lang="en">Insert License</value>
+              <value xml:lang="en">Set License</value>
             </prop>
           </node>
         </node>
