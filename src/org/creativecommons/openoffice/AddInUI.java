@@ -11,28 +11,19 @@
 package org.creativecommons.openoffice;
 
 import com.sun.star.awt.ActionEvent;
-import com.sun.star.awt.ItemEvent;
-import com.sun.star.awt.MessageBoxButtons;
-import com.sun.star.awt.Rectangle;
 import com.sun.star.awt.XActionListener;
 import com.sun.star.awt.XButton;
-import com.sun.star.awt.XComboBox;
 import com.sun.star.awt.XControl;
 import com.sun.star.awt.XControlContainer;
 import com.sun.star.awt.XControlModel;
 import com.sun.star.awt.XDialog;
-import com.sun.star.awt.XItemListener;
-import com.sun.star.awt.XMessageBox;
-import com.sun.star.awt.XMessageBoxFactory;
-import com.sun.star.awt.XTextComponent;
 import com.sun.star.awt.XToolkit;
 import com.sun.star.awt.XWindow;
-import com.sun.star.beans.PropertyVetoException;
 import com.sun.star.beans.UnknownPropertyException;
 import com.sun.star.beans.XPropertySet;
+import com.sun.star.container.NoSuchElementException;
 import com.sun.star.container.XNameContainer;
 import com.sun.star.lang.EventObject;
-
 import com.sun.star.lang.WrappedTargetException;
 import com.sun.star.lang.XComponent;
 import com.sun.star.lang.XMultiComponentFactory;
@@ -40,13 +31,10 @@ import com.sun.star.lang.XMultiServiceFactory;
 import com.sun.star.uno.UnoRuntime;
 import com.sun.star.uno.XComponentContext;
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 import java.util.Vector;
-import org.creativecommons.api.LicenseClass;
-import org.creativecommons.api.LicenseField;
+import org.creativecommons.license.Chooser;
+import org.creativecommons.license.License;
 
 /**
  *  The Creative Commons OpenOffice.org AddIn GUI class.
@@ -74,14 +62,15 @@ public class AddInUI {
     String service = "";
     
     // TODO put these labels in a properties file
-    protected String previousButtonName = "previousbt";
-    protected String previousButtonLabel = "< Previous";
-    protected String nextButtonName = "nextbt";
-    protected String nextButtonLabel = "Next >";
-    protected String finishButtonName = "finishbt";
-    protected String finishButtonLabel = "Finish";
-    protected String cancelButtonName = "cancelbt";
-    protected String cancelButtonLabel = "Cancel";
+    public static final String BTN_OK = "finishbt";
+    public static final String finishButtonLabel = "Finish";
+    public static final String BTN_CANCEL = "cancelbt";
+    public static final String cancelButtonLabel = "Cancel";
+
+    public static final String CHK_ALLOW_REMIX = "chkAllowRemix";
+    public static final String CHK_PROHIBIT_COMMERCIAL = "chkProhibitCommercial";
+    public static final String CHK_REQUIRE_SHAREALIKE = "chkRequireShareAlike";
+    public static final String CMB_JURISDICTION = "cmbJurisdiction";
     
     /**
      * Creates a new instance of AddInUI
@@ -92,96 +81,89 @@ public class AddInUI {
         this.m_xContext = m_xContext;
         this.service = sv;
     }
-    
-    
-    
+       
     /**
      * Method for creating a dialog at runtime
      *
      */
-    public void createDialog() throws com.sun.star.uno.Exception {
-        /*
-          // checar se ja licenciado
-                     Map prop = addin.retrieveLicenseMetadata();
-         
-                     //XMessageBoxFactory;
-                     XMessageBoxFactory factory = (XMessageBoxFactory)
-                     UnoRuntime.queryInterface( XMessageBoxFactory.class,
-                             this.xMultiComponentFactory.createInstanceWithContext(
-                             "com.sun.star.awt.Toolkit", m_xContext ) );
-         
-                     Rectangle ret = new Rectangle();
-         
-         
-                     XMessageBox box = factory.createMessageBox(this,ret,"querybox",MessageBoxButtons.BUTTONS_YES_NO,"Title","Document already licensed.\n\nWould you like do proceed anyway?");
-         
-                     box.execute();*/
-        
+    public void createDialog() throws com.sun.star.uno.Exception {        
         
         // get the service manager from the component context
         this.xMultiComponentFactory = this.m_xContext.getServiceManager();
         
         // create the dialog model and set the properties
-        Object dialogModel = xMultiComponentFactory.createInstanceWithContext("com.sun.star.awt.UnoControlDialogModel", m_xContext);
+        Object dlgLicenseSelector = xMultiComponentFactory.createInstanceWithContext
+                    ("com.sun.star.awt.UnoControlDialogModel", m_xContext);
+        XMultiServiceFactory msfLicenseSelector = (XMultiServiceFactory) UnoRuntime.queryInterface(
+                    XMultiServiceFactory.class, dlgLicenseSelector);
         
-        XPropertySet xPSetDialog = (XPropertySet)UnoRuntime.queryInterface(XPropertySet.class, dialogModel);
+        XPropertySet xPSetDialog = (XPropertySet)UnoRuntime.queryInterface(XPropertySet.class, dlgLicenseSelector);
         xPSetDialog.setPropertyValue("PositionX", new Integer(100));
         xPSetDialog.setPropertyValue("PositionY", new Integer(100));
         xPSetDialog.setPropertyValue("Width", new Integer(240));//470
         xPSetDialog.setPropertyValue("Height", new Integer(200));//360
-        xPSetDialog.setPropertyValue("Title", new String("Creative Commons Licensing"));
+        xPSetDialog.setPropertyValue("Title", new String("Set Creative Commons License"));
         xPSetDialog.setPropertyValue("Name", new String("cc"));
         xPSetDialog.setPropertyValue("Step", (short)1 );
         
         
         // get the service manager from the dialog model
         this.xMultiServiceFactory = (XMultiServiceFactory)UnoRuntime.queryInterface(
-                XMultiServiceFactory.class, dialogModel);
+                XMultiServiceFactory.class, dlgLicenseSelector);
         
-        // create the listbox model and set the properties
-        String licenseListName = "Class";
+        // create the boolean selection fields
+        Object chkAllowRemixing = msfLicenseSelector.createInstance("com.sun.star.awt.UnoControlCheckBoxModel");
+        XPropertySet xpsAllowRemixing = (XPropertySet) UnoRuntime.queryInterface(XPropertySet.class, chkAllowRemixing);
+
+        xpsAllowRemixing.setPropertyValue("PositionX", new Integer(80));
+        xpsAllowRemixing.setPropertyValue("PositionY", new Integer(25));
+        xpsAllowRemixing.setPropertyValue("Width", new Integer(85));
+        xpsAllowRemixing.setPropertyValue("Height", new Integer(12));
+        xpsAllowRemixing.setPropertyValue("Name", CHK_ALLOW_REMIX);
+        xpsAllowRemixing.setPropertyValue("Label", "Allow Remixing?");
         
-        Object comboBoxModel = xMultiServiceFactory.createInstance("com.sun.star.awt.UnoControlComboBoxModel" );
-        XPropertySet xPSetComboBox = (XPropertySet)UnoRuntime.queryInterface(
-                XPropertySet.class, comboBoxModel);
         
-        XPropertySet xPSetList = (XPropertySet)UnoRuntime.queryInterface(XPropertySet.class, comboBoxModel);
+        xpsAllowRemixing.setPropertyValue("TriState", Boolean.FALSE);
+        xpsAllowRemixing.setPropertyValue("State", new Short((short) 1));
+
+        Object chkProhibitCommercial = msfLicenseSelector.createInstance("com.sun.star.awt.UnoControlCheckBoxModel");
+        XPropertySet xpsProhibitCommercial = (XPropertySet) UnoRuntime.queryInterface(XPropertySet.class, chkProhibitCommercial);
+
+        xpsProhibitCommercial.setPropertyValue("PositionX", new Integer(80));
+        xpsProhibitCommercial.setPropertyValue("PositionY", new Integer(50));
+        xpsProhibitCommercial.setPropertyValue("Width", new Integer(85));
+        xpsProhibitCommercial.setPropertyValue("Height", new Integer(12));
+        xpsProhibitCommercial.setPropertyValue("Name", CHK_PROHIBIT_COMMERCIAL);
+        xpsProhibitCommercial.setPropertyValue("Label", "Prohibit Commercial Use?");
+        
+        xpsProhibitCommercial.setPropertyValue("TriState", Boolean.FALSE);
+        xpsProhibitCommercial.setPropertyValue("State", new Short((short) 0));
+
+        Object chkRequireShareAlike = msfLicenseSelector.createInstance("com.sun.star.awt.UnoControlCheckBoxModel");
+        XPropertySet xpsRequireShareAlike = (XPropertySet) UnoRuntime.queryInterface(XPropertySet.class, chkRequireShareAlike);
+
+        xpsRequireShareAlike.setPropertyValue("PositionX", new Integer(80));
+        xpsRequireShareAlike.setPropertyValue("PositionY", new Integer(75));
+        xpsRequireShareAlike.setPropertyValue("Width", new Integer(85));
+        xpsRequireShareAlike.setPropertyValue("Height", new Integer(12));
+        xpsRequireShareAlike.setPropertyValue("Name", CHK_REQUIRE_SHAREALIKE);
+        xpsRequireShareAlike.setPropertyValue("Label", "Require Share-Alike?");
+        
+        xpsRequireShareAlike.setPropertyValue("TriState", Boolean.FALSE);
+        xpsRequireShareAlike.setPropertyValue("State", new Short((short) 0));
+
+        // create the jurisdiction drop-down list
+        Object cmbJurisdictionList = xMultiServiceFactory.createInstance("com.sun.star.awt.UnoControlComboBoxModel" );
+        
+        XPropertySet xPSetList = (XPropertySet)UnoRuntime.queryInterface(XPropertySet.class, cmbJurisdictionList);
         xPSetList.setPropertyValue("PositionX", new Integer(80));
-        xPSetList.setPropertyValue("PositionY", new Integer(35));
+        xPSetList.setPropertyValue("PositionY", new Integer(100));
         xPSetList.setPropertyValue("Width", new Integer(85));
         xPSetList.setPropertyValue("Height", new Integer(12));
-        xPSetList.setPropertyValue("Name", licenseListName);
-        xPSetList.setPropertyValue("Dropdown", new Boolean("true"));
-        
-        //xPSetList.setPropertyValue("TabIndex", new Short((short)3));
+        xPSetList.setPropertyValue("Name", CMB_JURISDICTION);
+        xPSetList.setPropertyValue("Dropdown", new Boolean("true"));        
         xPSetList.setPropertyValue("Step", new Short((short)1));
-        
-        
-        // create the button model - Previous and set the properties
-        Object previousButton = xMultiServiceFactory.createInstance("com.sun.star.awt.UnoControlButtonModel" );
-        XPropertySet xPSetPreviousButton = (XPropertySet)UnoRuntime.queryInterface(
-                XPropertySet.class, previousButton);
-        xPSetPreviousButton.setPropertyValue("PositionX", new Integer(20));
-        xPSetPreviousButton.setPropertyValue("PositionY", new Integer(180));
-        xPSetPreviousButton.setPropertyValue("Width", new Integer(50));
-        xPSetPreviousButton.setPropertyValue("Height", new Integer(14));
-        xPSetPreviousButton.setPropertyValue("Name", previousButtonName);
-        xPSetPreviousButton.setPropertyValue("Label", previousButtonLabel);
-        
-        
-        // create the button model - next and set the properties
-        Object nextButton = xMultiServiceFactory.createInstance("com.sun.star.awt.UnoControlButtonModel" );
-        XPropertySet xPSetNextButton = (XPropertySet)UnoRuntime.queryInterface(
-                XPropertySet.class, nextButton);
-        xPSetNextButton.setPropertyValue("PositionX", new Integer(73));
-        xPSetNextButton.setPropertyValue("PositionY", new Integer(180));
-        xPSetNextButton.setPropertyValue("Width", new Integer(50));
-        xPSetNextButton.setPropertyValue("Height", new Integer(14));
-        xPSetNextButton.setPropertyValue("Name", nextButtonName);
-        //  xPSetNextButton.setPropertyValue("TabIndex", new Short((short)0));
-        xPSetNextButton.setPropertyValue("Label", nextButtonLabel);
-        
-        
+             
         // create the button model - Finish and set the properties
         Object finishButton = xMultiServiceFactory.createInstance("com.sun.star.awt.UnoControlButtonModel" );
         XPropertySet xPSetFinishButton = (XPropertySet)UnoRuntime.queryInterface(
@@ -190,7 +172,7 @@ public class AddInUI {
         xPSetFinishButton.setPropertyValue("PositionY", new Integer(180));
         xPSetFinishButton.setPropertyValue("Width", new Integer(50));
         xPSetFinishButton.setPropertyValue("Height", new Integer(14));
-        xPSetFinishButton.setPropertyValue("Name", finishButtonName);
+        xPSetFinishButton.setPropertyValue("Name", BTN_OK);
         xPSetFinishButton.setPropertyValue("Label", finishButtonLabel);
         
         
@@ -202,65 +184,60 @@ public class AddInUI {
         xPSetCancelButton.setPropertyValue("PositionY", new Integer(180));
         xPSetCancelButton.setPropertyValue("Width", new Integer(50));
         xPSetCancelButton.setPropertyValue("Height", new Integer(14));
-        xPSetCancelButton.setPropertyValue("Name", cancelButtonName);
+        xPSetCancelButton.setPropertyValue("Name", BTN_CANCEL);
         xPSetCancelButton.setPropertyValue("Label", cancelButtonLabel);
         
         
         // create the label model and set the properties
+        /*
         Object labelModel = xMultiServiceFactory.createInstance("com.sun.star.awt.UnoControlFixedTextModel" );
         XPropertySet xPSetLabel = ( XPropertySet )UnoRuntime.queryInterface(XPropertySet.class, labelModel );
         xPSetLabel.setPropertyValue("PositionX", new Integer(80));
         xPSetLabel.setPropertyValue("PositionY", new Integer(15));
         xPSetLabel.setPropertyValue("Width", new Integer(100));
         xPSetLabel.setPropertyValue("Height", new Integer(14));
-        xPSetLabel.setPropertyValue("Name", "nomeRotulo"/*_labelName*/);
+        xPSetLabel.setPropertyValue("Name", "nomeRotulo");
         xPSetLabel.setPropertyValue("TabIndex", new Short((short)1));
-        xPSetLabel.setPropertyValue("Label", "Chose the license class:"/*_labelPrefix*/);
+        xPSetLabel.setPropertyValue("Label", "Chose the license class:");
         xPSetLabel.setPropertyValue("Step", new Short((short)1));
-        
+        */
         
         // insert the control models into the dialog model
         this.xNameCont = (XNameContainer)UnoRuntime.queryInterface(
-                XNameContainer.class, dialogModel);
+                XNameContainer.class, dlgLicenseSelector);
         
-        xNameCont.insertByName("nomeRotulo"/*_labelName*/, labelModel);
-        xNameCont.insertByName(previousButtonName, previousButton);
-        xNameCont.insertByName(nextButtonName, nextButton);
-        xNameCont.insertByName(finishButtonName, finishButton);
-        xNameCont.insertByName(cancelButtonName, cancelButton);
-        xNameCont.insertByName(licenseListName, comboBoxModel);
+        //xNameCont.insertByName("nomeRotulo"/*_labelName*/, labelModel);
+        xNameCont.insertByName(CHK_ALLOW_REMIX, chkAllowRemixing);
+        xNameCont.insertByName(CHK_PROHIBIT_COMMERCIAL, chkProhibitCommercial);
+        xNameCont.insertByName(CHK_REQUIRE_SHAREALIKE, chkRequireShareAlike);
+        xNameCont.insertByName(CMB_JURISDICTION, cmbJurisdictionList);
+        
+        xNameCont.insertByName(BTN_OK, finishButton);
+        xNameCont.insertByName(BTN_CANCEL, cancelButton);
+
         
         // create the dialog control and set the model
         Object dialog = xMultiComponentFactory.createInstanceWithContext("com.sun.star.awt.UnoControlDialog", m_xContext); //esse
         XControl xControl = (XControl)UnoRuntime.queryInterface(XControl.class, dialog );
-        XControlModel xControlModel = (XControlModel)UnoRuntime.queryInterface(XControlModel.class, dialogModel);
+        XControlModel xControlModel = (XControlModel)UnoRuntime.queryInterface(XControlModel.class, dlgLicenseSelector);
         xControl.setModel(xControlModel);
         
         // add an action listener to the Previous button control
         xControlCont = (XControlContainer)UnoRuntime.queryInterface(
                 XControlContainer.class, dialog);
-        
-        Object objectButton = xControlCont.getControl(previousButtonName);
-        XButton xPreviousButton = (XButton)UnoRuntime.queryInterface(XButton.class, objectButton);
-        xPreviousButton.addActionListener(new OnPreviousClick(xControlCont,xPSetDialog, this));
-        
-        // add an action listener to the Next button control
-        Object objectButton2 = xControlCont.getControl(nextButtonName);
-        XButton xNextButton = (XButton)UnoRuntime.queryInterface(XButton.class, objectButton2);
-        xNextButton.addActionListener(new OnNextClick(xPSetDialog));
-        
+                
         // add an action listener to the Finish button control
-        Object objectButton3 = xControlCont.getControl(finishButtonName);
+        Object objectButton3 = xControlCont.getControl(BTN_OK);
         XButton xFinishButton = (XButton)UnoRuntime.queryInterface(XButton.class, objectButton3);
         xFinishButton.addActionListener(new OnFinishClick(this.addin, this));
         
         // add an action listener to the Cancel button control
-        Object objectButton4 = xControlCont.getControl(cancelButtonName);
+        Object objectButton4 = xControlCont.getControl(BTN_CANCEL);
         XButton xCancelButton = (XButton)UnoRuntime.queryInterface(XButton.class, objectButton4);
         xCancelButton.addActionListener(new OnCancelClick(xPSetDialog));
         
         // add Items and an action listener to the License ComboBox control
-        XComboBox lb = (XComboBox)UnoRuntime.queryInterface(XComboBox.class, xControlCont.getControl(licenseListName));
+/*        XComboBox lb = (XComboBox)UnoRuntime.queryInterface(XComboBox.class, xControlCont.getControl(licenseListName));
         
         List classes = (List)ccooo.ccr.licenseClasses("en");
         
@@ -277,16 +254,16 @@ public class AddInUI {
         
         
         lb.addItemListener(new OnSelectLicenceClass());
-        
+  */      
         // Disable previous, next and finish button at step 1
-        ((XWindow)UnoRuntime.queryInterface(
+/*        ((XWindow)UnoRuntime.queryInterface(
                 XWindow.class, xControlCont.getControl(previousButtonName))).setEnable(false);
         ((XWindow)UnoRuntime.queryInterface(
-                XWindow.class, xControlCont.getControl(finishButtonName))).setEnable(false);
+                XWindow.class, xControlCont.getControl(BTN_OK))).setEnable(false);
         ((XWindow)UnoRuntime.queryInterface(
                 XWindow.class, xControlCont.getControl(nextButtonName))).setEnable(false);
         
-        
+  */      
         // create a peer
         Object toolkit = xMultiComponentFactory.createInstanceWithContext("com.sun.star.awt.Toolkit", m_xContext);
         XToolkit xToolkit = (XToolkit)UnoRuntime.queryInterface(XToolkit.class, toolkit);
@@ -305,333 +282,7 @@ public class AddInUI {
         
     }
     
-    /**
-     * Creates a ComboBox in the dialog's interface
-     *
-     * @param posY The vertical position of the ComboBox
-     * @param cbName The name of the ComboBox component
-     * @param items  Map of items of the ComboBox
-     * @param step The step in the sequence which this component should appear
-     *
-     */
-    public void createCombo(int posY, String cbName, Map items, short step){
-        
-        try {
-            if (xNameCont.hasByName(cbName)) {
-                return; // it already exists. Let it be the sabe the user had chosen previously
-            } else {
-                
-                Object comboBoxModel;
-                comboBoxModel = xMultiServiceFactory.createInstance("com.sun.star.awt.UnoControlComboBoxModel");
-                
-                XPropertySet xPSetComboBox = (XPropertySet)UnoRuntime.queryInterface(
-                        XPropertySet.class, comboBoxModel);
-                
-                XPropertySet xPSetList = (XPropertySet)UnoRuntime.queryInterface(XPropertySet.class, comboBoxModel);
-                xPSetList.setPropertyValue("PositionX", new Integer(80));
-                xPSetList.setPropertyValue("PositionY", new Integer(posY));
-                xPSetList.setPropertyValue("Width", new Integer(85));
-                xPSetList.setPropertyValue("Height", new Integer(12));
-                xPSetList.setPropertyValue("Name", cbName);
-                xPSetList.setPropertyValue("Dropdown", new Boolean("true"));
-                //xPSetList.setPropertyValue("TabIndex", new Short((short)3));
-                xPSetList.setPropertyValue("Step", new Short(step));
-                
-                Object [] values =  items.values().toArray();
-                String [] temp = new String[values.length];
-                
-                for (int i = 0; i < values.length; i++) {
-                    temp[i] = (String) values[i];
-                }
-                xPSetList.setPropertyValue("StringItemList", temp);
-                
-                xNameCont.insertByName(cbName, comboBoxModel);
-                this.namesList.add(cbName); // Add the component name to the list so it can be removed after
-            }
-            
-        } catch (com.sun.star.uno.Exception ex) {
-            ex.printStackTrace();
-        }
-    }
-    
-    /**
-     * Creates a Label in the dialog's interface
-     *
-     * @param posY The vertical position of the Label
-     * @param lbName The name of the Label component
-     * @param label The text of the Label
-     * @param step The step in the sequence which this component should appear
-     *
-     */
-    public void createLabel(int posY, String lbName, String label, short step){
-        
-        try {
-            if (xNameCont.hasByName(lbName)) {
-                return; // it already exists. Let it be the sabe the user had chosen previously
-            } else {
-                
-                // create the label model and set the properties
-                Object labelModel = xMultiServiceFactory.createInstance("com.sun.star.awt.UnoControlFixedTextModel" );
-                XPropertySet xPSetLabel = ( XPropertySet )UnoRuntime.queryInterface(XPropertySet.class, labelModel );
-                xPSetLabel.setPropertyValue("PositionX", new Integer(80));
-                xPSetLabel.setPropertyValue("PositionY", new Integer(posY));
-                xPSetLabel.setPropertyValue("Width", new Integer(100));
-                xPSetLabel.setPropertyValue("Height", new Integer(10));
-                xPSetLabel.setPropertyValue("Name", lbName);
-                xPSetLabel.setPropertyValue("TabIndex", new Short((short)1));
-                xPSetLabel.setPropertyValue("Label", label);
-                xPSetLabel.setPropertyValue("Step", new Short(step));
-                
-                xNameCont.insertByName(lbName, labelModel);
-                this.namesList.add(lbName); // Add the component name to the list so it can be removed after
-            }
-        } catch (Exception ex) {
-            ex.printStackTrace();
-        }
-        
-    }
-    
-    /**
-     *
-     * Removes all Components in the dialog
-     *
-     */
-    
-    public void clearLabels() {
-        // This is because XNameContainer doesn't have a method like "clearAll" or "removeAll" :P
-        try {
-            Iterator it = this.namesList.iterator();
-            
-            while (it.hasNext()) {
-                String name = (String) it.next();
-                
-                if (this.xNameCont.hasByName(name)) {
-                    this.xNameCont.removeByName(name);
-                }
-                
-            }
-            this.namesList.clear();
-        } catch (Exception ex) {
-            ex.printStackTrace();
-        }
-    }
-    
-    /**
-     * Mounts the interface based on the selected license class
-     *
-     * @param id The license class id
-     *
-     */
-    public void selectClass(String id) {
-        this.answers = new HashMap();
-        this.currentId = id;
-        LicenseField current;
-        
-        
-        
-        // get the fields related to the class
-        List fields = (List)ccooo.ccr.fields(id);
-        
-        if (fields.size() == 0) {
-            ((XWindow)UnoRuntime.queryInterface(
-                    XWindow.class, this.xControlCont.getControl(this.finishButtonName))).setEnable(true);
-            
-        }
-        
-        
-        for (int i = 0; i < fields.size(); i ++) {
-            current = (LicenseField)fields.get(i);
-            
-            // Add the field label
-            String labelName = "label"+i;
-            this.createLabel((i*50 + 30), labelName,current.getLabel(), (short)2 );
-            
-            
-            // determine what type of widget needs to be added
-            if (current.getType().equals("enum")) {
-                // TODO choose between drop downs and combo-boxes based on the number of available options
-                // This code only uses drop downs
-                
-                String comboName = "combo"+ i;
-                this.createCombo((i*50+40),comboName,current.getEnum(),(short)2);
-                
-                // add an action listener to the combo box control
-                XComboBox lb = (XComboBox)UnoRuntime.queryInterface(XComboBox.class, xControlCont.getControl(comboName));
-                lb.addItemListener(new OnSelectAnswers(xControlCont,comboName,current.getId(),current.getEnum(),this.answers,fields.size(), this));
-                
-                
-            } // if type == enum
-            else {
-                System.out.print(current.getType());
-            }
-            
-        }
-        
-    } // end of method selectClass
-//}// end of AddIn class
-    
-    /**
-     * This is the listening class for
-     */
-    class OnSelectLicenceClass implements XItemListener {
-        
-        
-        public  OnSelectLicenceClass(){
-            
-        }
-        
-        public void disposing(EventObject e) {
-        }
-        
-        public void itemStateChanged(ItemEvent e) {
-            
-            
-            
-       /* next version!
-        // get the fields related to the class
-        List fields = (List)ccr.fields(id);
-        
-        if (fields.size() == 0) {
-            ((XWindow)UnoRuntime.queryInterface(
-                    XWindow.class, xControlCont.getControl(finishButtonName))).setEnable(true);
-        
-        } else {
-             // Enable next button
-                ((XWindow)UnoRuntime.queryInterface(
-                XWindow.class, xControlCont.getControl(nextButtonName))).setEnable(true);
-        }
-        */
-            
-            
-        /*
-        System.out.println("selected id:" + e.Selected);
-        if (e.Selected==1){//this.licenseClass.equalsIgnoreCase("Public Domain")) {
-            ((XWindow)UnoRuntime.queryInterface(
-                    XWindow.class, xControlCont.getControl(finishButtonName))).setEnable(true);
-         
-          //  currentId = "";
-        } else {*/
-            // Enable next button
-            ((XWindow)UnoRuntime.queryInterface(
-                    XWindow.class, xControlCont.getControl(nextButtonName))).setEnable(true);
-            // }
-            
-            
-            clearLabels();
-            
-        }
-    }
-    /**
-     *Listening class
-     */
-    class OnSelectAnswers implements XItemListener {
-        
-        private XControlContainer _xControlCont;
-        
-        private Map answerContainer;
-        private String id;
-        private String comboName;
-        private int number;
-        private Map answerMap;
-        private AddInUI ui;
-        
-        public  OnSelectAnswers(XControlContainer xControlCont, String comboName, String id, Map aMap, Map answers, int number, AddInUI ui){
-            this._xControlCont = xControlCont;
-            this.comboName = comboName;
-            this.answerContainer = answers;
-            this.id = id; // id da pergutna
-            this.number = number;
-            this.ui = ui;
-            this.answerMap = new HashMap();
-            
-            Iterator keys = aMap.keySet().iterator();
-            
-            while (keys.hasNext()) {
-                String current = (String)keys.next();
-                
-                this.answerMap.put(aMap.get(current), current);
-                
-            }
-        }
-        
-        
-        public void disposing(EventObject e) {
-        }
-        
-        public void itemStateChanged(ItemEvent e) {
-            
-            XTextComponent t = (XTextComponent)UnoRuntime.queryInterface(
-                    XTextComponent.class, _xControlCont.getControl(this.comboName));
-            
-            
-            this.answerContainer.put(this.id, this.answerMap.get(t.getText()));
-            
-            // Number of answers must be the same of the number of questions to enable finish button
-            if (this.answerContainer.size() == this.number) {
-                
-                // Enable "Finish" button
-                ((XWindow)UnoRuntime.queryInterface(
-                        XWindow.class, this._xControlCont.getControl(this.ui.finishButtonName))).setEnable(true);
-            }
-        }
-    }
-    
-    
-    
-    class OnNextClick implements XActionListener {
-        
-        
-        private XPropertySet _xPSetDialog;
-        
-        
-        public  OnNextClick(XPropertySet xPSetDialog){
-            
-            this._xPSetDialog = xPSetDialog;
-            
-            
-        }
-        
-        public void actionPerformed(ActionEvent a ) {
-            
-            try {
-                int step = ((Integer) this._xPSetDialog.getPropertyValue("Step")).intValue();
-                
-                // current step
-                if (step == 1) {
-                    
-                    XTextComponent t = (XTextComponent)UnoRuntime.queryInterface(
-                            XTextComponent.class, xControlCont.getControl("Class"));
-                    selectClass(ccooo.ccr.getLicenseId(t.getText()));
-                    
-                    this._xPSetDialog.setPropertyValue("Step", ++step);
-                    
-                    // Enable Previous Button
-                    ((XWindow)UnoRuntime.queryInterface(
-                            XWindow.class, xControlCont.getControl(previousButtonName))).setEnable(true);
-                    
-                    // Disable next button
-                    ((XWindow)UnoRuntime.queryInterface(
-                            XWindow.class, xControlCont.getControl(nextButtonName))).setEnable(false);
-                    
-                }
-                
-            } catch (com.sun.star.lang.IllegalArgumentException ex) {
-                ex.printStackTrace();
-            } catch (WrappedTargetException ex) {
-                ex.printStackTrace();
-            } catch (UnknownPropertyException ex) {
-                ex.printStackTrace();
-            } catch (PropertyVetoException ex) {
-                ex.printStackTrace();
-            }
-            
-        }
-        
-        public void disposing(EventObject e ) {
-        }
-    }
-    
-    
+
     class OnCancelClick implements XActionListener {
         
         
@@ -653,56 +304,7 @@ public class AddInUI {
         public void disposing(EventObject e ) {
         }
     }
-    
-    
-    class OnPreviousClick implements XActionListener {
-        
-        private XControlContainer _xControlCont;
-        private XPropertySet _xPSetDialog;
-        private AddInUI ui;
-        
-        public  OnPreviousClick(XControlContainer xControlCont, XPropertySet xPSetDialog, AddInUI ui){
-            this._xControlCont = xControlCont;
-            this._xPSetDialog = xPSetDialog;
-            this.ui = ui;
-            
-        }
-        
-        public void actionPerformed(ActionEvent a ) {
-            int step;
-            try {
-                
-                step = ((Integer) this._xPSetDialog.getPropertyValue("Step")).intValue();
-                
-                // current step
-                if (step == 2) {
-                    
-                    this._xPSetDialog.setPropertyValue("Step", --step);
-                    
-                    System.out.println("STEP: "+step);
-                    
-                    // Disable Previous Button
-                    ((XWindow)UnoRuntime.queryInterface(
-                            XWindow.class, this._xControlCont.getControl(this.ui.previousButtonName))).setEnable(false);
-                    
-                    // Enable next button
-                    ((XWindow)UnoRuntime.queryInterface(
-                            XWindow.class, this._xControlCont.getControl(this.ui.nextButtonName))).setEnable(true);
-                    
-                    // Disable finish
-                    ((XWindow)UnoRuntime.queryInterface(
-                            XWindow.class, this._xControlCont.getControl(this.ui.finishButtonName))).setEnable(false);
-                    
-                }
-            } catch (Exception ex) {
-                ex.printStackTrace();
-            }
-        }
-        
-        public void disposing(EventObject e ) {
-        }
-    }
-    
+
     
     class OnFinishClick implements XActionListener {
         
@@ -710,54 +312,84 @@ public class AddInUI {
         private ccooo addin;
         private AddInUI ui;
         
-        public  OnFinishClick(ccooo addin, AddInUI ui){
-            
+        public OnFinishClick(ccooo addin, AddInUI ui){
             
             this.addin = addin;
             this.ui = ui;
             
-        }
+        } // OnFinishClick - public constructor
+        
+        private Boolean getCheckboxValue(String chkName) {
+            try {
+
+                XPropertySet xPSetList = (XPropertySet) UnoRuntime.queryInterface(XPropertySet.class, 
+                            this.ui.xNameCont.getByName(chkName));
+                System.out.println(xPSetList.getPropertyValue("State"));
+                return (xPSetList.getPropertyValue("State") == "1");
+                
+            } catch (UnknownPropertyException ex) {
+                ex.printStackTrace();
+                return null;
+            } catch (WrappedTargetException ex) {
+                ex.printStackTrace();
+                return null;
+            } catch (NoSuchElementException ex) {
+                ex.printStackTrace();
+                return null;
+            }
+            
+        } // getCheckboxValue
         
         public void actionPerformed(ActionEvent a ) {
-            try {
-                
-                // retrieve the Document for the issued license
-                ccooo.ccr.issue(this.ui.currentId, this.ui.answers, "en");
-                
-                String licenseName = ccooo.ccr.getLicenseName();
-                String licenseURL =  ccooo.ccr.getLicenseUrl();
-                String licenseImageURL = ccooo.ccr.getLicenseImageURL();
-                
-                
-                if (service.equalsIgnoreCase("spreadsheet")) {
-                    Calc.embedGraphic(addin.getCurrentComponent(),licenseImageURL);
-                    Calc.insertLicenseText(addin.getCurrentComponent(), licenseName);
-                } else if (service.equalsIgnoreCase("text")) {
-                    Writer.createAutoText(addin.getCurrentComponent(), addin.getMSFactory(),licenseName,licenseURL,licenseImageURL);
-                } else if (service.equalsIgnoreCase("presentation")) {
-                    Impress.embedGraphic(addin.getCurrentComponent(), licenseImageURL);
-                    Impress.insertLicenseText(addin.getCurrentComponent(), licenseName);
-                    
-                } else if (service.equalsIgnoreCase("drawing")) {
-                    
-                }
-                
-                this.addin.insertLicenseMetadata(licenseName,licenseURL);
-                
-           /* this.addin.createAutoText(licenseName,licenseURL, licenseImageURL);
-            
+
+            // retrieve the Document for the issued license
+            Chooser licenseChooser = new Chooser();
+            License selected = licenseChooser.selectLicense(
+                    getCheckboxValue(CHK_ALLOW_REMIX), 
+                    getCheckboxValue(CHK_PROHIBIT_COMMERCIAL),
+                    getCheckboxValue(CHK_REQUIRE_SHAREALIKE));
+
+            System.out.println (selected.getLicenseUri());
+            /*
+            String licenseName = ccooo.ccr.getLicenseName();
+            String licenseURL =  ccooo.ccr.getLicenseUrl();
+            String licenseImageURL = ccooo.ccr.getLicenseImageURL();
             */
-                
-                this.ui.xDialog.endExecute();
-                
-            } catch (IOException ex) {
-                ex.printStackTrace();
+
+            System.out.println(selected.getName());
+            
+            if (service.equalsIgnoreCase("spreadsheet")) {
+
+                Calc.embedGraphic(addin.getCurrentComponent(), selected.getImageUrl());
+                Calc.insertLicenseText(addin.getCurrentComponent(), selected.getName());
+
+            } else if (service.equalsIgnoreCase("text")) {
+
+                Writer.createAutoText(addin.getCurrentComponent(), addin.getMSFactory(),
+                        selected.getName(),selected.getLicenseUri(),selected.getImageUrl());
+
+            } else if (service.equalsIgnoreCase("presentation")) {
+
+                Impress.embedGraphic(addin.getCurrentComponent(), selected.getImageUrl());
+                Impress.insertLicenseText(addin.getCurrentComponent(), selected.getName());
+
+            } else if (service.equalsIgnoreCase("drawing")) {
+
             }
-        }
+
+            this.addin.insertLicenseMetadata(selected.getName(), selected.getLicenseUri());
+
+       /* this.addin.createAutoText(licenseName,licenseURL, licenseImageURL);
+
+        */
+
+            this.ui.xDialog.endExecute();
+
+        } // actionPerformed
         
         public void disposing(EventObject e ) {
         }
-    }
+    } // OnFinishClick
     
     
 }
