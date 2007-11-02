@@ -13,8 +13,14 @@ import com.hp.hpl.jena.query.Query;
 import com.hp.hpl.jena.query.QueryExecution;
 import com.hp.hpl.jena.query.QueryExecutionFactory;
 import com.hp.hpl.jena.query.QueryFactory;
+import com.hp.hpl.jena.rdf.model.Literal;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
+import com.hp.hpl.jena.rdf.model.Property;
+import com.hp.hpl.jena.rdf.model.RDFNode;
+import com.hp.hpl.jena.rdf.model.Resource;
+import com.hp.hpl.jena.rdf.model.Statement;
+import com.hp.hpl.jena.rdf.model.StmtIterator;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FilenameFilter;
@@ -86,6 +92,41 @@ public class Store {
         QueryExecution qe = QueryExecutionFactory.create(query, model);
         
         return qe;
+    }
+    
+    public String object(String subject, Property predicate, String lang) {
+        
+        RDFNode current; 
+        
+        Resource subj = this.model.getResource(subject);
+
+        // get an iterator over the objects in case there's more than one'
+        StmtIterator iter = subj.listProperties(predicate);
+        while (iter.hasNext()) {
+            current = iter.nextStatement().getObject();
+            
+            if ( current.isLiteral() ) {
+
+                if ( ((Literal)current).getLanguage().equals(lang) ) {
+
+                    // this is a literal, in the language we care about
+                    return ((Literal)current).getString();
+                    
+                } // if current.getLanguage == lang
+                
+            } else {
+                // not a literal; we just pass back the first one we find
+                return current.toString();
+            }
+            
+        } // while hasNext...
+
+        return ""; //null;
+        
+    } // object
+    
+    public String object(String subject, Property predicate) {
+        return this.object(subject, predicate, "en");
     }
     
 } // org.creativecommons.license.Store

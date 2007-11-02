@@ -41,15 +41,16 @@ public class Chooser {
         ResultSet results = query.execSelect();
         
         // Get the first result
-        System.out.println(results.nextSolution().getResource("?license").toString());
+        License result = new License(results.nextSolution().getResource("?license").toString());
         
         // Important - free up resources used running the query
         query.close();
         
-        return null;
+        return result;
+
     } // selectLicense
 
-    private static String makeLicenseQuery(boolean allowRemixing, boolean prohibitCommercialUse, boolean requireShareAlike,
+    private String makeLicenseQuery(boolean allowRemixing, boolean prohibitCommercialUse, boolean requireShareAlike,
                 Jurisdiction jurisdiction) {
         
         // Create the basic query

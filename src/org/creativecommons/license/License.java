@@ -9,13 +9,15 @@
 
 package org.creativecommons.license;
 
+import com.hp.hpl.jena.vocabulary.DC;
+
 /**
  *
  * @author nathan
  */
 public class License {
     
-    private String _license_uri;
+    private String license_uri;
     private Store licenseStore;
     
     /**
@@ -23,9 +25,20 @@ public class License {
      */
     public License(String license_uri) {
         
-        this._license_uri = license_uri;
+        this.license_uri = license_uri;
         this.licenseStore = Store.get();
     } 
     
+    public String getLicenseUri() {
+        return this.license_uri;
+    }
+    
+    public String getName() {
+        return this.licenseStore.object(this.license_uri, DC.title);
+    }
+    
+    public String getImageUrl() {
+        return "";
+    }
     
 } // License
