@@ -30,10 +30,12 @@ public class Chooser {
         
     }
     
-    public License selectLicense(boolean allowRemixing, boolean prohibitCommercialUse, boolean requireShareAlike) {
+    public License selectLicense(
+            boolean allowRemixing, boolean prohibitCommercialUse, boolean requireShareAlike,
+            Jurisdiction jurisdiction) {
         
         // execute a simple query
-        String queryString = makeLicenseQuery(true, false, false, null);
+        String queryString = makeLicenseQuery(allowRemixing, prohibitCommercialUse, requireShareAlike, jurisdiction);
         System.out.println(queryString);
 
         // Execute the query and obtain results
@@ -70,7 +72,7 @@ public class Chooser {
         // add jurisdiction filter
         if (jurisdiction == null) {
             // limit results to unported
-            queryString += "OPTIONAL { ?license cc:jurisdiction ?jurisdiction } .";
+            queryString += "OPTIONAL { ?license cc:jurisdiction ?jurisdiction } . ";
             filter += "&& !bound(?jurisdiction) ";
             
         } else {
