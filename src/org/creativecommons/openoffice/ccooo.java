@@ -161,8 +161,7 @@ public final class ccooo extends WeakBase
             String sTargetFrameName,
             int iSearchFlags ) {
         if ( aURL.Protocol.compareTo("org.creativecommons.openoffice.ccooo:") == 0 ) {
-            if ( aURL.Path.compareTo("Command0") == 0 )
-                return this;
+            return this;
         }
         return null;
     }
@@ -186,24 +185,11 @@ public final class ccooo extends WeakBase
     public void initialize( Object[] object )
     throws com.sun.star.uno.Exception {
         if ( object.length > 0 ) {
-            /*try {*/
-            
-            
-              /* String file = Ressources.getFile(AddInConstants.LANGUAGE_FILE_NAME);
-               System.out.println("file:" +file);
-                labels.load(new FileInputStream(new File(file)));*/
-            
             
             
             m_xFrame = (com.sun.star.frame.XFrame)UnoRuntime.queryInterface(
                     com.sun.star.frame.XFrame.class, object[0]);
             this.AddOnLoadDocumentListener();
-            
-            /* } catch (FileNotFoundException ex) {
-                ex.printStackTrace();
-            } catch (IOException ex) {
-                ex.printStackTrace();
-            }*/
         }
     }
     public void addStatusListener( com.sun.star.frame.XStatusListener xControl,
@@ -221,63 +207,59 @@ public final class ccooo extends WeakBase
     public void dispatch( com.sun.star.util.URL aURL,
             com.sun.star.beans.PropertyValue[] aArguments ) {
         if ( aURL.Protocol.compareTo("org.creativecommons.openoffice.ccooo:") == 0 ) {
-            if ( aURL.Path.compareTo("Command0") == 0 ) {
-                
-                this.updateCurrentComponent();
-                
-                try {
-                    Map prop = this.retrieveLicenseMetadata();
-                    
-                    if (!prop.isEmpty()) { // Document is already licensed
-                        short answer =  this.createQueryBox("Warning",
-                                "This document is already licensed. It's not recommended putting different licenses in the same document. \n\nWould you like do proceed anyway? (Only the last license chosen will be valid)");
-                        
-                        if (answer != 1) {// clicked on Cancel
-                            return;
-                        }
-                        
-                    }
-                    
-                    if (mxRemoteServiceManager == null) {
-                        System.out.println("not available");
-                        return;
-                    }
-                    
-                    
-                    String service = "";
-                    
-                    XServiceInfo xServiceInfo = (XServiceInfo)UnoRuntime.queryInterface(
-                            XServiceInfo.class, this.xCurrentComponent);
-                    
-                    if (xServiceInfo.supportsService("com.sun.star.sheet.SpreadsheetDocument")) {
-                        System.out.println("Spreadsheet");
-                        service = "Spreadsheet";
-                    } else if (xServiceInfo.supportsService("com.sun.star.text.TextDocument")) {
-                        System.out.println("Text");
-                        service = "Text";
-                        
-                    } else if (xServiceInfo.supportsService("com.sun.star.presentation.PresentationDocument")) {
-                        System.out.println("Presentation");
-                        service = "Presentation";
-                    }
-                    
-                    else if (xServiceInfo.supportsService("com.sun.star.drawing.DrawingDocument")) {
-                        System.out.println("Drawing");
-                        service = "Drawing";
-                    }
-                    
-                    // Create the dialog
-                    AddInUI dialog = new AddInUI(this, this.m_xContext, service);
-                    dialog.createDialog();
-                } catch (Exception ex) {
-                    ex.printStackTrace();
-                }
-                
-                
+    
+            this.updateCurrentComponent();
+        
+            if ( aURL.Path.compareTo("SelectLicense") == 0 ) {
+                selectLicense();
+            } // if select license
+            else if ( aURL.Path.compareTo("InsertStatement") == 0 ) {
+                System.out.println("insert statement");
+                insertStatement();
+            } // if insert statement
+        } // if ccooo protocol
+    } // dispatch
+
+    private void selectLicense() {
+        
+        try {
+
+            if (mxRemoteServiceManager == null) {
+                System.out.println("not available");
                 return;
             }
+            
+            
+            String service = "";
+            
+            XServiceInfo xServiceInfo = (XServiceInfo)UnoRuntime.queryInterface(
+                    XServiceInfo.class, this.xCurrentComponent);
+            
+            if (xServiceInfo.supportsService("com.sun.star.sheet.SpreadsheetDocument")) {
+                service = "Spreadsheet";
+            } else if (xServiceInfo.supportsService("com.sun.star.text.TextDocument")) {
+                service = "Text";
+                
+            } else if (xServiceInfo.supportsService("com.sun.star.presentation.PresentationDocument")) {
+                service = "Presentation";
+            }
+            
+            else if (xServiceInfo.supportsService("com.sun.star.drawing.DrawingDocument")) {
+                service = "Drawing";
+            }
+            
+            // Create the dialog
+            AddInUI dialog = new AddInUI(this, this.m_xContext, service);
+            dialog.createDialog();
+        } catch (Exception ex) {
+            ex.printStackTrace();
         }
-    }
+        
+    } // selectLicense
+    
+    private void insertStatement() {
+        throw new UnsupportedOperationException("Not yet implemented");
+    } // insertStatement
     
     
     /**
@@ -504,4 +486,5 @@ public final class ccooo extends WeakBase
         }
         
     }
+
 }
