@@ -322,10 +322,12 @@ public class AddInUI {
         private Boolean getCheckboxValue(String chkName) {
             try {
 
-                XPropertySet xPSetList = (XPropertySet) UnoRuntime.queryInterface(XPropertySet.class, 
+                XPropertySet xPSetList = (XPropertySet)UnoRuntime.queryInterface(XPropertySet.class, 
                             this.ui.xNameCont.getByName(chkName));
-                System.out.println(xPSetList.getPropertyValue("State"));
-                return (xPSetList.getPropertyValue("State") == "1");
+                
+                System.out.println(
+                        (((Short)xPSetList.getPropertyValue("State")).intValue() == 1));
+                return (((Short)xPSetList.getPropertyValue("State")).intValue() == 1);
                 
             } catch (UnknownPropertyException ex) {
                 ex.printStackTrace();
@@ -345,9 +347,10 @@ public class AddInUI {
             // retrieve the Document for the issued license
             Chooser licenseChooser = new Chooser();
             License selected = licenseChooser.selectLicense(
-                    getCheckboxValue(CHK_ALLOW_REMIX), 
-                    getCheckboxValue(CHK_PROHIBIT_COMMERCIAL),
-                    getCheckboxValue(CHK_REQUIRE_SHAREALIKE));
+                    getCheckboxValue(CHK_ALLOW_REMIX).booleanValue(), 
+                    getCheckboxValue(CHK_PROHIBIT_COMMERCIAL).booleanValue(),
+                    getCheckboxValue(CHK_REQUIRE_SHAREALIKE).booleanValue(),
+                    null);
 
             System.out.println (selected.getLicenseUri());
             /*
@@ -365,7 +368,7 @@ public class AddInUI {
 
             } else if (service.equalsIgnoreCase("text")) {
 
-                Writer.createAutoText(addin.getCurrentComponent(), addin.getMSFactory(),
+                Writer.createLicenseTextField(addin.getCurrentComponent(),
                         selected.getName(),selected.getLicenseUri(),selected.getImageUrl());
 
             } else if (service.equalsIgnoreCase("presentation")) {
