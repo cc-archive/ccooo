@@ -66,14 +66,14 @@ import com.sun.star.lang.XServiceInfo;
  * @author Creative Commons
  * @version 0.3.0
  */
-public final class ccooo extends WeakBase
+public final class CcOOoAddin extends WeakBase
         implements com.sun.star.lang.XServiceInfo,
         com.sun.star.frame.XDispatchProvider,
         com.sun.star.lang.XInitialization,
         com.sun.star.frame.XDispatch {
     private final XComponentContext m_xContext;
     private com.sun.star.frame.XFrame m_xFrame;
-    private static final String m_implementationName = ccooo.class.getName();
+    private static final String m_implementationName = CcOOoAddin.class.getName();
     private static final String[] m_serviceNames = {
         "com.sun.star.frame.ProtocolHandler" };
     
@@ -97,7 +97,7 @@ public final class ccooo extends WeakBase
      *
      * @param context the XComponentContext
      */
-    public ccooo( XComponentContext context ) {
+    public CcOOoAddin( XComponentContext context ) {
         
         m_xContext = context;
         try {
@@ -116,7 +116,7 @@ public final class ccooo extends WeakBase
         XSingleComponentFactory xFactory = null;
         
         if ( sImplementationName.equals( m_implementationName ) )
-            xFactory = Factory.createComponentFactory(ccooo.class, m_serviceNames);
+            xFactory = Factory.createComponentFactory(CcOOoAddin.class, m_serviceNames);
         return xFactory;
     }
     
@@ -207,9 +207,9 @@ public final class ccooo extends WeakBase
     public void dispatch( com.sun.star.util.URL aURL,
             com.sun.star.beans.PropertyValue[] aArguments ) {
         if ( aURL.Protocol.compareTo("org.creativecommons.openoffice.ccooo:") == 0 ) {
-    
+            
             this.updateCurrentComponent();
-        
+            
             if ( aURL.Path.compareTo("SelectLicense") == 0 ) {
                 selectLicense();
             } // if select license
@@ -217,45 +217,48 @@ public final class ccooo extends WeakBase
                 System.out.println("insert statement");
                 insertStatement();
             } // if insert statement
-        } // if ccooo protocol
+        } // if CcOOoAddin protocol
     } // dispatch
-
+    
     private void selectLicense() {
         
         try {
-
+            
             if (mxRemoteServiceManager == null) {
                 System.out.println("not available");
                 return;
             }
             
-            
-            String service = "";
-            
-            XServiceInfo xServiceInfo = (XServiceInfo)UnoRuntime.queryInterface(
-                    XServiceInfo.class, this.xCurrentComponent);
-            
-            if (xServiceInfo.supportsService("com.sun.star.sheet.SpreadsheetDocument")) {
-                service = "Spreadsheet";
-            } else if (xServiceInfo.supportsService("com.sun.star.text.TextDocument")) {
-                service = "Text";
-                
-            } else if (xServiceInfo.supportsService("com.sun.star.presentation.PresentationDocument")) {
-                service = "Presentation";
-            }
-            
-            else if (xServiceInfo.supportsService("com.sun.star.drawing.DrawingDocument")) {
-                service = "Drawing";
-            }
-            
             // Create the dialog
-            AddInUI dialog = new AddInUI(this, this.m_xContext, service);
+            AddInUI dialog = new AddInUI(this, this.m_xContext);
             dialog.createDialog();
         } catch (Exception ex) {
             ex.printStackTrace();
         }
         
     } // selectLicense
+
+    public String getServiceType() {
+        
+        String service = "";
+        
+        XServiceInfo xServiceInfo = (XServiceInfo)UnoRuntime.queryInterface(
+                XServiceInfo.class, this.getCurrentComponent());
+        
+        if (xServiceInfo.supportsService("com.sun.star.sheet.SpreadsheetDocument")) {
+            service = "Spreadsheet";
+        } else if (xServiceInfo.supportsService("com.sun.star.text.TextDocument")) {
+            service = "Text";
+            
+        } else if (xServiceInfo.supportsService("com.sun.star.presentation.PresentationDocument")) {
+            service = "Presentation";
+        }
+        
+        else if (xServiceInfo.supportsService("com.sun.star.drawing.DrawingDocument")) {
+            service = "Drawing";
+        }
+        return service;
+    }
     
     private void insertStatement() {
         throw new UnsupportedOperationException("Not yet implemented");
@@ -486,5 +489,5 @@ public final class ccooo extends WeakBase
         }
         
     }
-
+    
 }
