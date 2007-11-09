@@ -28,21 +28,13 @@
 package org.creativecommons.openoffice;
 
 import com.sun.star.awt.MessageBoxButtons;
-import com.sun.star.awt.Point;
 import com.sun.star.awt.Rectangle;
-import com.sun.star.awt.Size;
 import com.sun.star.awt.WindowDescriptor;
-import com.sun.star.awt.XImageButton;
 import com.sun.star.awt.XMessageBox;
-import com.sun.star.beans.XPropertySet;
-import com.sun.star.container.XNameAccess;
-import com.sun.star.container.XNameContainer;
 import com.sun.star.document.XDocumentInfo;
 import com.sun.star.document.XDocumentInfoSupplier;
 import com.sun.star.document.XEventBroadcaster;
-import com.sun.star.frame.XController;
 import com.sun.star.frame.XDesktop;
-import com.sun.star.frame.XModel;
 import com.sun.star.frame.XStorable;
 import com.sun.star.lang.XComponent;
 import com.sun.star.lang.XMultiComponentFactory;
@@ -53,45 +45,19 @@ import com.sun.star.lib.uno.helper.Factory;
 import com.sun.star.lang.XSingleComponentFactory;
 import com.sun.star.registry.XRegistryKey;
 import com.sun.star.lib.uno.helper.WeakBase;
-import com.sun.star.text.XAutoTextContainer;
-import com.sun.star.text.XAutoTextEntry;
-import com.sun.star.text.XAutoTextGroup;
-import com.sun.star.text.XSimpleText;
 import com.sun.star.text.XText;
-import com.sun.star.text.XTextContent;
 import com.sun.star.text.XTextCursor;
 import com.sun.star.text.XTextDocument;
-import com.sun.star.text.XTextViewCursor;
-import com.sun.star.text.XTextViewCursorSupplier;
-import com.sun.star.uno.AnyConverter;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Properties;
 import java.util.Set;
-import org.creativecommons.api.CcRest;
 
 import com.sun.star.awt.XMessageBoxFactory;
 import com.sun.star.awt.XWindowPeer;
-import com.sun.star.drawing.FillStyle;
-import com.sun.star.drawing.LineStyle;
-import com.sun.star.drawing.XDrawPage;
-import com.sun.star.drawing.XDrawPageSupplier;
-import com.sun.star.drawing.XShape;
-import com.sun.star.drawing.XShapes;
 import com.sun.star.lang.XServiceInfo;
-import com.sun.star.presentation.XPresentation;
-import com.sun.star.style.LineSpacing;
-import com.sun.star.style.LineSpacingMode;
-import com.sun.star.text.HoriOrientation;
-import com.sun.star.text.TextContentAnchorType;
-import com.sun.star.text.VertOrientation;
-import com.sun.star.text.WrapTextMode;
-import com.sun.star.text.XTextGraphicObjectsSupplier;
-import com.sun.star.text.XTextRange;
-import org.creativecommons.openoffice.util.PageHelper;
-import org.creativecommons.openoffice.util.ShapeHelper;
 
 /**
  *  The Creative Commons OpenOffice.org AddIn core class.
@@ -125,10 +91,6 @@ public final class ccooo extends WeakBase
     
     
     Properties labels = new Properties();
-    
-    
-    public static CcRest ccr = new CcRest();
-    
     
     /**
      * Constructs a new instance
