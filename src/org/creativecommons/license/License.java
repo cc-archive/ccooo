@@ -10,6 +10,7 @@
 package org.creativecommons.license;
 
 import com.hp.hpl.jena.vocabulary.DC;
+import com.hp.hpl.jena.vocabulary.DCTerms;
 
 /**
  *
@@ -34,7 +35,12 @@ public class License {
     }
     
     public String getName() {
-        return this.licenseStore.object(this.license_uri, DC.title);
+        
+        return this.licenseStore.literal(this.license_uri, DC.title, "en").getString() + " " +
+                this.licenseStore.literal(this.license_uri, DCTerms.hasVersion, "").getString(); /*  + " " + 
+                this.licenseStore.literal(
+                    this.licenseStore.object(this.license_uri, CC.jurisdiction), DC.title).getString();
+                                                                                              */
     }
     
     public String getImageUrl() {

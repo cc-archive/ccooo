@@ -94,8 +94,48 @@ public class Store {
         return qe;
     }
     
-    public String object(String subject, Property predicate, String lang) {
+    public Literal literal(Resource subject, Property predicate, String lang) {
         
+        RDFNode current; 
+        
+        // get an iterator over the objects in case there's more than one'
+        StmtIterator iter = subject.listProperties(predicate);
+        while (iter.hasNext()) {
+            current = iter.nextStatement().getObject();
+            
+            if ( current.isLiteral() ) {
+
+                System.out.println(((Literal)current).getLanguage());
+                if ( ((Literal)current).getLanguage().equals(lang) ) {
+
+                    // this is a literal, in the language we care about
+                    return (Literal)current;
+                    
+                } // if current.getLanguage == lang
+                
+            } 
+            
+        } // while hasNext...
+
+        return null;
+        
+    } // literal
+    
+    public Literal literal(String subject, Property predicate, String lang) {
+        return literal(this.model.getResource(subject), predicate, lang);
+    }
+
+    /*
+    public Literal literal(String subject, Property predicate) {
+        return this.literal(subject, predicate, "en");
+    }
+    
+    public Literal literal(Resource subject, Property predicate) {
+        return this.literal(subject, predicate, "en");
+    }
+*/
+    public Resource object(String subject, Property predicate) {
+
         RDFNode current; 
         
         Resource subj = this.model.getResource(subject);
@@ -105,28 +145,15 @@ public class Store {
         while (iter.hasNext()) {
             current = iter.nextStatement().getObject();
             
-            if ( current.isLiteral() ) {
+            if ( current.isResource() ) {
 
-                if ( ((Literal)current).getLanguage().equals(lang) ) {
-
-                    // this is a literal, in the language we care about
-                    return ((Literal)current).getString();
-                    
-                } // if current.getLanguage == lang
+                return (Resource)current;
                 
-            } else {
-                // not a literal; we just pass back the first one we find
-                return current.toString();
-            }
+            } 
             
         } // while hasNext...
 
-        return ""; //null;
-        
-    } // object
-    
-    public String object(String subject, Property predicate) {
-        return this.object(subject, predicate, "en");
+        return null;
     }
     
 } // org.creativecommons.license.Store

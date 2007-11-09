@@ -31,5 +31,7 @@ public class CC {
 
     private static Model m = ModelFactory.createDefaultModel();
     
-    public static final Property LEGALCODE = m.createProperty(uri, "legalcode");
+    public static final Property legalcode = m.createProperty(uri, "legalcode");
+    public static final Property jurisdiction = m.createProperty(uri, "jurisdiction");
+    
 }
