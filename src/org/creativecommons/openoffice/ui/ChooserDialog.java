@@ -64,7 +64,8 @@ public class ChooserDialog {
     protected String currentId = "";
     protected CcOOoAddin addin = null;
     
-    private List jurisdictions = null;
+    private List jurisdictionList = null;
+    private Jurisdiction selected = null;
     
     // TODO put these labels in a properties file
     public static final String BTN_OK = "finishbt";
@@ -258,18 +259,28 @@ public class ChooserDialog {
                 XControlContainer.class, dialog);
         
         XComboBox cmbJList = (XComboBox)UnoRuntime.queryInterface(XComboBox.class, xControlCont.getControl(CMB_JURISDICTION));
-        this.jurisdictions = Store.get().jurisdictions();
- 
+        this.setJurisdictionList(Store.get().jurisdictions());
+        
         Iterator it;
-        it = this.jurisdictions.iterator();
+        it = this.getJurisdictionList().iterator();
         short count = 0;
+        
+        // add Unported, which isn't actually a jurisdiction'
+        cmbJList.addItem("Unported", count++);
+        
         while (it.hasNext()) {
             Jurisdiction j = (Jurisdiction)it.next();
-            // cmbJList.
             cmbJList.addItem(j.getTitle(), count++);
             
         }        
-               
+
+        // add a bogus place-holder for Unported in the JurisdictionList to
+        // ensure indices match up when determining the item selected
+        this.getJurisdictionList().add(0, null);
+        
+        // listen for selection changes
+        cmbJList.addItemListener(new JurisdictionSelectListener(this));               
+        
         // add an action listener to the Finish button control
         Object objectButton3 = xControlCont.getControl(BTN_OK);
         XButton xFinishButton = (XButton)UnoRuntime.queryInterface(XButton.class, objectButton3);
@@ -279,35 +290,7 @@ public class ChooserDialog {
         Object objectButton4 = xControlCont.getControl(BTN_CANCEL);
         XButton xCancelButton = (XButton)UnoRuntime.queryInterface(XButton.class, objectButton4);
         xCancelButton.addActionListener(new CancelClickListener(this));
-        
-        // add Items and an action listener to the License ComboBox control
-/*        XComboBox lb = (XComboBox)UnoRuntime.queryInterface(XComboBox.class, xControlCont.getControl(licenseListName));
  
-        List classes = (List)CcOOoAddin.ccr.licenseClasses("en");
- 
-        // TODO timeout exception
- 
-        Iterator it;
-        it = classes.iterator();
-        short count = 0;
-        while (it.hasNext()) {
-            LicenseClass lc = (LicenseClass)it.next();
-            lb.addItem(lc.getLabel(), count++);
- 
-        }
- 
- 
-        lb.addItemListener(new OnSelectLicenceClass());
- */
-        // Disable previous, next and finish button at step 1
-/*        ((XWindow)UnoRuntime.queryInterface(
-                XWindow.class, xControlCont.getControl(previousButtonName))).setEnable(false);
-        ((XWindow)UnoRuntime.queryInterface(
-                XWindow.class, xControlCont.getControl(BTN_OK))).setEnable(false);
-        ((XWindow)UnoRuntime.queryInterface(
-                XWindow.class, xControlCont.getControl(nextButtonName))).setEnable(false);
- 
- */
         // create a peer
         Object toolkit = xMultiComponentFactory.createInstanceWithContext("com.sun.star.awt.Toolkit", m_xContext);
         XToolkit xToolkit = (XToolkit)UnoRuntime.queryInterface(XToolkit.class, toolkit);
@@ -321,8 +304,7 @@ public class ChooserDialog {
         
         // dispose the dialog
         XComponent xComponent = (XComponent)UnoRuntime.queryInterface(XComponent.class, dialog);
-        xComponent.dispose();
-        
+        xComponent.dispose();        
         
     }
 
@@ -332,8 +314,6 @@ public class ChooserDialog {
             XPropertySet xPSetList = (XPropertySet)UnoRuntime.queryInterface(XPropertySet.class,
                         this.xNameCont.getByName(chkName));
             
-            System.out.println(
-                    (((Short) xPSetList.getPropertyValue("State")).intValue()  == 1));
             return (((Short) xPSetList.getPropertyValue("State")).intValue()  == 1);
             
         }  catch (UnknownPropertyException ex) {
@@ -348,6 +328,22 @@ public class ChooserDialog {
         }
         
     } // getCheckboxValue
+
+    public Jurisdiction getSelected() {
+        return selected;
+    }
+
+    public void setSelected(Jurisdiction selected) {
+        this.selected = selected;
+    }
+
+    public List getJurisdictionList() {
+        return jurisdictionList;
+    }
+
+    protected void setJurisdictionList(List jurisdictionList) {
+        this.jurisdictionList = jurisdictionList;
+    }
     
     
 }

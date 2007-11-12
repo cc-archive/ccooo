@@ -33,11 +33,13 @@ class FinishClickListener implements XActionListener {
         
         // retrieve the Document for the issued license
         Chooser licenseChooser = new Chooser();
+        // System.out.println(this.chooserDialog.getSelected().getTitle());
+        
         License selected = licenseChooser.selectLicense(
                     this.chooserDialog.getCheckboxValue(this.chooserDialog.CHK_ALLOW_REMIX).booleanValue(),
                     this.chooserDialog.getCheckboxValue(this.chooserDialog.CHK_PROHIBIT_COMMERCIAL).booleanValue(),
                     this.chooserDialog.getCheckboxValue(this.chooserDialog.CHK_REQUIRE_SHAREALIKE).booleanValue(),
-                    null);
+                    this.chooserDialog.getSelected());
         
         if (this.addin.getServiceType().equalsIgnoreCase("spreadsheet")) {
             

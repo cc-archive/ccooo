@@ -17,10 +17,9 @@ import com.hp.hpl.jena.vocabulary.DC;
  * @author nathan
  */
 public class Jurisdiction 
-    implements Comparable {
+    implements IJurisdiction {
     
     private static final String JURIS_BASE = "http://creativecommons.org/international/";
-    private static final String UNPORTED = "http://creativecommons.org/international/-/";
     
     private String uri = null;
     
@@ -56,9 +55,6 @@ public class Jurisdiction
     }
 
     public int compareTo(Object other) {
-        
-        if (this.uri.equals(this.UNPORTED)) return -1;
-        if (((Jurisdiction)other).uri.equals(this.UNPORTED)) return 1;
         
         return this.getTitle().compareTo(((Jurisdiction)other).getTitle());
 

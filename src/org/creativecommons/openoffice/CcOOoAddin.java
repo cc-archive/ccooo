@@ -375,6 +375,7 @@ public final class CcOOoAddin extends WeakBase
      */
     public void insertLicenseMetadata(String licenseName, String licenseURL){
         // TODO Store metadata as in MSOffice addin?
+        
         try {
             XDocumentInfo m_xDocumentInfo;
             

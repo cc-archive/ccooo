@@ -60,15 +60,17 @@ public class Chooser {
         String queryString =
                 "PREFIX cc: <http://creativecommons.org/ns#> " +
                 "PREFIX dc: <http://purl.org/dc/elements/1.1/> " +
+                "PREFIX dcq: <http://purl.org/dc/terms/> " +                
                 "PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> " +
                 
                 "SELECT ?license " +
                 "WHERE {" +
                 "      ?license cc:requires cc:Attribution . " +
                 "      ?license cc:permits  cc:Distribution . "+
-                "OPTIONAL {?license cc:deprecatedOn ?deprecatedDate } . ";
+                "OPTIONAL {?license cc:deprecatedOn ?deprecatedDate } . " +
+                "OPTIONAL {?license dcq:isReplacedBy ?replacedBy } . ";
 
-        String filter = "!bound(?deprecatedDate) ";
+        String filter = "!bound(?deprecatedDate) && !bound(?replacedBy) ";
         
         // add jurisdiction filter
         if (jurisdiction == null) {
@@ -78,9 +80,9 @@ public class Chooser {
             
         } else {
             // add a qualifier for the specific jurisdiction
-            queryString += "?license cc:jurisdiction " + jurisdiction + " . ";
+            queryString += "?license cc:jurisdiction <" + jurisdiction.toString() + "> . ";
         }
-        
+
         // add optional qualifiers
         if (allowRemixing) {
             queryString += "?license cc:permits cc:DerivativeWorks . ";

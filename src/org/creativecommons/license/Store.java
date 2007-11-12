@@ -130,7 +130,6 @@ public class Store {
             
             if ( current.isLiteral() ) {
 
-                System.out.println(((Literal)current).getLanguage());
                 if ( ((Literal)current).getLanguage().equals(lang) ) {
 
                     // this is a literal, in the language we care about
