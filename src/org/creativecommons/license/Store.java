@@ -18,14 +18,18 @@ import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
 import com.hp.hpl.jena.rdf.model.Property;
 import com.hp.hpl.jena.rdf.model.RDFNode;
+import com.hp.hpl.jena.rdf.model.ResIterator;
 import com.hp.hpl.jena.rdf.model.Resource;
-import com.hp.hpl.jena.rdf.model.Statement;
 import com.hp.hpl.jena.rdf.model.StmtIterator;
+import com.hp.hpl.jena.vocabulary.RDF;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 /**
  *
@@ -84,7 +88,28 @@ public class Store {
             ex.printStackTrace();
         }
         
+    } // private Store()
+    
+    protected Model getModel() {
+        return model;
     }
+    
+    public List jurisdictions() {
+        
+        ArrayList result = new ArrayList();
+        
+        ResIterator jurisdiction_iterator = this.getModel().listSubjectsWithProperty(
+                RDF.type, CC.Jurisdiction);
+        
+        while (jurisdiction_iterator.hasNext()) {
+            result.add(new Jurisdiction(jurisdiction_iterator.nextResource().getURI()));
+        }
+        
+        Collections.sort(result);
+        
+        return result;
+        
+    } // public List jurisdictions
     
     public QueryExecution query(String queryString) {
         
@@ -125,15 +150,6 @@ public class Store {
         return literal(this.model.getResource(subject), predicate, lang);
     }
 
-    /*
-    public Literal literal(String subject, Property predicate) {
-        return this.literal(subject, predicate, "en");
-    }
-    
-    public Literal literal(Resource subject, Property predicate) {
-        return this.literal(subject, predicate, "en");
-    }
-*/
     public Resource object(String subject, Property predicate) {
 
         RDFNode current; 

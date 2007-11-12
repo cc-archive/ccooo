@@ -13,6 +13,7 @@ package org.creativecommons.openoffice;
 import com.sun.star.awt.ActionEvent;
 import com.sun.star.awt.XActionListener;
 import com.sun.star.awt.XButton;
+import com.sun.star.awt.XComboBox;
 import com.sun.star.awt.XControl;
 import com.sun.star.awt.XControlContainer;
 import com.sun.star.awt.XControlModel;
@@ -30,11 +31,14 @@ import com.sun.star.lang.XMultiComponentFactory;
 import com.sun.star.lang.XMultiServiceFactory;
 import com.sun.star.uno.UnoRuntime;
 import com.sun.star.uno.XComponentContext;
-import java.io.IOException;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Vector;
 import org.creativecommons.license.Chooser;
+import org.creativecommons.license.Jurisdiction;
 import org.creativecommons.license.License;
+import org.creativecommons.license.Store;
 
 /**
  *  The Creative Commons OpenOffice.org AddIn GUI class.
@@ -58,6 +62,8 @@ public class AddInUI {
     protected Map answers = null;
     protected String currentId = "";
     protected CcOOoAddin addin = null;
+    
+    private List jurisdictions = null;
     
     // TODO put these labels in a properties file
     public static final String BTN_OK = "finishbt";
@@ -208,10 +214,11 @@ public class AddInUI {
         xPSetList.setPropertyValue("Height", new Integer(12));
         xPSetList.setPropertyValue("Name", CMB_JURISDICTION);
         xPSetList.setPropertyValue("Dropdown", new Boolean("true"));
+        // xPSetList.setPropertyValue("ReadOnly", new Boolean("true"));
         xPSetList.setPropertyValue("Step", new Short((short)1));
 
         xNameCont.insertByName(CMB_JURISDICTION, cmbJurisdictionList);
-        
+
         // create the button model - OK and set the properties
         Object finishButton = xMultiServiceFactory.createInstance("com.sun.star.awt.UnoControlButtonModel" );
         XPropertySet xPSetFinishButton = (XPropertySet)UnoRuntime.queryInterface(
@@ -249,6 +256,19 @@ public class AddInUI {
         xControlCont = (XControlContainer)UnoRuntime.queryInterface(
                 XControlContainer.class, dialog);
         
+        XComboBox cmbJList = (XComboBox)UnoRuntime.queryInterface(XComboBox.class, xControlCont.getControl(CMB_JURISDICTION));
+        this.jurisdictions = Store.get().jurisdictions();
+ 
+        Iterator it;
+        it = this.jurisdictions.iterator();
+        short count = 0;
+        while (it.hasNext()) {
+            Jurisdiction j = (Jurisdiction)it.next();
+            // cmbJList.
+            cmbJList.addItem(j.getTitle(), count++);
+            
+        }        
+               
         // add an action listener to the Finish button control
         Object objectButton3 = xControlCont.getControl(BTN_OK);
         XButton xFinishButton = (XButton)UnoRuntime.queryInterface(XButton.class, objectButton3);

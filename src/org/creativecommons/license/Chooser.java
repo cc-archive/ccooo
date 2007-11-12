@@ -11,6 +11,7 @@ package org.creativecommons.license;
 
 import com.hp.hpl.jena.query.QueryExecution;
 import com.hp.hpl.jena.query.ResultSet;
+import java.util.List;
 import org.creativecommons.license.Jurisdiction;
 
 /**
@@ -110,5 +111,5 @@ public class Chooser {
         
         return queryString;
     } // makeLicenseQuery
-        
+
 } // Chooser

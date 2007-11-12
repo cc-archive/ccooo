@@ -20,18 +20,13 @@ import com.hp.hpl.jena.rdf.model.*;
  */
 public class CC {
     
-    protected static final String uri ="http://creativecommons.org/ns#";
-
-    /** returns the URI for this schema
-     * @return the URI for this schema
-     */
-    public static String getURI() {
-          return uri;
-    }
-
+    private static final String NS ="http://creativecommons.org/ns#";
     private static Model m = ModelFactory.createDefaultModel();
     
-    public static final Property legalcode = m.createProperty(uri, "legalcode");
-    public static final Property jurisdiction = m.createProperty(uri, "jurisdiction");
+    public static final Resource NAMESPACE = m.createResource( NS );
     
-}
+    public static final Resource Jurisdiction = m.createResource(NS + "Jurisdiction");
+    public static final Property legalcode = m.createProperty(NS, "legalcode");
+    public static final Property jurisdiction = m.createProperty(NS, "jurisdiction");
+   
+} // CC
