@@ -17,7 +17,9 @@ package org.creativecommons.openoffice;
 public interface AddInConstants {
     
     // cc tags will be identified putting this prefix in the documents metadata file
-    public static final String CC_METADATA_IDENTIFIER = "[CC]";
+    public static final String CC_METADATA_IDENTIFIER = "http://creativecommons.org/ns#";
+    public static final String LICENSE_URI = "license";
+    public static final String LICENSE_NAME = "License Name";
     
     public static final String LANGUAGE_FILE_NAME = "language.properties";
     

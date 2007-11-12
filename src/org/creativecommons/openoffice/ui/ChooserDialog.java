@@ -10,8 +10,6 @@
 
 package org.creativecommons.openoffice.ui;
 
-import com.sun.star.awt.ActionEvent;
-import com.sun.star.awt.XActionListener;
 import com.sun.star.awt.XButton;
 import com.sun.star.awt.XComboBox;
 import com.sun.star.awt.XControl;
@@ -24,7 +22,6 @@ import com.sun.star.beans.UnknownPropertyException;
 import com.sun.star.beans.XPropertySet;
 import com.sun.star.container.NoSuchElementException;
 import com.sun.star.container.XNameContainer;
-import com.sun.star.lang.EventObject;
 import com.sun.star.lang.WrappedTargetException;
 import com.sun.star.lang.XComponent;
 import com.sun.star.lang.XMultiComponentFactory;
@@ -35,9 +32,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Vector;
-import org.creativecommons.license.Chooser;
 import org.creativecommons.license.Jurisdiction;
-import org.creativecommons.license.License;
 import org.creativecommons.license.Store;
 import org.creativecommons.openoffice.*;
 
@@ -139,12 +134,17 @@ public class ChooserDialog {
         Object lblSelectedLicense = msfLicenseSelector.createInstance("com.sun.star.awt.UnoControlFixedTextModel");
         XPropertySet xpsSelectedLicense = (XPropertySet) UnoRuntime.queryInterface(XPropertySet.class, lblSelectedLicense);
         
+        String current_license = "(none)";
+        if (this.addin.retrieveLicenseMetadata().containsKey(AddInConstants.LICENSE_NAME)) {
+            current_license = (String)(this.addin.retrieveLicenseMetadata().get(AddInConstants.LICENSE_NAME));
+        } 
+        
         xpsSelectedLicense.setPropertyValue("PositionX", new Integer(60));
         xpsSelectedLicense.setPropertyValue("PositionY", new Integer(10));
         xpsSelectedLicense.setPropertyValue("Width", new Integer(200));
         xpsSelectedLicense.setPropertyValue("Height", new Integer(15));
         xpsSelectedLicense.setPropertyValue("Name", LBL_SELECTED_LICENSE);
-        xpsSelectedLicense.setPropertyValue("Label", "(none)");
+        xpsSelectedLicense.setPropertyValue("Label", current_license);
 
         xNameCont.insertByName(LBL_SELECTED_LICENSE, lblSelectedLicense);
 

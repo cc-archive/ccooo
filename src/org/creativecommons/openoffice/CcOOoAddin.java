@@ -385,10 +385,10 @@ public final class CcOOoAddin extends WeakBase
             
             m_xDocumentInfo = xDocumentInfoSupplier.getDocumentInfo();
             
-            m_xDocumentInfo.setUserFieldName((short)0, AddInConstants.CC_METADATA_IDENTIFIER+"License Name");
+            m_xDocumentInfo.setUserFieldName((short)0, AddInConstants.CC_METADATA_IDENTIFIER + AddInConstants.LICENSE_NAME);
             m_xDocumentInfo.setUserFieldValue((short)0, licenseName);
             
-            m_xDocumentInfo.setUserFieldName((short)1, AddInConstants.CC_METADATA_IDENTIFIER+"License URL");
+            m_xDocumentInfo.setUserFieldName((short)1, AddInConstants.CC_METADATA_IDENTIFIER + AddInConstants.LICENSE_URI);
             m_xDocumentInfo.setUserFieldValue((short)1, licenseURL);
             
             XStorable xStorable = (XStorable)UnoRuntime.queryInterface(
