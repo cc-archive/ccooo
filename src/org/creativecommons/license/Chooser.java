@@ -42,12 +42,18 @@ public class Chooser {
         ResultSet results = query.execSelect();
         
         // Get the first result
-        License result = new License(results.nextSolution().getResource("?license").toString());
+        while (results.hasNext()) {
+            String uri = results.nextSolution().getResource("?license").toString();
+            
+            if (uri.contains("sampling")) continue;
+            
+            // Important - free up resources used running the query
+            query.close();
+            return new License(uri);
+            
+        }
         
-        // Important - free up resources used running the query
-        query.close();
-        
-        return result;
+        return null;
 
     } // selectLicense
 
