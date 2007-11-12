@@ -18,21 +18,20 @@ import org.creativecommons.license.Jurisdiction;
  *
  * @author nathan
  */
-public class JurisdictionSelectListener implements XItemListener {
-    
-    private ChooserDialog chooserDialog;
-    
-    /** Creates a new instance of JurisdictionSelectListener */
-    public JurisdictionSelectListener(ChooserDialog dialog) {
-        this.chooserDialog = dialog;
-    }
+public class JurisdictionSelectListener extends UpdateLicenseListener
+        implements XItemListener {
 
+    public JurisdictionSelectListener(ChooserDialog dialog) {
+        super(dialog);
+    }    
+    
     public void itemStateChanged(ItemEvent event) {
-        this.chooserDialog.setSelectedJurisdiction(
-                (Jurisdiction)this.chooserDialog.getJurisdictionList().get(event.Selected)
+        this.getDialog().setSelectedJurisdiction(
+                (Jurisdiction)this.getDialog().getJurisdictionList().get(event.Selected)
                 );
         
-        this.chooserDialog.updateSelectedLicense();
+        super.itemStateChanged(event);
+        
     }
 
     public void disposing(EventObject event) {

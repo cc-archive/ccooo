@@ -25,15 +25,23 @@ public class UpdateLicenseListener
     /** Creates a new instance of UpdateLicenseListener */
     public UpdateLicenseListener(ChooserDialog dialog) {
         
-        this.dialog = dialog;
+        this.setDialog(dialog);
     }
 
     public void itemStateChanged(ItemEvent event) {
         
-        this.dialog.updateSelectedLicense();
+        this.getDialog().updateSelectedLicense();
     }
 
     public void disposing(EventObject event) {
+    }
+
+    public ChooserDialog getDialog() {
+        return dialog;
+    }
+
+    protected void setDialog(ChooserDialog dialog) {
+        this.dialog = dialog;
     }
     
 }
