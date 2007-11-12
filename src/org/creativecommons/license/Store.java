@@ -53,41 +53,14 @@ public class Store {
      * Creates a new instance of Store
      */
     private Store() {
-        
-        // TODO: determine our actual path in the JAR file
-        String base = "/home/nathan/p/ccooo/trunk/src/org/creativecommons/license/rdf/";
-        FilenameFilter filter = new FilenameFilter() {
-            public boolean accept(File dir, String name) {
-                return !name.startsWith(".") && name.endsWith(".rdf");
-            }
-        };
-        InputStream in = null;
-        
-        // Create an empty in-memory model and populate it from the graph
+                
         this.model = ModelFactory.createMemModelMaker().createFreshModel();
         
-        try {
-            File rdf_dir = new File(base);
-            
-            String[] children = rdf_dir.list(filter);
-            for (int i=0; i<children.length; i++) {
-                // Get filename of file or directory
-                String filename = children[i];
-                
-                // TODO: convert to java logging
-                System.out.println("loading " + filename);
-                
-                in = new FileInputStream(new File(base + filename));
-                this.model.read(in,null);
-                in.close();
-                
-            }
-        } catch (IOException ex) {
-            ex.printStackTrace();
-        } catch (Exception ex) {
-            ex.printStackTrace();
-        }
-        
+        // Load the RDF definitions
+        this.model.read(this.getClass().getResource("/org/creativecommons/license/rdf/schema.rdf").toString());
+        this.model.read(this.getClass().getResource("/org/creativecommons/license/rdf/index.rdf").toString());
+        this.model.read(this.getClass().getResource("/org/creativecommons/license/rdf/jurisdictions.rdf").toString());
+
     } // private Store()
     
     protected Model getModel() {
