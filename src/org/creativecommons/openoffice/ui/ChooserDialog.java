@@ -303,12 +303,8 @@ public class ChooserDialog {
         XButton xCancelButton = (XButton)UnoRuntime.queryInterface(XButton.class, objectButton4);
         xCancelButton.addActionListener(new CancelClickListener(this));
  
-        if (this.addin.retrieveLicenseMetadata().containsKey(AddInConstants.LICENSE_URI)) {
-            this.setSelectedLicense(
-                    new License(
-                        (String)(this.addin.retrieveLicenseMetadata().get(AddInConstants.LICENSE_URI))
-                        )
-                    );
+        if (this.addin.getDocumentLicense() != null) {
+            this.setSelectedLicense( this.addin.getDocumentLicense() );
         } else {
             this.setSelectedLicense(new License("http://creativecommons.org/licenses/by/3.0/"));
         }

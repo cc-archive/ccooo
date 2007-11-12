@@ -35,7 +35,7 @@ class FinishClickListener implements XActionListener {
         License selected = this.chooserDialog.getSelectedLicense();
         
         this.addin.insertStatement(selected);
-        this.addin.insertLicenseMetadata(selected);
+        this.addin.setDocumentLicense(selected);
                     
         this.chooserDialog.xDialog.endExecute();
         

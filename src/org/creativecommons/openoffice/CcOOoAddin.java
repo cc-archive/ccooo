@@ -286,7 +286,9 @@ public final class CcOOoAddin extends WeakBase
     } 
     
     public void insertStatement() {
-        throw new UnsupportedOperationException("Not yet implemented");
+        
+        insertStatement(this.getDocumentLicense());
+
     } // insertStatement
     
     
@@ -397,7 +399,7 @@ public final class CcOOoAddin extends WeakBase
      * @param licenseURL The License URL.
      *
      */
-    public void insertLicenseMetadata(License license) {
+    public void setDocumentLicense(License license) {
         // TODO Store metadata as in MSOffice addin?
         
         try {
@@ -426,13 +428,23 @@ public final class CcOOoAddin extends WeakBase
         
     }
     
+    public License getDocumentLicense() {
+        // Return the License for the active document, if it exists
+        
+        if (this.retrieveLicenseMetadata().containsKey(AddInConstants.LICENSE_URI)) {
+            return new License((String)this.retrieveLicenseMetadata().get(AddInConstants.LICENSE_URI));
+        }
+        
+        return null;
+        
+    }
     /**
      * Retrieve the license properties from the document's metadata
      *
      * @return Map Returns a map containing the license properties
      *
      */
-    public Map retrieveLicenseMetadata(){
+    private Map retrieveLicenseMetadata(){
         Map licenseProp = new HashMap();
         
         XDocumentInfo m_xDocumentInfo;
