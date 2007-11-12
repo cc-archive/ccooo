@@ -69,6 +69,10 @@ public class AddInUI {
     public static final String CHK_PROHIBIT_COMMERCIAL = "chkProhibitCommercial";
     public static final String CHK_REQUIRE_SHAREALIKE = "chkRequireShareAlike";
     public static final String CMB_JURISDICTION = "cmbJurisdiction";
+
+    public static final String LBL_SELECTED_LICENSE = "lblSelectedLicense";
+    public static final String LBL_SELECTED_LICENSE_LABEL = "lblSelectedLicense_lbl";
+    public static final String LBL_JURISDICTION_LIST = "lblJurisdictionList";
     
     /**
      * Creates a new instance of AddInUI
@@ -97,119 +101,141 @@ public class AddInUI {
         XPropertySet xPSetDialog = (XPropertySet)UnoRuntime.queryInterface(XPropertySet.class, dlgLicenseSelector);
         xPSetDialog.setPropertyValue("PositionX", new Integer(100));
         xPSetDialog.setPropertyValue("PositionY", new Integer(100));
-        xPSetDialog.setPropertyValue("Width", new Integer(240));//470
-        xPSetDialog.setPropertyValue("Height", new Integer(200));//360
-        xPSetDialog.setPropertyValue("Title", new String("Set Creative Commons License"));
+        xPSetDialog.setPropertyValue("Width", new Integer(140));//470
+        xPSetDialog.setPropertyValue("Height", new Integer(125));//360
+        xPSetDialog.setPropertyValue("Title", new String("Select a License"));
         xPSetDialog.setPropertyValue("Name", new String("cc"));
         xPSetDialog.setPropertyValue("Step", (short)1 );
         
+        // get the name container for the dialog for inserting other elements
+        this.xNameCont = (XNameContainer)UnoRuntime.queryInterface(
+                XNameContainer.class, dlgLicenseSelector);
         
         // get the service manager from the dialog model
         this.xMultiServiceFactory = (XMultiServiceFactory)UnoRuntime.queryInterface(
                 XMultiServiceFactory.class, dlgLicenseSelector);
         
+        // create the current license information
+        Object lblSelectedLicenseLabel = msfLicenseSelector.createInstance("com.sun.star.awt.UnoControlFixedTextModel");
+        XPropertySet xpsSelectedLicenseLbl = (XPropertySet) UnoRuntime.queryInterface(XPropertySet.class, lblSelectedLicenseLabel);
+        
+        xpsSelectedLicenseLbl.setPropertyValue("PositionX", new Integer(10));
+        xpsSelectedLicenseLbl.setPropertyValue("PositionY", new Integer(10));
+        xpsSelectedLicenseLbl.setPropertyValue("Width", new Integer(50));
+        xpsSelectedLicenseLbl.setPropertyValue("Height", new Integer(15));
+        xpsSelectedLicenseLbl.setPropertyValue("Name", LBL_SELECTED_LICENSE_LABEL);
+        xpsSelectedLicenseLbl.setPropertyValue("Label", "Selected License:");
+
+        xNameCont.insertByName(LBL_SELECTED_LICENSE_LABEL, lblSelectedLicenseLabel);
+
+        Object lblSelectedLicense = msfLicenseSelector.createInstance("com.sun.star.awt.UnoControlFixedTextModel");
+        XPropertySet xpsSelectedLicense = (XPropertySet) UnoRuntime.queryInterface(XPropertySet.class, lblSelectedLicense);
+        
+        xpsSelectedLicense.setPropertyValue("PositionX", new Integer(60));
+        xpsSelectedLicense.setPropertyValue("PositionY", new Integer(10));
+        xpsSelectedLicense.setPropertyValue("Width", new Integer(200));
+        xpsSelectedLicense.setPropertyValue("Height", new Integer(15));
+        xpsSelectedLicense.setPropertyValue("Name", LBL_SELECTED_LICENSE);
+        xpsSelectedLicense.setPropertyValue("Label", "(none)");
+
+        xNameCont.insertByName(LBL_SELECTED_LICENSE, lblSelectedLicense);
+
         // create the boolean selection fields
         Object chkAllowRemixing = msfLicenseSelector.createInstance("com.sun.star.awt.UnoControlCheckBoxModel");
         XPropertySet xpsAllowRemixing = (XPropertySet) UnoRuntime.queryInterface(XPropertySet.class, chkAllowRemixing);
         
-        xpsAllowRemixing.setPropertyValue("PositionX", new Integer(80));
-        xpsAllowRemixing.setPropertyValue("PositionY", new Integer(25));
-        xpsAllowRemixing.setPropertyValue("Width", new Integer(85));
+        xpsAllowRemixing.setPropertyValue("PositionX", new Integer(15));
+        xpsAllowRemixing.setPropertyValue("PositionY", new Integer(30));
+        xpsAllowRemixing.setPropertyValue("Width", new Integer(250));
         xpsAllowRemixing.setPropertyValue("Height", new Integer(12));
         xpsAllowRemixing.setPropertyValue("Name", CHK_ALLOW_REMIX);
-        xpsAllowRemixing.setPropertyValue("Label", "Allow Remixing?");
-        
+        xpsAllowRemixing.setPropertyValue("Label", "Allow Remixing?");      
         
         xpsAllowRemixing.setPropertyValue("TriState", Boolean.FALSE);
         xpsAllowRemixing.setPropertyValue("State", new Short((short) 1));
-        
+
+        xNameCont.insertByName(CHK_ALLOW_REMIX, chkAllowRemixing);
+
         Object chkProhibitCommercial = msfLicenseSelector.createInstance("com.sun.star.awt.UnoControlCheckBoxModel");
         XPropertySet xpsProhibitCommercial = (XPropertySet) UnoRuntime.queryInterface(XPropertySet.class, chkProhibitCommercial);
         
-        xpsProhibitCommercial.setPropertyValue("PositionX", new Integer(80));
-        xpsProhibitCommercial.setPropertyValue("PositionY", new Integer(50));
-        xpsProhibitCommercial.setPropertyValue("Width", new Integer(85));
+        xpsProhibitCommercial.setPropertyValue("PositionX", new Integer(15));
+        xpsProhibitCommercial.setPropertyValue("PositionY", new Integer(40));
+        xpsProhibitCommercial.setPropertyValue("Width", new Integer(250));
         xpsProhibitCommercial.setPropertyValue("Height", new Integer(12));
         xpsProhibitCommercial.setPropertyValue("Name", CHK_PROHIBIT_COMMERCIAL);
         xpsProhibitCommercial.setPropertyValue("Label", "Prohibit Commercial Use?");
         
         xpsProhibitCommercial.setPropertyValue("TriState", Boolean.FALSE);
         xpsProhibitCommercial.setPropertyValue("State", new Short((short) 0));
+
+        xNameCont.insertByName(CHK_PROHIBIT_COMMERCIAL, chkProhibitCommercial);
         
         Object chkRequireShareAlike = msfLicenseSelector.createInstance("com.sun.star.awt.UnoControlCheckBoxModel");
         XPropertySet xpsRequireShareAlike = (XPropertySet) UnoRuntime.queryInterface(XPropertySet.class, chkRequireShareAlike);
         
-        xpsRequireShareAlike.setPropertyValue("PositionX", new Integer(80));
-        xpsRequireShareAlike.setPropertyValue("PositionY", new Integer(75));
-        xpsRequireShareAlike.setPropertyValue("Width", new Integer(85));
+        xpsRequireShareAlike.setPropertyValue("PositionX", new Integer(15));
+        xpsRequireShareAlike.setPropertyValue("PositionY", new Integer(50));
+        xpsRequireShareAlike.setPropertyValue("Width", new Integer(250));
         xpsRequireShareAlike.setPropertyValue("Height", new Integer(12));
         xpsRequireShareAlike.setPropertyValue("Name", CHK_REQUIRE_SHAREALIKE);
         xpsRequireShareAlike.setPropertyValue("Label", "Require Share-Alike?");
         
         xpsRequireShareAlike.setPropertyValue("TriState", Boolean.FALSE);
         xpsRequireShareAlike.setPropertyValue("State", new Short((short) 0));
-        
+
+        xNameCont.insertByName(CHK_REQUIRE_SHAREALIKE, chkRequireShareAlike);
+
         // create the jurisdiction drop-down list
+        Object lblJurisdictionList = xMultiServiceFactory.createInstance("com.sun.star.awt.UnoControlFixedTextModel" );
+        XPropertySet xpsLblJurisdictionList = (XPropertySet) UnoRuntime.queryInterface(XPropertySet.class, lblJurisdictionList);
+        
+        xpsLblJurisdictionList.setPropertyValue("PositionX", new Integer(15));
+        xpsLblJurisdictionList.setPropertyValue("PositionY", new Integer(72));
+        xpsLblJurisdictionList.setPropertyValue("Width", new Integer(30));
+        xpsLblJurisdictionList.setPropertyValue("Height", new Integer(15));
+        xpsLblJurisdictionList.setPropertyValue("Name", LBL_JURISDICTION_LIST);
+        xpsLblJurisdictionList.setPropertyValue("Label", "Jurisdiction");
+
+        xNameCont.insertByName(LBL_JURISDICTION_LIST, xpsLblJurisdictionList);
+        
         Object cmbJurisdictionList = xMultiServiceFactory.createInstance("com.sun.star.awt.UnoControlComboBoxModel" );
         
         XPropertySet xPSetList = (XPropertySet)UnoRuntime.queryInterface(XPropertySet.class, cmbJurisdictionList);
-        xPSetList.setPropertyValue("PositionX", new Integer(80));
-        xPSetList.setPropertyValue("PositionY", new Integer(100));
-        xPSetList.setPropertyValue("Width", new Integer(85));
+        xPSetList.setPropertyValue("PositionX", new Integer(45));
+        xPSetList.setPropertyValue("PositionY", new Integer(70));
+        xPSetList.setPropertyValue("Width", new Integer(80));
         xPSetList.setPropertyValue("Height", new Integer(12));
         xPSetList.setPropertyValue("Name", CMB_JURISDICTION);
         xPSetList.setPropertyValue("Dropdown", new Boolean("true"));
         xPSetList.setPropertyValue("Step", new Short((short)1));
+
+        xNameCont.insertByName(CMB_JURISDICTION, cmbJurisdictionList);
         
-        // create the button model - Finish and set the properties
+        // create the button model - OK and set the properties
         Object finishButton = xMultiServiceFactory.createInstance("com.sun.star.awt.UnoControlButtonModel" );
         XPropertySet xPSetFinishButton = (XPropertySet)UnoRuntime.queryInterface(
                 XPropertySet.class, finishButton);
-        xPSetFinishButton.setPropertyValue("PositionX", new Integer(126));
-        xPSetFinishButton.setPropertyValue("PositionY", new Integer(180));
-        xPSetFinishButton.setPropertyValue("Width", new Integer(50));
+        xPSetFinishButton.setPropertyValue("PositionX", new Integer(45));
+        xPSetFinishButton.setPropertyValue("PositionY", new Integer(100));
+        xPSetFinishButton.setPropertyValue("Width", new Integer(40));
         xPSetFinishButton.setPropertyValue("Height", new Integer(14));
         xPSetFinishButton.setPropertyValue("Name", BTN_OK);
         xPSetFinishButton.setPropertyValue("Label", finishButtonLabel);
         
+        xNameCont.insertByName(BTN_OK, finishButton);
         
         // create the button model - Cancel and set the properties
         Object cancelButton = xMultiServiceFactory.createInstance("com.sun.star.awt.UnoControlButtonModel" );
         XPropertySet xPSetCancelButton = (XPropertySet)UnoRuntime.queryInterface(
                 XPropertySet.class, cancelButton);
-        xPSetCancelButton.setPropertyValue("PositionX", new Integer(179));
-        xPSetCancelButton.setPropertyValue("PositionY", new Integer(180));
-        xPSetCancelButton.setPropertyValue("Width", new Integer(50));
+        xPSetCancelButton.setPropertyValue("PositionX", new Integer(90));
+        xPSetCancelButton.setPropertyValue("PositionY", new Integer(100));
+        xPSetCancelButton.setPropertyValue("Width", new Integer(40));
         xPSetCancelButton.setPropertyValue("Height", new Integer(14));
         xPSetCancelButton.setPropertyValue("Name", BTN_CANCEL);
         xPSetCancelButton.setPropertyValue("Label", cancelButtonLabel);
-        
-        
-        // create the label model and set the properties
-        /*
-        Object labelModel = xMultiServiceFactory.createInstance("com.sun.star.awt.UnoControlFixedTextModel" );
-        XPropertySet xPSetLabel = ( XPropertySet )UnoRuntime.queryInterface(XPropertySet.class, labelModel );
-        xPSetLabel.setPropertyValue("PositionX", new Integer(80));
-        xPSetLabel.setPropertyValue("PositionY", new Integer(15));
-        xPSetLabel.setPropertyValue("Width", new Integer(100));
-        xPSetLabel.setPropertyValue("Height", new Integer(14));
-        xPSetLabel.setPropertyValue("Name", "nomeRotulo");
-        xPSetLabel.setPropertyValue("TabIndex", new Short((short)1));
-        xPSetLabel.setPropertyValue("Label", "Chose the license class:");
-        xPSetLabel.setPropertyValue("Step", new Short((short)1));
-         */
-        
-        // insert the control models into the dialog model
-        this.xNameCont = (XNameContainer)UnoRuntime.queryInterface(
-                XNameContainer.class, dlgLicenseSelector);
-        
-        //xNameCont.insertByName("nomeRotulo"/*_labelName*/, labelModel);
-        xNameCont.insertByName(CHK_ALLOW_REMIX, chkAllowRemixing);
-        xNameCont.insertByName(CHK_PROHIBIT_COMMERCIAL, chkProhibitCommercial);
-        xNameCont.insertByName(CHK_REQUIRE_SHAREALIKE, chkRequireShareAlike);
-        xNameCont.insertByName(CMB_JURISDICTION, cmbJurisdictionList);
-        
-        xNameCont.insertByName(BTN_OK, finishButton);
+                
         xNameCont.insertByName(BTN_CANCEL, cancelButton);
         
         
