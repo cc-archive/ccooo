@@ -28,7 +28,7 @@ public class JurisdictionSelectListener implements XItemListener {
     }
 
     public void itemStateChanged(ItemEvent event) {
-        this.chooserDialog.setSelected(
+        this.chooserDialog.setSelectedJurisdiction(
                 (Jurisdiction)this.chooserDialog.getJurisdictionList().get(event.Selected)
                 );
     }

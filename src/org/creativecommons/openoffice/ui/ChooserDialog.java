@@ -11,6 +11,7 @@
 package org.creativecommons.openoffice.ui;
 
 import com.sun.star.awt.XButton;
+import com.sun.star.awt.XCheckBox;
 import com.sun.star.awt.XComboBox;
 import com.sun.star.awt.XControl;
 import com.sun.star.awt.XControlContainer;
@@ -18,6 +19,7 @@ import com.sun.star.awt.XControlModel;
 import com.sun.star.awt.XDialog;
 import com.sun.star.awt.XToolkit;
 import com.sun.star.awt.XWindow;
+import com.sun.star.beans.PropertyVetoException;
 import com.sun.star.beans.UnknownPropertyException;
 import com.sun.star.beans.XPropertySet;
 import com.sun.star.container.NoSuchElementException;
@@ -32,7 +34,9 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Vector;
+import org.creativecommons.license.Chooser;
 import org.creativecommons.license.Jurisdiction;
+import org.creativecommons.license.License;
 import org.creativecommons.license.Store;
 import org.creativecommons.openoffice.*;
 
@@ -60,7 +64,7 @@ public class ChooserDialog {
     protected CcOOoAddin addin = null;
     
     private List jurisdictionList = null;
-    private Jurisdiction selected = null;
+    private Jurisdiction selectedJurisdiction = null;
     
     // TODO put these labels in a properties file
     public static final String BTN_OK = "finishbt";
@@ -275,11 +279,19 @@ public class ChooserDialog {
         }        
 
         // add a bogus place-holder for Unported in the JurisdictionList to
-        // ensure indices match up when determining the item selected
+        // ensure indices match up when determining the item selectedJurisdiction
         this.getJurisdictionList().add(0, null);
         
-        // listen for selection changes
-        cmbJList.addItemListener(new JurisdictionSelectListener(this));               
+        // listen for license selection changes
+        ((XCheckBox)UnoRuntime.queryInterface(XCheckBox.class, xControlCont.getControl(CHK_ALLOW_REMIX))).addItemListener(
+                new UpdateLicenseListener(this));
+        ((XCheckBox)UnoRuntime.queryInterface(XCheckBox.class, xControlCont.getControl(CHK_PROHIBIT_COMMERCIAL))).addItemListener(
+                new UpdateLicenseListener(this));
+        ((XCheckBox)UnoRuntime.queryInterface(XCheckBox.class, xControlCont.getControl(CHK_REQUIRE_SHAREALIKE))).addItemListener(
+                new UpdateLicenseListener(this));
+        
+        cmbJList.addItemListener(new JurisdictionSelectListener(this));   
+        cmbJList.addItemListener(new UpdateLicenseListener(this));
         
         // add an action listener to the Finish button control
         Object objectButton3 = xControlCont.getControl(BTN_OK);
@@ -329,12 +341,12 @@ public class ChooserDialog {
         
     } // getCheckboxValue
 
-    public Jurisdiction getSelected() {
-        return selected;
+    public Jurisdiction getSelectedJurisdiction() {
+        return selectedJurisdiction;
     }
 
-    public void setSelected(Jurisdiction selected) {
-        this.selected = selected;
+    public void setSelectedJurisdiction(Jurisdiction selected) {
+        this.selectedJurisdiction = selected;
     }
 
     public List getJurisdictionList() {
@@ -344,7 +356,40 @@ public class ChooserDialog {
     protected void setJurisdictionList(List jurisdictionList) {
         this.jurisdictionList = jurisdictionList;
     }
+
+    public License getSelectedLicense() {
+        
+        // retrieve the Document for the issued license
+        Chooser licenseChooser = new Chooser();
+        
+        return licenseChooser.selectLicense(
+                    this.getCheckboxValue(this.CHK_ALLOW_REMIX).booleanValue(),
+                    this.getCheckboxValue(this.CHK_PROHIBIT_COMMERCIAL).booleanValue(),
+                    this.getCheckboxValue(this.CHK_REQUIRE_SHAREALIKE).booleanValue(),
+                    this.getSelectedJurisdiction());
+
+    } // getSelectedLicense
+
+    void updateSelectedLicense() {
+        try {
+
+            XPropertySet xpsSelectedLicense = (XPropertySet) UnoRuntime.queryInterface(XPropertySet.class, 
+                        this.xNameCont.getByName(LBL_SELECTED_LICENSE));
+            
+            xpsSelectedLicense.setPropertyValue("Label", this.getSelectedLicense().getName());
+        } catch (UnknownPropertyException ex) {
+            ex.printStackTrace();
+        } catch (com.sun.star.lang.IllegalArgumentException ex) {
+            ex.printStackTrace();
+        } catch (PropertyVetoException ex) {
+            ex.printStackTrace();
+        } catch (WrappedTargetException ex) {
+            ex.printStackTrace();
+        } catch (NoSuchElementException ex) {
+            ex.printStackTrace();
+        }
+    }
     
     
-}
+} // ChooserDialog
 
