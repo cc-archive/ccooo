@@ -58,6 +58,7 @@ import java.util.Set;
 import com.sun.star.awt.XMessageBoxFactory;
 import com.sun.star.awt.XWindowPeer;
 import com.sun.star.lang.XServiceInfo;
+import org.creativecommons.license.License;
 import org.creativecommons.openoffice.ui.ChooserDialog;
 
 /**
@@ -215,13 +216,12 @@ public final class CcOOoAddin extends WeakBase
                 selectLicense();
             } // if select license
             else if ( aURL.Path.compareTo("InsertStatement") == 0 ) {
-                System.out.println("insert statement");
                 insertStatement();
             } // if insert statement
         } // if CcOOoAddin protocol
     } // dispatch
     
-    private void selectLicense() {
+    public void selectLicense() {
         
         try {
             
@@ -261,7 +261,31 @@ public final class CcOOoAddin extends WeakBase
         return service;
     }
     
-    private void insertStatement() {
+    public void insertStatement(License license) {
+        
+        
+        if (this.getServiceType().equalsIgnoreCase("spreadsheet")) {
+            
+            Calc.embedGraphic(this.getCurrentComponent(), license.getImageUrl());
+            Calc.insertLicenseText(this.getCurrentComponent(), license.getName());
+            
+        }  else if (this.getServiceType().equalsIgnoreCase("text")) {
+            
+            Writer.createLicenseTextField(this.getCurrentComponent(),
+                    license.getName(),license.getLicenseUri(),license.getImageUrl());
+            
+        }  else if (this.getServiceType().equalsIgnoreCase("presentation")) {
+            
+            Impress.embedGraphic(this.getCurrentComponent(), license.getImageUrl());
+            Impress.insertLicenseText(this.getCurrentComponent(), license.getName());
+            
+        }  else if (this.getServiceType().equalsIgnoreCase("drawing")) {
+            
+        }
+        
+    } 
+    
+    public void insertStatement() {
         throw new UnsupportedOperationException("Not yet implemented");
     } // insertStatement
     
@@ -373,7 +397,7 @@ public final class CcOOoAddin extends WeakBase
      * @param licenseURL The License URL.
      *
      */
-    public void insertLicenseMetadata(String licenseName, String licenseURL){
+    public void insertLicenseMetadata(License license) {
         // TODO Store metadata as in MSOffice addin?
         
         try {
@@ -386,10 +410,10 @@ public final class CcOOoAddin extends WeakBase
             m_xDocumentInfo = xDocumentInfoSupplier.getDocumentInfo();
             
             m_xDocumentInfo.setUserFieldName((short)0, AddInConstants.CC_METADATA_IDENTIFIER + AddInConstants.LICENSE_NAME);
-            m_xDocumentInfo.setUserFieldValue((short)0, licenseName);
+            m_xDocumentInfo.setUserFieldValue((short)0, license.getName());
             
             m_xDocumentInfo.setUserFieldName((short)1, AddInConstants.CC_METADATA_IDENTIFIER + AddInConstants.LICENSE_URI);
-            m_xDocumentInfo.setUserFieldValue((short)1, licenseURL);
+            m_xDocumentInfo.setUserFieldValue((short)1, license.getLicenseUri());
             
             XStorable xStorable = (XStorable)UnoRuntime.queryInterface(
                     XStorable.class, xCurrentComponent);

@@ -34,26 +34,8 @@ class FinishClickListener implements XActionListener {
         // retrieve the selected License
         License selected = this.chooserDialog.getSelectedLicense();
         
-        if (this.addin.getServiceType().equalsIgnoreCase("spreadsheet")) {
-            
-            Calc.embedGraphic(addin.getCurrentComponent(), selected.getImageUrl());
-            Calc.insertLicenseText(addin.getCurrentComponent(), selected.getName());
-            
-        }  else if (this.addin.getServiceType().equalsIgnoreCase("text")) {
-            
-            Writer.createLicenseTextField(addin.getCurrentComponent(),
-                    selected.getName(),selected.getLicenseUri(),selected.getImageUrl());
-            
-        }  else if (this.addin.getServiceType().equalsIgnoreCase("presentation")) {
-            
-            Impress.embedGraphic(addin.getCurrentComponent(), selected.getImageUrl());
-            Impress.insertLicenseText(addin.getCurrentComponent(), selected.getName());
-            
-        }  else if (this.addin.getServiceType().equalsIgnoreCase("drawing")) {
-            
-        }
-
-        this.addin.insertLicenseMetadata(selected.getName(), selected.getLicenseUri());
+        this.addin.insertStatement(selected);
+        this.addin.insertLicenseMetadata(selected);
                     
         this.chooserDialog.xDialog.endExecute();
         
