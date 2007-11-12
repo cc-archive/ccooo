@@ -58,6 +58,7 @@ import java.util.Set;
 import com.sun.star.awt.XMessageBoxFactory;
 import com.sun.star.awt.XWindowPeer;
 import com.sun.star.lang.XServiceInfo;
+import org.creativecommons.openoffice.ui.ChooserDialog;
 
 /**
  *  The Creative Commons OpenOffice.org AddIn core class.
@@ -230,7 +231,7 @@ public final class CcOOoAddin extends WeakBase
             }
             
             // Create the dialog
-            AddInUI dialog = new AddInUI(this, this.m_xContext);
+            ChooserDialog dialog = new ChooserDialog(this, this.m_xContext);
             dialog.createDialog();
         } catch (Exception ex) {
             ex.printStackTrace();
