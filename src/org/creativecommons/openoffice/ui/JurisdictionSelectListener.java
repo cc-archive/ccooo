@@ -31,6 +31,8 @@ public class JurisdictionSelectListener implements XItemListener {
         this.chooserDialog.setSelectedJurisdiction(
                 (Jurisdiction)this.chooserDialog.getJurisdictionList().get(event.Selected)
                 );
+        
+        this.chooserDialog.updateSelectedLicense();
     }
 
     public void disposing(EventObject event) {

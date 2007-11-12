@@ -143,5 +143,11 @@ public class Store {
 
         return null;
     }
+
+    boolean exists(String subject, Property predicate, Resource obj) {
+        
+        return this.model.contains(this.model.getResource(subject), predicate, obj);
+
+    }
     
 } // org.creativecommons.license.Store

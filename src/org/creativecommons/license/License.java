@@ -39,10 +39,7 @@ public class License {
         
         return this.licenseStore.literal(this.license_uri, DC.title, "en").getString() + " " +
                 this.licenseStore.literal(this.license_uri, DCTerms.hasVersion, "").getString() + " " +
-                this.getJurisdiction().getTitle(); /*  + " " + 
-                this.licenseStore.literal(
-                    this.licenseStore.object(this.license_uri, CC.jurisdiction), DC.title).getString();
-                                                                                              */
+                this.getJurisdiction().getTitle();
     }
     
     public IJurisdiction getJurisdiction() {
@@ -58,6 +55,30 @@ public class License {
     
     public String getImageUrl() {
         return "";
+    }
+
+    public Boolean requireShareAlike() {
+        
+        return Boolean.valueOf(
+                this.licenseStore.exists(this.license_uri, CC.requires, CC.ShareAlike)
+                );
+        
+    }
+
+    public Boolean prohibitCommercial() {
+        
+        return Boolean.valueOf(
+                this.licenseStore.exists(this.license_uri, CC.prohibits, CC.CommercialUse)
+                );
+
+    }
+
+    public Boolean allowRemix() {
+
+        return Boolean.valueOf(
+                this.licenseStore.exists(this.license_uri, CC.permits, CC.DerivativeWorks)
+                );
+
     }
     
 } // License

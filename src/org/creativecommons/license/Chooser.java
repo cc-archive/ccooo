@@ -11,8 +11,6 @@ package org.creativecommons.license;
 
 import com.hp.hpl.jena.query.QueryExecution;
 import com.hp.hpl.jena.query.ResultSet;
-import java.util.List;
-import org.creativecommons.license.Jurisdiction;
 
 /**
  *
@@ -33,7 +31,7 @@ public class Chooser {
     
     public License selectLicense(
             boolean allowRemixing, boolean prohibitCommercialUse, boolean requireShareAlike,
-            Jurisdiction jurisdiction) {
+            IJurisdiction jurisdiction) {
         
         // execute a simple query
         String queryString = makeLicenseQuery(allowRemixing, prohibitCommercialUse, requireShareAlike, jurisdiction);
@@ -54,7 +52,7 @@ public class Chooser {
     } // selectLicense
 
     private String makeLicenseQuery(boolean allowRemixing, boolean prohibitCommercialUse, boolean requireShareAlike,
-                Jurisdiction jurisdiction) {
+                IJurisdiction jurisdiction) {
         
         // Create the basic query
         String queryString =
@@ -73,7 +71,7 @@ public class Chooser {
         String filter = "!bound(?deprecatedDate) && !bound(?replacedBy) ";
         
         // add jurisdiction filter
-        if (jurisdiction == null) {
+        if (jurisdiction == null || Unported.class.isInstance(jurisdiction)) {
             // limit results to unported
             queryString += "OPTIONAL { ?license cc:jurisdiction ?jurisdiction } . ";
             filter += "&& !bound(?jurisdiction) ";
