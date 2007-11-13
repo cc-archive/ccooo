@@ -7,7 +7,7 @@
  * and open the template in the editor.
  */
 
-package org.creativecommons.openoffice;
+package org.creativecommons.openoffice.program;
 
 import com.sun.star.awt.Point;
 import com.sun.star.awt.Size;
@@ -28,6 +28,7 @@ import com.sun.star.style.LineSpacingMode;
 import com.sun.star.table.XCell;
 import com.sun.star.uno.AnyConverter;
 import com.sun.star.uno.UnoRuntime;
+import org.creativecommons.license.License;
 import org.creativecommons.openoffice.util.PageHelper;
 import org.creativecommons.openoffice.util.ShapeHelper;
 
@@ -35,12 +36,8 @@ import org.creativecommons.openoffice.util.ShapeHelper;
  *
  * @author Cassio
  */
-public class Calc {
-    
-    /** Creates a new instance of Calc */
-    public Calc() {
-    }
-    
+public class Calc
+    implements IOOoProgramWrapper  {
     
     public static void embedGraphic(XComponent xSpreadsheetComponent,  String imgURL) {
         XDrawPage xPage = null;

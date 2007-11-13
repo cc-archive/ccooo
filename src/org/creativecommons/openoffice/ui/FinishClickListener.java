@@ -10,10 +10,10 @@ import com.sun.star.lang.WrappedTargetException;
 import com.sun.star.uno.UnoRuntime;
 import org.creativecommons.license.Chooser;
 import org.creativecommons.license.License;
-import org.creativecommons.openoffice.Calc;
+import org.creativecommons.openoffice.program.Calc;
 import org.creativecommons.openoffice.CcOOoAddin;
-import org.creativecommons.openoffice.Impress;
-import org.creativecommons.openoffice.Writer;
+import org.creativecommons.openoffice.program.Impress;
+import org.creativecommons.openoffice.program.Writer;
 
 
 

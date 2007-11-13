@@ -7,7 +7,7 @@
  * and open the template in the editor.
  */
 
-package org.creativecommons.openoffice;
+package org.creativecommons.openoffice.program;
 
 import com.sun.star.beans.XPropertySet;
 import com.sun.star.container.XNameAccess;
@@ -29,12 +29,14 @@ import com.sun.star.text.XTextFieldsSupplier;
 import com.sun.star.uno.AnyConverter;
 import com.sun.star.uno.UnoRuntime;
 import com.sun.star.util.XRefreshable;
+import org.creativecommons.license.License;
 
 /**
  *
  * @author Cassio
  */
-public class Writer {
+public class Writer 
+    implements IOOoProgramWrapper {
     
     /**
      * Embeds the license "button" into a Textdocument at the given cursor position
@@ -178,5 +180,6 @@ public class Writer {
         }
         
     } // createLicenseTextField
-    
+
+
 } // Writer

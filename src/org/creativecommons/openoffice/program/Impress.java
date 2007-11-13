@@ -7,7 +7,7 @@
  * and open the template in the editor.
  */
 
-package org.creativecommons.openoffice;
+package org.creativecommons.openoffice.program;
 
 import com.sun.star.awt.Point;
 import com.sun.star.awt.Size;
@@ -28,6 +28,7 @@ import java.awt.Image;
 import java.io.File;
 import java.io.IOException;
 import javax.imageio.ImageIO;
+import org.creativecommons.license.License;
 import org.creativecommons.openoffice.util.PageHelper;
 import org.creativecommons.openoffice.util.ShapeHelper;
 
@@ -35,14 +36,9 @@ import org.creativecommons.openoffice.util.ShapeHelper;
  *
  * @author Cassio
  */
-public class Impress {
-    
-    /** Creates a new instance of Impress */
-    public Impress() {
-    }
-    
-    
-    
+public class Impress 
+    implements IOOoProgramWrapper {
+     
     public static void embedGraphic(XComponent xDrawComponent,  String imgURL) {
         XDrawPage xPage = null;
         

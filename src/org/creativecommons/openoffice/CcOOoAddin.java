@@ -59,6 +59,9 @@ import com.sun.star.awt.XMessageBoxFactory;
 import com.sun.star.awt.XWindowPeer;
 import com.sun.star.lang.XServiceInfo;
 import org.creativecommons.license.License;
+import org.creativecommons.openoffice.program.Calc;
+import org.creativecommons.openoffice.program.Impress;
+import org.creativecommons.openoffice.program.Writer;
 import org.creativecommons.openoffice.ui.ChooserDialog;
 
 /**
@@ -91,8 +94,6 @@ public final class CcOOoAddin extends WeakBase
     protected XMultiComponentFactory xMultiComponentFactory = null;
     protected XMultiComponentFactory mxRemoteServiceManager = null;
     
-    
-    Properties labels = new Properties();
     
     /**
      * Constructs a new instance
