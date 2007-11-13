@@ -35,7 +35,6 @@ public class Chooser {
         
         // execute a simple query
         String queryString = makeLicenseQuery(allowRemixing, prohibitCommercialUse, requireShareAlike, jurisdiction);
-        System.out.println(queryString);
 
         // Execute the query and obtain results
         QueryExecution query = this.licenseStore.query(queryString);
