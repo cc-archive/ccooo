@@ -272,8 +272,7 @@ public final class CcOOoAddin extends WeakBase
             
         }  else if (this.getServiceType().equalsIgnoreCase("text")) {
             
-            Writer.createLicenseTextField(this.getCurrentComponent(),
-                    license.getName(),license.getLicenseUri(),license.getImageUrl());
+            Writer.insertStatement(this.getCurrentComponent(), license);
             
         }  else if (this.getServiceType().equalsIgnoreCase("presentation")) {
             

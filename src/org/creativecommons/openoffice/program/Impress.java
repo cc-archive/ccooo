@@ -36,8 +36,7 @@ import org.creativecommons.openoffice.util.ShapeHelper;
  *
  * @author Cassio
  */
-public class Impress 
-    implements IOOoProgramWrapper {
+public class Impress {
      
     public static void embedGraphic(XComponent xDrawComponent,  String imgURL) {
         XDrawPage xPage = null;

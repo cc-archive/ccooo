@@ -12,6 +12,8 @@ package org.creativecommons.license;
 import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.vocabulary.DC;
 import com.hp.hpl.jena.vocabulary.DCTerms;
+import java.net.MalformedURLException;
+import java.net.URL;
 
 /**
  *
@@ -53,10 +55,45 @@ public class License {
 
     } // getJurisdiction
     
+    /**
+     * Return the URL of the icon for this license if available; if unavailable,
+     * return null.
+     *
+     * @return the URL for the license image
+     *
+     */
     public String getImageUrl() {
-        return "";
+        
+        return "http://i.creativecommons.org/l/" + this.getCode() + "/" + this.getVersion() + "/88x31.png";
+    }
+    
+    /**
+     * Return the license code for this License.  For example, the code for the
+     * Attribution 3.0 license (http://creativecommons.org/licenses/by/3.0/) is
+     * "by".  Note this is based on a Creative Commons-specific standard.
+     *
+     * @return license code for the selected License.
+     */
+    private String getCode() {
+        
+        try {
+            URL licenseUrl = new URL(this.getLicenseUri());
+            String[] pieces = licenseUrl.getPath().split("/");
+            if (pieces.length > 2) {
+                return pieces[2];
+            }
+
+        } catch (MalformedURLException ex) {
+            ex.printStackTrace();
+        }
+
+        return null;
     }
 
+    public String getVersion() {
+        return this.licenseStore.literal(this.license_uri, DCTerms.hasVersion, "").getString();
+    }
+    
     public Boolean requireShareAlike() {
         
         return Boolean.valueOf(
@@ -80,5 +117,5 @@ public class License {
                 );
 
     }
-    
+
 } // License

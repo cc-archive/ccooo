@@ -36,8 +36,7 @@ import org.creativecommons.openoffice.util.ShapeHelper;
  *
  * @author Cassio
  */
-public class Calc
-    implements IOOoProgramWrapper  {
+public class Calc {
     
     public static void embedGraphic(XComponent xSpreadsheetComponent,  String imgURL) {
         XDrawPage xPage = null;
