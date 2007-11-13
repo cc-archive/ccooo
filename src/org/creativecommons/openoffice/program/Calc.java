@@ -29,16 +29,85 @@ import com.sun.star.table.XCell;
 import com.sun.star.uno.AnyConverter;
 import com.sun.star.uno.UnoRuntime;
 import org.creativecommons.license.License;
-import org.creativecommons.openoffice.util.PageHelper;
 import org.creativecommons.openoffice.util.ShapeHelper;
 
 /**
  *
  * @author Cassio
  */
-public class Calc {
+public class Calc extends OOoProgram {
     
-    public static void embedGraphic(XComponent xSpreadsheetComponent,  String imgURL) {
+    public Calc(XComponent component) {
+        super(component);
+    }
+
+    public boolean hasVisibleNotice() {
+        // XXX need to actually detect if the notice exists
+        return false;
+    }
+
+    public void insertVisibleNotice() {
+        
+        XDrawPage xPage;
+        XSpreadsheet xSpreadsheet = null;
+        License license = this.getDocumentLicense();
+        
+        try {
+            //XDrawPage xPage = PageHelper.getDrawPageByIndex( xDrawDoc, 0 );
+            // xPage = PageHelper.getMasterPageByIndex(xDrawDoc, 0);
+            XSpreadsheetDocument xSheetDoc = (XSpreadsheetDocument) UnoRuntime.queryInterface(
+                    XSpreadsheetDocument.class,
+                    this.getComponent()); // <== tem que ver se o xcomponent o documento ou componente
+            
+            xSpreadsheet = (XSpreadsheet) UnoRuntime.queryInterface(
+                    XSpreadsheet.class,
+                    xSheetDoc.getSheets()
+                    .getByName(xSheetDoc.getSheets()
+                    .getElementNames()[0]));
+            
+            XDrawPageSupplier xDrawPageSupplier = (XDrawPageSupplier)UnoRuntime.queryInterface(XDrawPageSupplier.class, xSpreadsheet);
+            xPage = xDrawPageSupplier.getDrawPage();
+            
+            XShapes xShapes = (XShapes)
+            UnoRuntime.queryInterface( XShapes.class, xPage );
+            
+            
+            XShape xRectangle;
+            XPropertySet xTextPropSet, xShapePropSet;
+            LineSpacing  aLineSpacing = new LineSpacing();
+            aLineSpacing.Mode = LineSpacingMode.PROP;
+            
+            
+            
+            // first shape
+            xRectangle = ShapeHelper.createShape( this.getComponent(),
+                    new Point(0, 1600 ),
+                    new Size( 15000, 1500 ),
+                    "com.sun.star.drawing.RectangleShape" );
+            xShapes.add( xRectangle );
+            xShapePropSet = (XPropertySet)
+            UnoRuntime.queryInterface( XPropertySet.class, xRectangle );
+            
+            
+            xShapePropSet.setPropertyValue("TextAutoGrowHeight", true);
+            xShapePropSet.setPropertyValue("TextAutoGrowWidth", true);
+            xShapePropSet.setPropertyValue("LineStyle", LineStyle.NONE);
+            xShapePropSet.setPropertyValue("FillStyle", FillStyle.NONE);
+            
+            // first paragraph
+            xTextPropSet =
+                    ShapeHelper.addPortion( xRectangle, license.getName(), false );
+            xTextPropSet.setPropertyValue( "CharColor", new Integer( 0x000000 ) );
+            
+            // insert the graphic
+            this.embedGraphic(license.getImageUrl());
+            
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+    }
+    
+    public void embedGraphic(String imgURL) {
         XDrawPage xPage = null;
         
         XNameContainer xBitmapContainer = null;
@@ -52,7 +121,7 @@ public class Calc {
         try {
             XSpreadsheetDocument xSheetDoc = (XSpreadsheetDocument) UnoRuntime.queryInterface(
                     XSpreadsheetDocument.class,
-                    xSpreadsheetComponent); // <== tem que ver se o xcomponent o documento ou componente
+                    this.getComponent()); // <== tem que ver se o xcomponent o documento ou componente
             
             xSpreadsheet = (XSpreadsheet) UnoRuntime.queryInterface(
                     XSpreadsheet.class,
@@ -114,64 +183,7 @@ public class Calc {
         }
     }
     
-    
-    public static void insertLicenseText(XComponent xSpreadsheetComponent, String licenseName){
-        XDrawPage xPage;
-        XSpreadsheet xSpreadsheet = null;
-        
-        try {
-            //XDrawPage xPage = PageHelper.getDrawPageByIndex( xDrawDoc, 0 );
-            // xPage = PageHelper.getMasterPageByIndex(xDrawDoc, 0);
-            XSpreadsheetDocument xSheetDoc = (XSpreadsheetDocument) UnoRuntime.queryInterface(
-                    XSpreadsheetDocument.class,
-                    xSpreadsheetComponent); // <== tem que ver se o xcomponent o documento ou componente
-            
-            xSpreadsheet = (XSpreadsheet) UnoRuntime.queryInterface(
-                    XSpreadsheet.class,
-                    xSheetDoc.getSheets()
-                    .getByName(xSheetDoc.getSheets()
-                    .getElementNames()[0]));
-            
-            XDrawPageSupplier xDrawPageSupplier = (XDrawPageSupplier)UnoRuntime.queryInterface(XDrawPageSupplier.class, xSpreadsheet);
-            xPage = xDrawPageSupplier.getDrawPage();
-            
-            XShapes xShapes = (XShapes)
-            UnoRuntime.queryInterface( XShapes.class, xPage );
-            
-            
-            XShape xRectangle;
-            XPropertySet xTextPropSet, xShapePropSet;
-            LineSpacing  aLineSpacing = new LineSpacing();
-            aLineSpacing.Mode = LineSpacingMode.PROP;
-            
-            
-            
-            // first shape
-            xRectangle = ShapeHelper.createShape( xSpreadsheetComponent,
-                    new Point(0, 1600 ),
-                    new Size( 15000, 1500 ),
-                    "com.sun.star.drawing.RectangleShape" );
-            xShapes.add( xRectangle );
-            xShapePropSet = (XPropertySet)
-            UnoRuntime.queryInterface( XPropertySet.class, xRectangle );
-            
-            
-            xShapePropSet.setPropertyValue("TextAutoGrowHeight", true);
-            xShapePropSet.setPropertyValue("TextAutoGrowWidth", true);
-            xShapePropSet.setPropertyValue("LineStyle", LineStyle.NONE);
-            xShapePropSet.setPropertyValue("FillStyle", FillStyle.NONE);
-            
-            // first paragraph
-            xTextPropSet =
-                    ShapeHelper.addPortion( xRectangle, licenseName/*"This work is licensed under a Creative Commons license"*/, false );
-            xTextPropSet.setPropertyValue( "CharColor", new Integer( 0x000000 ) );
-            
-        } catch (Exception ex) {
-            ex.printStackTrace();
-        }
-    }
-    
-    
+   
     private XSpreadsheet getSheet(XComponent xDoc) {
         XSpreadsheetDocument xSheetDoc = (XSpreadsheetDocument) UnoRuntime.queryInterface(
                 XSpreadsheetDocument.class,
@@ -207,5 +219,6 @@ public class Calc {
         }
         return p;
     }
+
     
 }
