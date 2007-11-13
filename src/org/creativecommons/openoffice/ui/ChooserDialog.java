@@ -12,7 +12,6 @@ package org.creativecommons.openoffice.ui;
 
 import com.sun.star.awt.XButton;
 import com.sun.star.awt.XCheckBox;
-import com.sun.star.awt.XComboBox;
 import com.sun.star.awt.XControl;
 import com.sun.star.awt.XControlContainer;
 import com.sun.star.awt.XControlModel;
@@ -33,8 +32,6 @@ import com.sun.star.uno.UnoRuntime;
 import com.sun.star.uno.XComponentContext;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
-import java.util.Vector;
 import org.creativecommons.license.Chooser;
 import org.creativecommons.license.IJurisdiction;
 import org.creativecommons.license.Jurisdiction;
@@ -59,14 +56,13 @@ public class ChooserDialog {
     private XNameContainer xNameCont = null;
     private XControlContainer xControlCont = null;
     
-    protected Vector namesList = null;
-    protected XDialog xDialog = null;
-    protected Map answers = null;
-    protected String currentId = "";
-    protected CcOOoAddin addin = null;
+    private XDialog xDialog = null;
+    private CcOOoAddin addin = null;
     
     private List jurisdictionList = null;
     private IJurisdiction selectedJurisdiction = null;
+    
+    private boolean cancelled = false;
     
     // TODO put these labels in a properties file
     public static final String BTN_OK = "finishbt";
@@ -78,7 +74,7 @@ public class ChooserDialog {
     public static final String CHK_PROHIBIT_COMMERCIAL = "chkProhibitCommercial";
     public static final String CHK_REQUIRE_SHAREALIKE = "chkRequireShareAlike";
     public static final String CMB_JURISDICTION = "cmbJurisdiction";
-
+    
     public static final String LBL_SELECTED_LICENSE = "lblSelectedLicense";
     public static final String LBL_SELECTED_LICENSE_LABEL = "lblSelectedLicense_lbl";
     public static final String LBL_JURISDICTION_LIST = "lblJurisdictionList";
@@ -87,7 +83,6 @@ public class ChooserDialog {
      * Creates a new instance of ChooserDialog
      */
     public ChooserDialog(CcOOoAddin addin, XComponentContext m_xContext) {
-        namesList = new Vector();
         this.addin = addin;
         this.m_xContext = m_xContext;
     }
@@ -96,7 +91,7 @@ public class ChooserDialog {
      * Method for creating a dialog at runtime
      *
      */
-    public void createDialog() throws com.sun.star.uno.Exception {
+    public void showDialog() throws com.sun.star.uno.Exception {
         
         // get the service manager from the component context
         this.xMultiComponentFactory = this.m_xContext.getServiceManager();
@@ -134,21 +129,21 @@ public class ChooserDialog {
         xpsSelectedLicenseLbl.setPropertyValue("Height", new Integer(15));
         xpsSelectedLicenseLbl.setPropertyValue("Name", LBL_SELECTED_LICENSE_LABEL);
         xpsSelectedLicenseLbl.setPropertyValue("Label", "Selected License:");
-
+        
         getNameContainer().insertByName(LBL_SELECTED_LICENSE_LABEL, lblSelectedLicenseLabel);
-
+        
         Object lblSelectedLicense = msfLicenseSelector.createInstance("com.sun.star.awt.UnoControlFixedTextModel");
         XPropertySet xpsSelectedLicense = (XPropertySet) UnoRuntime.queryInterface(XPropertySet.class, lblSelectedLicense);
-
+        
         xpsSelectedLicense.setPropertyValue("PositionX", new Integer(60));
         xpsSelectedLicense.setPropertyValue("PositionY", new Integer(10));
         xpsSelectedLicense.setPropertyValue("Width", new Integer(200));
         xpsSelectedLicense.setPropertyValue("Height", new Integer(15));
         xpsSelectedLicense.setPropertyValue("Name", LBL_SELECTED_LICENSE);
         // xpsSelectedLicense.setPropertyValue("Label", current_license);
-
+        
         getNameContainer().insertByName(LBL_SELECTED_LICENSE, lblSelectedLicense);
-
+        
         // create the boolean selection fields
         Object chkAllowRemixing = msfLicenseSelector.createInstance("com.sun.star.awt.UnoControlCheckBoxModel");
         XPropertySet xpsAllowRemixing = (XPropertySet) UnoRuntime.queryInterface(XPropertySet.class, chkAllowRemixing);
@@ -158,13 +153,13 @@ public class ChooserDialog {
         xpsAllowRemixing.setPropertyValue("Width", new Integer(250));
         xpsAllowRemixing.setPropertyValue("Height", new Integer(12));
         xpsAllowRemixing.setPropertyValue("Name", CHK_ALLOW_REMIX);
-        xpsAllowRemixing.setPropertyValue("Label", "Allow Remixing?");      
+        xpsAllowRemixing.setPropertyValue("Label", "Allow Remixing?");
         
         xpsAllowRemixing.setPropertyValue("TriState", Boolean.FALSE);
         xpsAllowRemixing.setPropertyValue("State", new Short((short) 1));
-
+        
         getNameContainer().insertByName(CHK_ALLOW_REMIX, chkAllowRemixing);
-
+        
         Object chkProhibitCommercial = msfLicenseSelector.createInstance("com.sun.star.awt.UnoControlCheckBoxModel");
         XPropertySet xpsProhibitCommercial = (XPropertySet) UnoRuntime.queryInterface(XPropertySet.class, chkProhibitCommercial);
         
@@ -177,7 +172,7 @@ public class ChooserDialog {
         
         xpsProhibitCommercial.setPropertyValue("TriState", Boolean.FALSE);
         xpsProhibitCommercial.setPropertyValue("State", new Short((short) 0));
-
+        
         getNameContainer().insertByName(CHK_PROHIBIT_COMMERCIAL, chkProhibitCommercial);
         
         Object chkRequireShareAlike = msfLicenseSelector.createInstance("com.sun.star.awt.UnoControlCheckBoxModel");
@@ -192,9 +187,9 @@ public class ChooserDialog {
         
         xpsRequireShareAlike.setPropertyValue("TriState", Boolean.FALSE);
         xpsRequireShareAlike.setPropertyValue("State", new Short((short) 0));
-
+        
         getNameContainer().insertByName(CHK_REQUIRE_SHAREALIKE, chkRequireShareAlike);
-
+        
         // create the jurisdiction drop-down list
         Object lblJurisdictionList = xMultiServiceFactory.createInstance("com.sun.star.awt.UnoControlFixedTextModel" );
         XPropertySet xpsLblJurisdictionList = (XPropertySet) UnoRuntime.queryInterface(XPropertySet.class, lblJurisdictionList);
@@ -205,7 +200,7 @@ public class ChooserDialog {
         xpsLblJurisdictionList.setPropertyValue("Height", new Integer(15));
         xpsLblJurisdictionList.setPropertyValue("Name", LBL_JURISDICTION_LIST);
         xpsLblJurisdictionList.setPropertyValue("Label", "Jurisdiction");
-
+        
         getNameContainer().insertByName(LBL_JURISDICTION_LIST, xpsLblJurisdictionList);
         
         Object cmbJurisdictionList = xMultiServiceFactory.createInstance("com.sun.star.awt.UnoControlListBoxModel" );
@@ -219,9 +214,9 @@ public class ChooserDialog {
         xPSetList.setPropertyValue("Dropdown", new Boolean("true"));
         xPSetList.setPropertyValue("MultiSelection", new Boolean("false"));
         xPSetList.setPropertyValue("Step", new Short((short)1));
-
+        
         getNameContainer().insertByName(CMB_JURISDICTION, cmbJurisdictionList);
-
+        
         // create the button model - OK and set the properties
         Object finishButton = xMultiServiceFactory.createInstance("com.sun.star.awt.UnoControlButtonModel" );
         XPropertySet xPSetFinishButton = (XPropertySet)UnoRuntime.queryInterface(
@@ -245,7 +240,7 @@ public class ChooserDialog {
         xPSetCancelButton.setPropertyValue("Height", new Integer(14));
         xPSetCancelButton.setPropertyValue("Name", BTN_CANCEL);
         xPSetCancelButton.setPropertyValue("Label", cancelButtonLabel);
-                
+        
         getNameContainer().insertByName(BTN_CANCEL, cancelButton);
         
         
@@ -273,15 +268,15 @@ public class ChooserDialog {
             Jurisdiction j = (Jurisdiction)it.next();
             cmbJList.addItem(j.getTitle(), count++);
             
-        }        
-
+        }
+        
         // add a bogus place-holder for Unported in the JurisdictionList to
         // ensure indices match up when determining the item selectedJurisdiction
         this.getJurisdictionList().add(0, null);
         
         // Pre-select Unported
-        cmbJList.selectItemPos((short)1, true);
-        cmbJList.makeVisible((short)1);
+        cmbJList.selectItemPos((short)0, true);
+        cmbJList.makeVisible((short)0);
         
         // listen for license selection changes
         ((XCheckBox)UnoRuntime.queryInterface(XCheckBox.class, xControlCont.getControl(CHK_ALLOW_REMIX))).addItemListener(
@@ -291,7 +286,7 @@ public class ChooserDialog {
         ((XCheckBox)UnoRuntime.queryInterface(XCheckBox.class, xControlCont.getControl(CHK_REQUIRE_SHAREALIKE))).addItemListener(
                 new UpdateLicenseListener(this));
         
-        cmbJList.addItemListener(new JurisdictionSelectListener(this));   
+        cmbJList.addItemListener(new JurisdictionSelectListener(this));
         
         // add an action listener to the Finish button control
         Object objectButton3 = xControlCont.getControl(BTN_OK);
@@ -302,9 +297,9 @@ public class ChooserDialog {
         Object objectButton4 = xControlCont.getControl(BTN_CANCEL);
         XButton xCancelButton = (XButton)UnoRuntime.queryInterface(XButton.class, objectButton4);
         xCancelButton.addActionListener(new CancelClickListener(this));
- 
-        if (this.addin.getDocumentLicense() != null) {
-            this.setSelectedLicense( this.addin.getDocumentLicense() );
+        
+        if (this.addin.getProgramWrapper().getDocumentLicense() != null) {
+            this.setSelectedLicense( this.addin.getProgramWrapper().getDocumentLicense() );
         } else {
             this.setSelectedLicense(new License("http://creativecommons.org/licenses/by/3.0/"));
         }
@@ -322,15 +317,15 @@ public class ChooserDialog {
         
         // dispose the dialog
         XComponent xComponent = (XComponent)UnoRuntime.queryInterface(XComponent.class, dialog);
-        xComponent.dispose();        
+        xComponent.dispose();
         
     }
-
+    
     protected void setCheckboxValue(String controlName, Boolean b) {
         
         try {
             XPropertySet xPSetList = (XPropertySet)UnoRuntime.queryInterface(XPropertySet.class,
-                                    this.getNameContainer().getByName(controlName));
+                    this.getNameContainer().getByName(controlName));
             
             xPSetList.setPropertyValue("State", (b?new Short((short)1):new Short((short)0)) ); // b.booleanValue());
         } catch (com.sun.star.lang.IllegalArgumentException ex) {
@@ -344,14 +339,14 @@ public class ChooserDialog {
         } catch (NoSuchElementException ex) {
             ex.printStackTrace();
         }
-
+        
     }
     
     protected Boolean getCheckboxValue(String chkName) {
         try {
             
             XPropertySet xPSetList = (XPropertySet)UnoRuntime.queryInterface(XPropertySet.class,
-                        this.getNameContainer().getByName(chkName));
+                    this.getNameContainer().getByName(chkName));
             
             return (((Short) xPSetList.getPropertyValue("State")).intValue()  == 1);
             
@@ -367,39 +362,39 @@ public class ChooserDialog {
         }
         
     } // getCheckboxValue
-
+    
     public IJurisdiction getSelectedJurisdiction() {
         return selectedJurisdiction;
     }
-
+    
     public void setSelectedJurisdiction(IJurisdiction selected) {
         this.selectedJurisdiction = selected;
     }
-
+    
     public List getJurisdictionList() {
         return jurisdictionList;
     }
-
+    
     protected void setJurisdictionList(List jurisdictionList) {
         this.jurisdictionList = jurisdictionList;
     }
-
+    
     public License getSelectedLicense() {
         
         // retrieve the Document for the issued license
         Chooser licenseChooser = new Chooser();
         
         return licenseChooser.selectLicense(
-                    this.getCheckboxValue(this.CHK_ALLOW_REMIX).booleanValue(),
-                    this.getCheckboxValue(this.CHK_PROHIBIT_COMMERCIAL).booleanValue(),
-                    this.getCheckboxValue(this.CHK_REQUIRE_SHAREALIKE).booleanValue(),
-                    this.getSelectedJurisdiction());
-
+                this.getCheckboxValue(this.CHK_ALLOW_REMIX).booleanValue(),
+                this.getCheckboxValue(this.CHK_PROHIBIT_COMMERCIAL).booleanValue(),
+                this.getCheckboxValue(this.CHK_REQUIRE_SHAREALIKE).booleanValue(),
+                this.getSelectedJurisdiction());
+        
     } // getSelectedLicense
-
+    
     public void setSelectedLicense(License selected) {
         // update the user interface to match this selection
-    
+        
         this.setCheckboxValue(this.CHK_ALLOW_REMIX, selected.allowRemix());
         this.setCheckboxValue(this.CHK_PROHIBIT_COMMERCIAL, selected.prohibitCommercial());
         this.setCheckboxValue(this.CHK_REQUIRE_SHAREALIKE, selected.requireShareAlike());
@@ -412,9 +407,9 @@ public class ChooserDialog {
     
     void updateSelectedLicense() {
         try {
-
-            XPropertySet xpsSelectedLicense = (XPropertySet) UnoRuntime.queryInterface(XPropertySet.class, 
-                        this.getNameContainer().getByName(LBL_SELECTED_LICENSE));
+            
+            XPropertySet xpsSelectedLicense = (XPropertySet) UnoRuntime.queryInterface(XPropertySet.class,
+                    this.getNameContainer().getByName(LBL_SELECTED_LICENSE));
             
             xpsSelectedLicense.setPropertyValue("Label", this.getSelectedLicense().getName());
         } catch (UnknownPropertyException ex) {
@@ -429,11 +424,24 @@ public class ChooserDialog {
             ex.printStackTrace();
         }
     }
-
+    
     public XNameContainer getNameContainer() {
         return xNameCont;
     }
-
+    
+    public boolean isCancelled() {
+        return cancelled;
+    }
+    
+    public void setCancelled(boolean cancelled) {
+        this.cancelled = cancelled;
+    }
+    
+    public void close() {
+        this.xDialog.endExecute();
+        
+    }
+    
     
 } // ChooserDialog
 

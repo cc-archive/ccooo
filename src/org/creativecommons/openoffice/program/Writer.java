@@ -23,18 +23,24 @@ import com.sun.star.text.XText;
 import com.sun.star.text.XTextContent;
 import com.sun.star.text.XTextCursor;
 import com.sun.star.text.XTextDocument;
+import com.sun.star.text.XTextField;
 import com.sun.star.text.XTextFieldsSupplier;
 import com.sun.star.text.XTextViewCursorSupplier;
 import com.sun.star.uno.AnyConverter;
 import com.sun.star.uno.UnoRuntime;
 import com.sun.star.util.XRefreshable;
+import com.sun.star.util.XUpdatable;
 import org.creativecommons.license.License;
 
 /**
  *
  * @author Cassio
  */
-public class Writer {
+public class Writer extends OOoProgram {
+    
+    public Writer(XComponent xTextComponent) {
+        super(xTextComponent);
+    }
     
     /**
      * Embeds the license "button" into a Textdocument at the given cursor position
@@ -44,14 +50,14 @@ public class Writer {
      * @param imgURL  URL of the license button
      *
      */
-    private static void embedGraphic(XMultiServiceFactory mxDocFactory, XTextCursor xCursor, String imgURL) {
-
+    private void embedGraphic(XMultiServiceFactory mxDocFactory, XTextCursor xCursor, String imgURL) {
+        
         XNameContainer xBitmapContainer = null;
         XTextContent xImage = null;
         String internalURL = null;
         
         try {
-
+            
             xBitmapContainer = (XNameContainer) UnoRuntime.queryInterface(
                     XNameContainer.class, mxDocFactory.createInstance(
                     "com.sun.star.drawing.BitmapTable"));
@@ -83,7 +89,41 @@ public class Writer {
             e.printStackTrace();
         }
     }
-
+    
+    public boolean hasVisibleNotice() {
+        
+        XTextDocument mxDoc = (XTextDocument)UnoRuntime.queryInterface(
+                XTextDocument.class, this.getComponent());
+        
+        XMultiServiceFactory mxDocFactory = (XMultiServiceFactory) UnoRuntime.queryInterface(
+                XMultiServiceFactory.class, mxDoc );
+        
+        XTextFieldsSupplier mxTextFields = (XTextFieldsSupplier)UnoRuntime.queryInterface(
+                XTextFieldsSupplier.class, mxDoc);
+        
+        try {
+            
+            
+            XPropertySet licenseNameMaster = getMasterField("License Name", mxTextFields, mxDocFactory);
+            return (((Object[])licenseNameMaster.getPropertyValue("DependentTextFields")).length != 0);
+            
+        } catch (WrappedTargetException ex) {
+            ex.printStackTrace();
+        } catch (NoSuchElementException ex) {
+            ex.printStackTrace();
+        } catch (UnknownPropertyException ex) {
+            ex.printStackTrace();
+        } catch (PropertyVetoException ex) {
+            ex.printStackTrace();
+        } catch (com.sun.star.lang.IllegalArgumentException ex) {
+            ex.printStackTrace();
+        } catch (com.sun.star.uno.Exception ex) {
+            ex.printStackTrace();
+        }
+        
+        return false;
+    }
+    
     /**
      * Create and insert an auto-text containing the license
      *
@@ -92,32 +132,37 @@ public class Writer {
      * @param licenseImgURL The license "button" URL.
      *
      */
-    public static void insertStatement(XComponent xTextComponent,
-            License license) {
-
+    public void insertVisibleNotice() {
+        
+        License license = this.getDocumentLicense();
+        
         try {
-
+            
             XTextDocument mxDoc = (XTextDocument)UnoRuntime.queryInterface(
-                    XTextDocument.class, xTextComponent);
+                    XTextDocument.class, this.getComponent());
             
             XText mxDocText = mxDoc.getText();
             
             XTextCursor docCursor = ((XTextViewCursorSupplier)UnoRuntime.queryInterface(
-                        XTextViewCursorSupplier.class, mxDoc.getCurrentController())).getViewCursor();
+                    XTextViewCursorSupplier.class, mxDoc.getCurrentController())).getViewCursor();
             
             XMultiServiceFactory mxDocFactory = (XMultiServiceFactory) UnoRuntime.queryInterface(
                     XMultiServiceFactory.class, mxDoc );
-                        
+            
             XTextFieldsSupplier mxTextFields = (XTextFieldsSupplier)UnoRuntime.queryInterface(
                     XTextFieldsSupplier.class, mxDoc);
-            XDependentTextField licenseNameField = createField(mxDocFactory, mxTextFields, "License Name", license.getName());
-            XDependentTextField licenseURLField = createField(mxDocFactory, mxTextFields, "License URL", license.getLicenseUri());
+            
+            XPropertySet licenseNameMaster = updateMasterField("License Name", license.getName(), mxTextFields, mxDocFactory);
+            XPropertySet licenseURLMaster = updateMasterField("License URL", license.getLicenseUri(), mxTextFields, mxDocFactory);
+            
+            XDependentTextField licenseNameField = createUserTextField(mxDocFactory, mxTextFields, "License Name", license.getName());
+            XDependentTextField licenseURLField = createUserTextField(mxDocFactory, mxTextFields, "License URL", license.getLicenseUri());
             
             // insert the license graphic if available
             if (license.getImageUrl() != null)
-                embedGraphic(mxDocFactory, docCursor, license.getImageUrl()); 
-
-            // insert the licensing statement           
+                embedGraphic(mxDocFactory, docCursor, license.getImageUrl());
+            
+            // insert the licensing statement
             mxDocText.insertControlCharacter(docCursor, ControlCharacter.PARAGRAPH_BREAK, false );
             mxDocText.insertString(docCursor, "This document is licensed under the ", false );
             mxDocText.insertTextContent(docCursor, licenseNameField, false );
@@ -139,21 +184,57 @@ public class Writer {
             ex.printStackTrace();
         }
         
-
-    } // insertStatement
-
-    private static XDependentTextField createField(
-            final XMultiServiceFactory mxDocFactory, 
-            final XTextFieldsSupplier mxTextFields, 
+    } // insertVisibleNotice
+    
+    protected XDependentTextField createUserTextField(
+            final XMultiServiceFactory mxDocFactory,
+            final XTextFieldsSupplier mxTextFields,
             final String field_name,
-            final String field_value) 
+            final String field_value)
             
-            throws WrappedTargetException, 
-            com.sun.star.uno.Exception, 
-            NoSuchElementException, 
-            UnknownPropertyException, 
-            PropertyVetoException, 
+            throws WrappedTargetException,
+            com.sun.star.uno.Exception,
+            NoSuchElementException,
+            UnknownPropertyException,
+            PropertyVetoException,
             com.sun.star.lang.IllegalArgumentException {
+        
+        XPropertySet xMasterPropSet = updateMasterField(field_name, field_value, mxTextFields, mxDocFactory);
+        
+        // Use the text document's factory to create a user text field,
+        // and access it's XDependentTextField interface
+        XDependentTextField xUserField =
+                (XDependentTextField) UnoRuntime.queryInterface(
+                XDependentTextField.class, mxDocFactory.createInstance(
+                "com.sun.star.text.TextField.User" ) );
+        
+        // Attach the field master to the user field
+        xUserField.attachTextFieldMaster( xMasterPropSet );
+        return xUserField;
+    }
+    
+    protected XPropertySet updateMasterField(final String field_name, final String field_value, final XTextFieldsSupplier mxTextFields, final XMultiServiceFactory mxDocFactory) throws WrappedTargetException, com.sun.star.uno.Exception, NoSuchElementException, com.sun.star.lang.IllegalArgumentException, UnknownPropertyException, PropertyVetoException {
+        
+        // get or create the master field
+        XPropertySet xMasterPropSet = getMasterField(field_name, mxTextFields, mxDocFactory);
+        
+        // Set the value of the FieldMaster
+        xMasterPropSet.setPropertyValue( "Content", field_value );
+        
+        // update any dependent text fields in the document
+        XTextField[] fields = ((XTextField[])xMasterPropSet.getPropertyValue("DependentTextFields"));
+        
+        for (int i = 0; i < fields.length; i++) {
+            
+            ( (XUpdatable)UnoRuntime.queryInterface(
+                    XUpdatable.class, fields[i])
+                    ).update();
+        }
+        
+        return xMasterPropSet;
+    }
+    
+    protected XPropertySet getMasterField(final String field_name, final XTextFieldsSupplier mxTextFields, final XMultiServiceFactory mxDocFactory) throws com.sun.star.lang.IllegalArgumentException, PropertyVetoException, UnknownPropertyException, NoSuchElementException, WrappedTargetException, com.sun.star.uno.Exception {
         
         // property set for the user text field
         XPropertySet xMasterPropSet = null;
@@ -167,31 +248,43 @@ public class Writer {
             xMasterPropSet = (XPropertySet)UnoRuntime.queryInterface(
                     XPropertySet.class, mxTextFields.getTextFieldMasters().getByName(masterFieldName));
         } else {
-        
+            
             // Create a fieldmaster for our newly created User Text field, and
             // access it's XPropertySet interface
             xMasterPropSet = (XPropertySet)UnoRuntime.queryInterface(
-                XPropertySet.class, mxDocFactory.createInstance (
+                    XPropertySet.class, mxDocFactory.createInstance(
                     "com.sun.star.text.FieldMaster.User" ) );
             
-            xMasterPropSet.setPropertyValue ( "Name", field_name );
-
+            xMasterPropSet.setPropertyValue( "Name", field_name );
+            
+        }
+        return xMasterPropSet;
+    }
+    
+    public void setDocumentLicense(License license) {
+        super.setDocumentLicense(license);
+        
+        // create/update the user fields for the license name and URL
+        XTextDocument mxDoc = (XTextDocument)UnoRuntime.queryInterface(
+                XTextDocument.class, this.getComponent());
+        
+        XMultiServiceFactory mxDocFactory = (XMultiServiceFactory) UnoRuntime.queryInterface(
+                XMultiServiceFactory.class, mxDoc );
+        
+        XTextFieldsSupplier mxTextFields = (XTextFieldsSupplier)UnoRuntime.queryInterface(
+                XTextFieldsSupplier.class, mxDoc);
+        try {
+            
+            updateMasterField("License Name", license.getName(), mxTextFields, mxDocFactory);
+            updateMasterField("License URL", license.getLicenseUri(), mxTextFields, mxDocFactory);
+        } catch (WrappedTargetException ex) {
+            ex.printStackTrace();
+        } catch (com.sun.star.uno.Exception ex) {
+            ex.printStackTrace();
         }
         
-        // Set the name and value of the FieldMaster
-        xMasterPropSet.setPropertyValue ( "Content", field_value );
-        
-        // Use the text document's factory to create a user text field, 
-        // and access it's XDependentTextField interface
-        XDependentTextField xUserField = 
-            (XDependentTextField) UnoRuntime.queryInterface (
-                XDependentTextField.class, mxDocFactory.createInstance (
-                    "com.sun.star.text.TextField.User" ) );
-        
-        // Attach the field master to the user field
-        xUserField.attachTextFieldMaster ( xMasterPropSet );
-        return xUserField;
     }
-
-
+    
+    
+    
 } // Writer

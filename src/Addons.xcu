@@ -28,8 +28,8 @@
               <value>com.sun.star.presentation.PresentationDocument,com.sun.star.sheet.SpreadsheetDocument,com.sun.star.text.TextDocument</value>
             </prop>
             <prop oor:name="Title" oor:type="xs:string">
-              <value/>
-              <value xml:lang="en">Select License</value>
+                <value>Select License</value>
+                <value xml:lang="en">Select License</value>
             </prop>
           </node>
           <node oor:name="m2" oor:op="replace">

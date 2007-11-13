@@ -52,7 +52,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Properties;
 import java.util.Set;
 
 import com.sun.star.awt.XMessageBoxFactory;
@@ -60,6 +59,7 @@ import com.sun.star.awt.XWindowPeer;
 import com.sun.star.lang.XServiceInfo;
 import org.creativecommons.license.License;
 import org.creativecommons.openoffice.program.Calc;
+import org.creativecommons.openoffice.program.IVisibleNotice;
 import org.creativecommons.openoffice.program.Impress;
 import org.creativecommons.openoffice.program.Writer;
 import org.creativecommons.openoffice.ui.ChooserDialog;
@@ -108,7 +108,6 @@ public final class CcOOoAddin extends WeakBase
             // get the service manager from the component context
             this.xMultiComponentFactory = this.m_xContext.getServiceManager();
             
-            
         } catch (Exception ex) {
             ex.printStackTrace();
         }
@@ -138,6 +137,31 @@ public final class CcOOoAddin extends WeakBase
         return this.xCurrentComponent;
     }
     
+    protected IVisibleNotice getProgramWrapper(XComponent component) {
+        
+        XServiceInfo xServiceInfo = (XServiceInfo)UnoRuntime.queryInterface(
+                XServiceInfo.class, this.getCurrentComponent());
+        
+        if (xServiceInfo.supportsService("com.sun.star.sheet.SpreadsheetDocument")) {
+            
+        } else if (xServiceInfo.supportsService("com.sun.star.text.TextDocument")) {
+            
+            return new Writer(this.getCurrentComponent());
+            
+        } else if (xServiceInfo.supportsService("com.sun.star.presentation.PresentationDocument")) {
+            
+        }
+        
+        else if (xServiceInfo.supportsService("com.sun.star.drawing.DrawingDocument")) {
+            
+        }
+        
+        return null;
+    }
+    
+    public IVisibleNotice getProgramWrapper() {
+        return this.getProgramWrapper(this.getCurrentComponent());
+    }
     
     public XMultiServiceFactory getMSFactory() {
         return (XMultiServiceFactory)UnoRuntime.queryInterface(
@@ -231,65 +255,37 @@ public final class CcOOoAddin extends WeakBase
                 return;
             }
             
-            // Create the dialog
+            this.updateCurrentComponent();
+            
+            // Create the dialog for license selection
             ChooserDialog dialog = new ChooserDialog(this, this.m_xContext);
-            dialog.createDialog();
+            dialog.showDialog();
+            
+            if (!dialog.isCancelled()) {
+                // retrieve the selected License
+                License selected = dialog.getSelectedLicense();
+                IVisibleNotice document = this.getProgramWrapper();
+
+                // store the license information in the document
+                document.setDocumentLicense(selected);
+                
+                // insert the statement if one does not already exist
+                if (!document.hasVisibleNotice()) {
+                    document.insertVisibleNotice();
+                }
+            }
+            
         } catch (Exception ex) {
             ex.printStackTrace();
         }
         
     } // selectLicense
-
-    public String getServiceType() {
-        
-        String service = "";
-        
-        XServiceInfo xServiceInfo = (XServiceInfo)UnoRuntime.queryInterface(
-                XServiceInfo.class, this.getCurrentComponent());
-        
-        if (xServiceInfo.supportsService("com.sun.star.sheet.SpreadsheetDocument")) {
-            service = "Spreadsheet";
-        } else if (xServiceInfo.supportsService("com.sun.star.text.TextDocument")) {
-            service = "Text";
-            
-        } else if (xServiceInfo.supportsService("com.sun.star.presentation.PresentationDocument")) {
-            service = "Presentation";
-        }
-        
-        else if (xServiceInfo.supportsService("com.sun.star.drawing.DrawingDocument")) {
-            service = "Drawing";
-        }
-        return service;
-    }
-    
-    public void insertStatement(License license) {
-        
-        
-        if (this.getServiceType().equalsIgnoreCase("spreadsheet")) {
-            
-            Calc.embedGraphic(this.getCurrentComponent(), license.getImageUrl());
-            Calc.insertLicenseText(this.getCurrentComponent(), license.getName());
-            
-        }  else if (this.getServiceType().equalsIgnoreCase("text")) {
-            
-            Writer.insertStatement(this.getCurrentComponent(), license);
-            
-        }  else if (this.getServiceType().equalsIgnoreCase("presentation")) {
-            
-            Impress.embedGraphic(this.getCurrentComponent(), license.getImageUrl());
-            Impress.insertLicenseText(this.getCurrentComponent(), license.getName());
-            
-        }  else if (this.getServiceType().equalsIgnoreCase("drawing")) {
-            
-        }
-        
-    } 
     
     public void insertStatement() {
         
-        insertStatement(this.getDocumentLicense());
-
-    } // insertStatement
+        this.getProgramWrapper(this.getCurrentComponent()).insertVisibleNotice();
+        
+    } // insertVisibleNotice
     
     
     /**
@@ -391,94 +387,7 @@ public final class CcOOoAddin extends WeakBase
         
     }
     
-    
-    /**
-     * Inserts the license name and the license URL into the document's metadata
-     *
-     * @param licenseName The License Name.
-     * @param licenseURL The License URL.
-     *
-     */
-    public void setDocumentLicense(License license) {
-        // TODO Store metadata as in MSOffice addin?
-        
-        try {
-            XDocumentInfo m_xDocumentInfo;
-            
-            XDocumentInfoSupplier xDocumentInfoSupplier =
-                    (XDocumentInfoSupplier)UnoRuntime.queryInterface(
-                    XDocumentInfoSupplier.class, this.xCurrentComponent);
-            
-            m_xDocumentInfo = xDocumentInfoSupplier.getDocumentInfo();
-            
-            m_xDocumentInfo.setUserFieldName((short)0, AddInConstants.CC_METADATA_IDENTIFIER + AddInConstants.LICENSE_NAME);
-            m_xDocumentInfo.setUserFieldValue((short)0, license.getName());
-            
-            m_xDocumentInfo.setUserFieldName((short)1, AddInConstants.CC_METADATA_IDENTIFIER + AddInConstants.LICENSE_URI);
-            m_xDocumentInfo.setUserFieldValue((short)1, license.getLicenseUri());
-            
-            XStorable xStorable = (XStorable)UnoRuntime.queryInterface(
-                    XStorable.class, xCurrentComponent);
-            xStorable.store();
-            
-        } catch (Exception ex) {
-            // just swallow..
-            //ex.printStackTrace();
-        }
-        
-    }
-    
-    public License getDocumentLicense() {
-        // Return the License for the active document, if it exists
-        
-        if (this.retrieveLicenseMetadata().containsKey(AddInConstants.LICENSE_URI)) {
-            return new License((String)this.retrieveLicenseMetadata().get(AddInConstants.LICENSE_URI));
-        }
-        
-        return null;
-        
-    }
-    /**
-     * Retrieve the license properties from the document's metadata
-     *
-     * @return Map Returns a map containing the license properties
-     *
-     */
-    private Map retrieveLicenseMetadata(){
-        Map licenseProp = new HashMap();
-        
-        XDocumentInfo m_xDocumentInfo;
-        
-        updateCurrentComponent();
-        
-        XDocumentInfoSupplier xDocumentInfoSupplier =
-                (XDocumentInfoSupplier)UnoRuntime.queryInterface(
-                XDocumentInfoSupplier.class, xCurrentComponent);
-        
-        m_xDocumentInfo = xDocumentInfoSupplier.getDocumentInfo();
-        
-        try {
-            
-            short fieldsnum = m_xDocumentInfo.getUserFieldCount();
-            
-            // if XDocumentInfoSupplier had a hasFieldName(String fieldName) we wouldn't have done this...
-            
-            // TODO   poderia ter um atributo imutavel indicando se licenciado ou nao,
-            // assim buscariamos primeiro por esse atributo antes de varrer os fields
-            for (short i = 0 ; i < fieldsnum; i++) {
-                String temp  = m_xDocumentInfo.getUserFieldName(i);
-                
-                if (temp.startsWith(AddInConstants.CC_METADATA_IDENTIFIER)) {
-                    licenseProp.put(temp.substring(AddInConstants.CC_METADATA_IDENTIFIER.length()),m_xDocumentInfo.getUserFieldValue(i));
-                }
-            }
-            
-            
-        } catch (com.sun.star.lang.ArrayIndexOutOfBoundsException ex) {
-            ex.printStackTrace();
-        }
-        return licenseProp;
-    }
+
     
     /**
      * Add a listener to the openoffice to be triggered when OnLoad events occur
@@ -499,7 +408,7 @@ public final class CcOOoAddin extends WeakBase
                     // for all events in ooo this check happen...
                     // would be nice if it had an OnLoadListener interface, wouldn't it?
                     if (oEvent.EventName.equalsIgnoreCase("OnLoad")) {
-                        
+                        /*
                         Map licenseProps = retrieveLicenseMetadata();
                         if (!licenseProps.isEmpty()) {
                             String body ="This work is licensed under a Creative Commons License. \n\n";
@@ -512,9 +421,9 @@ public final class CcOOoAddin extends WeakBase
                                 //System.out.println(temp.getKey() + " -> "+temp.getValue());
                             }
                             
-                            createInfoBox("Creative Commons Licensed Document",body);
+                            // createInfoBox("Creative Commons Licensed Document",body);
                         }
-                        
+                        */
                     }
                 }
                 public void disposing(com.sun.star.lang.EventObject e) {
