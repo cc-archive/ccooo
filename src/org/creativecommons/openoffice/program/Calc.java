@@ -140,12 +140,11 @@ public class Calc extends OOoProgram {
                     XNameContainer.class, xSpreadsheetFactory.createInstance(
                     "com.sun.star.drawing.BitmapTable"));
             
-            
             Object graphicObject = xSpreadsheetFactory.createInstance("com.sun.star.drawing.GraphicObjectShape");
             XShape xGraphicShape = (XShape)UnoRuntime.queryInterface( XShape.class, graphicObject );
-            xGraphicShape.setSize(new Size(4000,1550));
+
+            xGraphicShape.setSize(new Size(3104, 1093));
             
-            //xGraphicShape.setPosition(new Point(21000,18200));
             xGraphicShape.setPosition(getAbsoluteCellPosition(xSpreadsheet, new Integer(0), new Integer(0)));
             
             XPropertySet xProps = (XPropertySet) UnoRuntime.queryInterface(
