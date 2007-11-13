@@ -71,8 +71,8 @@ public class Writer {
             xProps.setPropertyValue("AnchorType",
                     com.sun.star.text.TextContentAnchorType.AS_CHARACTER);
             xProps.setPropertyValue("GraphicURL", internalURL);
-            xProps.setPropertyValue("Width", (int) 4000); // original: 88 px
-            xProps.setPropertyValue("Height", (int) 1550); // original: 31 px
+            xProps.setPropertyValue("Width", (int) 3104); // original: 88 px
+            xProps.setPropertyValue("Height", (int) 1093); // original: 31 px
             
             // insert the graphic at the cursor position
             xCursor.getText().insertTextContent(xCursor, xImage, false);
