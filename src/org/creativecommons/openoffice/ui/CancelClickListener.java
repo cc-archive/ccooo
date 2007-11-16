@@ -15,7 +15,7 @@ class CancelClickListener implements XActionListener {
     }
     
     public void actionPerformed(ActionEvent a) {
-        this.chooserDialog.setCancelled(true);
+
         this.chooserDialog.close();
     }
     

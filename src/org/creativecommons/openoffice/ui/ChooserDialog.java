@@ -62,7 +62,7 @@ public class ChooserDialog {
     private List jurisdictionList = null;
     private IJurisdiction selectedJurisdiction = null;
     
-    private boolean cancelled = false;
+    private boolean cancelled = true;
     
     // TODO put these labels in a properties file
     public static final String BTN_OK = "finishbt";
@@ -226,6 +226,7 @@ public class ChooserDialog {
         xPSetFinishButton.setPropertyValue("Width", new Integer(40));
         xPSetFinishButton.setPropertyValue("Height", new Integer(14));
         xPSetFinishButton.setPropertyValue("Name", BTN_OK);
+        xPSetFinishButton.setPropertyValue("DefaultButton", new Boolean("true"));
         xPSetFinishButton.setPropertyValue("Label", finishButtonLabel);
         
         getNameContainer().insertByName(BTN_OK, finishButton);
