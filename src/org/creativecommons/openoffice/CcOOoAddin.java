@@ -267,9 +267,11 @@ public final class CcOOoAddin extends WeakBase
                 document.setDocumentLicense(selected);
                 
                 // insert the statement if one does not already exist
+                /*
                 if (!document.hasVisibleNotice()) {
                     document.insertVisibleNotice();
                 }
+                 */
             }
             
         } catch (Exception ex) {
