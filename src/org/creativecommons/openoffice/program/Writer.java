@@ -136,6 +136,8 @@ public class Writer extends OOoProgram {
         
         License license = this.getDocumentLicense();
         
+        if (license == null) return;
+        
         try {
             
             XTextDocument mxDoc = (XTextDocument)UnoRuntime.queryInterface(

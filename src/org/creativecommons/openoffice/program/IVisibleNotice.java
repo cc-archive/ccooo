@@ -30,5 +30,6 @@ public interface IVisibleNotice {
     
     public void setDocumentLicense(License license);
     public License getDocumentLicense();
+    // public boolean hasDocumentLicense();
     
 }
