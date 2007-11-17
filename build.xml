@@ -5,6 +5,7 @@
 <project name="ccooo" default="default" basedir=".">
     <description>Builds, tests, and runs the project Addin.</description>
     <import file="nbproject/build-uno-impl.xml"/>
+
     <!--
 
     There exist several targets which are by default empty and which can be 
@@ -66,5 +67,11 @@
     nbproject/build-impl.xml file. 
 
     -->
+
+    <target name="-pre-jar">
+        <manifest file="${build.dir}/MANIFEST.MF" mode="update">
+            <attribute name="UNO-Type-Path" value=" "/>
+        </manifest>
+    </target>
 
 </project>
