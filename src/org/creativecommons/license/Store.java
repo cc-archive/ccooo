@@ -1,10 +1,9 @@
 /*
  * Store.java
  *
- * Created on October 29, 2007, 9:29 PM
+ * Copyright 2007, Creative Commons
+ * licensed under the GNU LGPL License; see licenses/LICENSE for details
  *
- * To change this template, choose Tools | Template Manager
- * and open the template in the editor.
  */
 
 package org.creativecommons.license;

@@ -1,10 +1,8 @@
 /*
  * Constants.java
  *
- * copyright 2007, Creative Commons
- * licensed under the MIT License; see docs/LICENSE for details.
- *
- * Created on Jul 2, 2007
+ * Copyright 2007, Creative Commons
+ * licensed under the GNU LGPL License; see licenses/LICENSE for details
  *
  */
 

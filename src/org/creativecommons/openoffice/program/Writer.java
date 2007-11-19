@@ -1,10 +1,9 @@
 /*
  * Writer.java
  *
- * Created on 21 de Julho de 2007, 18:46
+ * Copyright 2007, Creative Commons
+ * licensed under the GNU LGPL License; see licenses/LICENSE for details
  *
- * To change this template, choose Tools | Template Manager
- * and open the template in the editor.
  */
 
 package org.creativecommons.openoffice.program;

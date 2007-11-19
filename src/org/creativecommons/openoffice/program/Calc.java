@@ -1,10 +1,9 @@
 /*
  * Calc.java
  *
- * Created on 24 de Julho de 2007, 19:04
+ * Copyright 2007, Creative Commons
+ * licensed under the GNU LGPL License; see licenses/LICENSE for details
  *
- * To change this template, choose Tools | Template Manager
- * and open the template in the editor.
  */
 
 package org.creativecommons.openoffice.program;

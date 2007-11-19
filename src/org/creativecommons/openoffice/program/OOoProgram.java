@@ -1,10 +1,9 @@
 /*
  * OOoProgram.java
  *
- * Created on November 13, 2007, 9:33 PM
+ * Copyright 2007, Creative Commons
+ * licensed under the GNU LGPL License; see licenses/LICENSE for details
  *
- * To change this template, choose Tools | Template Manager
- * and open the template in the editor.
  */
 
 package org.creativecommons.openoffice.program;
