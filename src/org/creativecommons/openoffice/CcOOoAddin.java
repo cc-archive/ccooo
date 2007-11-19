@@ -266,12 +266,6 @@ public final class CcOOoAddin extends WeakBase
                 // store the license information in the document
                 document.setDocumentLicense(selected);
                 
-                // insert the statement if one does not already exist
-                /*
-                if (!document.hasVisibleNotice()) {
-                    document.insertVisibleNotice();
-                }
-                 */
             }
             
         } catch (Exception ex) {
@@ -281,6 +275,10 @@ public final class CcOOoAddin extends WeakBase
     } // selectLicense
     
     public void insertStatement() {
+        
+        if (this.getProgramWrapper().getDocumentLicense() == null) {
+            this.selectLicense();
+        }
         
         this.getProgramWrapper(this.getCurrentComponent()).insertVisibleNotice();
         
