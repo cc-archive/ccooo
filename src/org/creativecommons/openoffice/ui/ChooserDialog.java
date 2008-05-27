@@ -5,7 +5,7 @@
  * licensed under the GNU LGPL License; see licenses/LICENSE for details
  *
  */
-
+ 
 package org.creativecommons.openoffice.ui;
 
 import com.sun.star.awt.XButton;
