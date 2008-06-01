@@ -37,6 +37,10 @@ public class Impress extends OOoProgram {
         super(component);
     }
     
+    public void insertPictureFlickr() {
+        
+    }
+    
     public boolean hasVisibleNotice() {
         // XXX need to actually detect if the notice exists
         return false;

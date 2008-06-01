@@ -39,6 +39,10 @@ public class Calc extends OOoProgram {
     public Calc(XComponent component) {
         super(component);
     }
+    
+    public void insertPictureFlickr() {
+        
+    }
 
     public boolean hasVisibleNotice() {
         // XXX need to actually detect if the notice exists

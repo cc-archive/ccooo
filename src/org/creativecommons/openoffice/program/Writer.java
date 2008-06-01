@@ -41,6 +41,10 @@ public class Writer extends OOoProgram {
         super(xTextComponent);
     }
     
+    public void insertPictureFlickr() {
+        
+    }
+    
     /**
      * Embeds the license "button" into a Textdocument at the given cursor position
      *

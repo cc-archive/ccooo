@@ -53,6 +53,7 @@ import org.creativecommons.openoffice.program.IVisibleNotice;
 import org.creativecommons.openoffice.program.Impress;
 import org.creativecommons.openoffice.program.Writer;
 import org.creativecommons.openoffice.ui.ChooserDialog;
+import org.creativecommons.openoffice.ui.PictureFlickrDialog;
 
 /**
  *  The Creative Commons OpenOffice.org AddIn core class.
@@ -238,6 +239,9 @@ public final class CcOOoAddin extends WeakBase
             else if ( aURL.Path.compareTo("InsertStatement") == 0 ) {
                 insertStatement();
             } // if insert statement
+            else if ( aURL.Path.compareTo("InsertPictureFlickr") == 0 ) {
+                insertPictureFlickr();
+            } 
         } // if CcOOoAddin protocol
     } // dispatch
     
@@ -281,6 +285,65 @@ public final class CcOOoAddin extends WeakBase
         this.getProgramWrapper(this.getCurrentComponent()).insertVisibleNotice();
         
     } // insertVisibleNotice
+    
+    public void selectPictureFlickr() {
+        
+        try {
+            
+            if (mxRemoteServiceManager == null) {
+                System.out.println("not available");
+                return;
+            }
+            
+            this.updateCurrentComponent();
+            
+            // Create the dialog for license selection
+            ChooserDialog dialog = new ChooserDialog(this, this.m_xContext);
+            dialog.showDialog();
+            
+            if (!dialog.isCancelled()) {
+                // retrieve the selected License
+                License selected = dialog.getSelectedLicense();
+                IVisibleNotice document = this.getProgramWrapper();
+
+                // store the license information in the document
+                document.setDocumentLicense(selected);
+                
+            }
+            
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+        
+    } // selectLicense
+    
+    public void insertPictureFlickr() {
+        
+        try {
+            
+            if (mxRemoteServiceManager == null) {
+                System.out.println("not available");
+                return;
+            }
+            
+            this.updateCurrentComponent();
+            
+            // Create the dialog for license selection
+            PictureFlickrDialog dialog = new PictureFlickrDialog(this, this.m_xContext);
+            dialog.showDialog();
+            
+            if (!dialog.isCancelled()) {
+                                
+                // insert the selected image 
+                this.getProgramWrapper(this.getCurrentComponent()).insertPictureFlickr();
+                
+            }
+            
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+        
+    } // insertPictureFlickr
     
     
     /**
