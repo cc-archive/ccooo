@@ -332,12 +332,12 @@ public final class CcOOoAddin extends WeakBase
             PictureFlickrDialog dialog = new PictureFlickrDialog(this, this.m_xContext);
             dialog.showDialog();
             
-            if (!dialog.isCancelled()) {
+            //if (!dialog.isCancelled()) {
                                 
                 // insert the selected image 
-                this.getProgramWrapper(this.getCurrentComponent()).insertPictureFlickr();
+              //  this.getProgramWrapper(this.getCurrentComponent()).insertPictureFlickr();
                 
-            }
+            //}
             
         } catch (Exception ex) {
             ex.printStackTrace();

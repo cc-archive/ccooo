@@ -9,7 +9,7 @@
     <!-- ================================================================================== -->
     <target depends="-do-init" name="-uno-project-init">
         <property file="nbproject/project-uno.properties"/>
-        <property name="build.uno.version" value="1.1.0"/>
+        <property name="build.uno.version" value="1.1.2"/>
         <!-- set variablers from SDK and Office -->
         <echo message="setting up UNO environment ..."/>
         <property location="${office.program.dir}${file.separator}classes" name="office.classes.dir"/>
@@ -278,7 +278,25 @@
             <zipfileset casesensitive="yes" dir="${project.dir}/licenses" includes="**" prefix="licenses"/>
         </zip>
     </target>
-    <target depends="-uno-package-with-license" description="Creates UNO extension pacakge" name="-do-uno-package">
+    <target name="-help-exists">
+        <available file="${project.dir}/${help.dir}" property="do.help" type="dir"/>
+    </target>
+    <!-- test for help dir is necessary because zipfileset fails if dir not there -->
+    <target depends="-help-exists" if="do.help" name="-uno-package-with-help">
+        <zip destfile="${uno.package.name}" update="true">
+            <zipfileset dir="${help.dir}" includes="**/*.xhp" prefix="help"/>
+        </zip>
+    </target>
+    <target name="-dialogs-exists">
+        <available file="${project.dir}/${dialogs.dir}" property="do.dialogs" type="dir"/>
+    </target>
+    <!-- test for dialogs dir is necessary because zipfileset fails if dir not there -->
+    <target depends="-dialogs-exists" if="do.dialogs" name="-uno-package-with-dialogs">
+        <zip destfile="${uno.package.name}" update="true">
+            <zipfileset dir="${dialogs.dir}" includes="**/*.xdl,**/*.properties,**/*.default,**/*.png" prefix="dialogs"/>
+        </zip>
+    </target>
+    <target depends="-uno-package-with-license,-uno-package-with-help,-uno-package-with-dialogs" description="Creates UNO extension pacakge" name="-do-uno-package">
         <echo message="creating UNO extension package ..."/>
         <zip destfile="${uno.package.name}" update="true">
             <fileset casesensitive="yes" dir="${src.dir}" includes="${manifest.package.extensions}"/>

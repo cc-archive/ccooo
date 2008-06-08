@@ -16,12 +16,16 @@ import com.sun.star.awt.XControl;
 import com.sun.star.awt.XControlContainer;
 import com.sun.star.awt.XControlModel;
 import com.sun.star.awt.XDialog;
+import com.sun.star.awt.PushButtonType;
 import com.sun.star.awt.XListBox;
+import com.sun.star.awt.XFixedText;
+import com.sun.star.awt.XTextComponent;
 import com.sun.star.awt.XToolkit;
 import com.sun.star.awt.XWindow;
 import com.sun.star.beans.PropertyVetoException;
 import com.sun.star.beans.UnknownPropertyException;
 import com.sun.star.beans.XPropertySet;
+import com.sun.star.beans.XMultiPropertySet;
 import com.sun.star.container.NoSuchElementException;
 import com.sun.star.container.XNameContainer;
 import com.sun.star.lang.WrappedTargetException;
@@ -31,13 +35,26 @@ import com.sun.star.lang.XMultiServiceFactory;
 import com.sun.star.uno.UnoRuntime;
 import com.sun.star.uno.XComponentContext;
 import java.util.Iterator;
+import java.util.ArrayList;
 import java.util.List;
+import com.sun.star.graphic.XGraphic;
 import org.creativecommons.license.Chooser;
 import org.creativecommons.license.IJurisdiction;
 import org.creativecommons.license.Jurisdiction;
 import org.creativecommons.license.License;
 import org.creativecommons.license.Store;
 import org.creativecommons.openoffice.*;
+import org.creativecommons.openoffice.program.Image;
+import com.sun.star.awt.XWindowPeer; 
+import com.sun.star.graphic.XGraphicProvider;
+import com.sun.star.beans.PropertyValue;
+import java.io.File;
+import java.io.ByteArrayOutputStream;
+import java.io.RandomAccessFile;
+import java.io.BufferedInputStream;
+import java.net.URL;
+import javax.imageio.ImageIO;
+import java.io.InputStream;
 
 /**
  *  The Creative Commons OpenOffice.org AddIn GUI class.
@@ -59,7 +76,15 @@ public class PictureFlickrDialog {
     private XDialog xDialog = null;
     private CcOOoAddin addin = null;
     
-    private boolean cancelled = true;
+    public static final String LBL_TAGS = "lblTags";
+    public static final String TXT_TAGS = "txtTags";
+    public static final String LBL_LICENSE = "lblLicense";
+    public static final String LISTBOX_LICENSE = "cmbLicense";    
+    public static final String BTN_SEARCH = "btnSearch";
+    public static final String searchButtonLabel = "Search";
+    public static final String GB_RESULTS = "gbResults";
+    
+    public static final int SHOWRESULTSPERPAGE = 3;
     
     /**
      * Creates a new instance of ChooserDialog
@@ -87,10 +112,10 @@ public class PictureFlickrDialog {
         XMultiServiceFactory msfLicenseSelector = (XMultiServiceFactory) UnoRuntime.queryInterface(
                 XMultiServiceFactory.class, dlgLicenseSelector);
         
-            XPropertySet xPSetDialog = createAWTControl(dlgLicenseSelector, "dlgMainForm",
-                "", new Rectangle(100, 100, 310, 225));
-            xPSetDialog.setPropertyValue("Title", new String("Insert Picture From Flickr"));
-            xPSetDialog.setPropertyValue("Step", (short)1 );        
+        XPropertySet xPSetDialog = createAWTControl(dlgLicenseSelector, "dlgMainForm",
+                "", new Rectangle(100, 100, 190, 380));
+        xPSetDialog.setPropertyValue("Title", new String("Insert Picture From Flickr"));
+        xPSetDialog.setPropertyValue("Step", (short)1 );        
         
         // get the name container for the dialog for inserting other elements
         this.xNameCont = (XNameContainer)UnoRuntime.queryInterface(
@@ -101,13 +126,53 @@ public class PictureFlickrDialog {
                 XMultiServiceFactory.class, dlgLicenseSelector);
         
         Object lblTags = msfLicenseSelector.createInstance("com.sun.star.awt.UnoControlFixedTextModel");
-        createAWTControl(lblTags, "lblTags", "Tags", new Rectangle(10, 10, 50, 15));
+        createAWTControl(lblTags, LBL_TAGS, "Tags", new Rectangle(10, 10, 50, 12));        
+        
+        Object txtTags = msfLicenseSelector.createInstance("com.sun.star.awt.UnoControlEditModel");
+        createAWTControl(txtTags, TXT_TAGS, "", new Rectangle(30, 10, 150, 12));
+        
+        Object lblLicense = msfLicenseSelector.createInstance("com.sun.star.awt.UnoControlFixedTextModel");
+        createAWTControl(lblLicense, LBL_LICENSE, "License", new Rectangle(10, 35, 50, 12));        
+        
+        Object cmbLicense = msfLicenseSelector.createInstance("com.sun.star.awt.UnoControlListBoxModel");   
+        XPropertySet xpsLicense = createAWTControl(cmbLicense, LISTBOX_LICENSE, "", new Rectangle(30, 35, 150, 12));                    
+        xpsLicense.setPropertyValue("MultiSelection", new Boolean("false"));
+        xpsLicense.setPropertyValue("Dropdown", new Boolean("true"));
+        xpsLicense.setPropertyValue("Step", new Short((short)1));
+        
+        Object searchButton = msfLicenseSelector.createInstance("com.sun.star.awt.UnoControlButtonModel");   
+        XPropertySet xPSetFinishButton = createAWTControl(searchButton, BTN_SEARCH, searchButtonLabel,
+                new Rectangle(30, 55, 40, 15));                    
+        xPSetFinishButton.setPropertyValue("DefaultButton", new Boolean("true"));
         
         // create the dialog control and set the model
         Object dialog = xMultiComponentFactory.createInstanceWithContext("com.sun.star.awt.UnoControlDialog", m_xContext); //esse
         XControl xControl = (XControl)UnoRuntime.queryInterface(XControl.class, dialog );
         XControlModel xControlModel = (XControlModel)UnoRuntime.queryInterface(XControlModel.class, dlgLicenseSelector);
-        xControl.setModel(xControlModel);
+        xControl.setModel(xControlModel);                
+        
+        xControlCont = (XControlContainer)UnoRuntime.queryInterface(
+                XControlContainer.class, dialog);
+        
+        Object objSearchButton = xControlCont.getControl(BTN_SEARCH);
+        XButton xFinishButton = (XButton)UnoRuntime.queryInterface(XButton.class, objSearchButton);
+        xFinishButton.addActionListener(new SearchClickListener(this, this.addin));
+                               
+        Object oLicense = xControlCont.getControl(LISTBOX_LICENSE);
+        XListBox cmbJList = (XListBox)UnoRuntime.queryInterface(XListBox.class, oLicense);
+        cmbJList.addItem("0.None", new Short((short)0));
+        cmbJList.addItem("1.Attribution-NonCommercial-ShareAlike License", new Short((short)1));
+        cmbJList.addItem("2.Attribution-NonCommercial License", new Short((short)2));
+        cmbJList.addItem("3.Attribution-NonCommercial-NoDerivs License", new Short((short)3));
+        cmbJList.addItem("4.Attribution License", new Short((short)4));
+        cmbJList.addItem("5.Attribution-ShareAlike License", new Short((short)5));
+        cmbJList.addItem("6.Attribution-NoDerivs License", new Short((short)6));
+        cmbJList.selectItemPos((short)0, true);
+        cmbJList.makeVisible((short)0);
+        cmbJList.addItemListener(new LicenseListListener(this));
+       
+        Object oGBResults = msfLicenseSelector.createInstance("com.sun.star.awt.UnoControlGroupBoxModel");   
+        createAWTControl(oGBResults, GB_RESULTS, "Results", new Rectangle(10, 75, 170, 300));                            
         
         // create a peer
         Object toolkit = xMultiComponentFactory.createInstanceWithContext("com.sun.star.awt.Toolkit", m_xContext);
@@ -129,7 +194,6 @@ public class PictureFlickrDialog {
         }
     }
     
-    
     private XPropertySet createAWTControl(Object objControl, String ctrlName,
             String ctrlCaption, Rectangle posSize ) throws Exception {
                 
@@ -143,7 +207,7 @@ public class PictureFlickrDialog {
         if (ctrlCaption != "")
             xpsProperties.setPropertyValue("Label", ctrlCaption);
         
-        if (getNameContainer()!= null)
+        if ((getNameContainer()!= null) &&  (!getNameContainer().hasByName(ctrlName)))
         {
             getNameContainer().insertByName(ctrlName, objControl);
         }
@@ -151,16 +215,129 @@ public class PictureFlickrDialog {
         return xpsProperties;
     }
     
+     public String[] GetTags() {
+         Object oTags = xControlCont.getControl(TXT_TAGS);
+         XControl txtTags = (XControl)UnoRuntime.queryInterface(XControl.class, oTags);
+         XControlModel xControlModel = txtTags.getModel();
+         XPropertySet xPSet = (XPropertySet) UnoRuntime.queryInterface(XPropertySet.class, xControlModel);
+         
+         try {
+               
+         String selTags = (String) xPSet.getPropertyValue("Text");
+         return selTags.split(" ");
+         
+         }
+         catch ( Exception ex ) {
+             ex.printStackTrace();
+         }
+      
+         return new String[0];
+     }
+     
+     public void showResults(ArrayList<Image> imgList) {
+     //clear previous ones
+         
+         Image img = imgList.get(0);
+         
+         createImageControl(imgList.get(0), new Rectangle(15, 90, 90, 90), "1");
+         createImageControl(imgList.get(1), new Rectangle(15, 185, 90, 90), "2");
+         createImageControl(imgList.get(2), new Rectangle(15, 280, 90, 90), "3");
+     }
+     
+     private void createImageControl(Image img, Rectangle rect, String pos) {
+         
+         try
+         {
+             
+             Object oICModel = null;
+             if (getNameContainer().hasByName("ImageControl"+pos))
+             {
+                 oICModel = getNameContainer().getByName("ImageControl"+pos);
+             }
+             else
+             {             
+         // create a controlmodel at the multiservicefactory of the dialog model... 
+                oICModel = xMultiServiceFactory.createInstance("com.sun.star.awt.UnoControlImageControlModel");
+             }
+      XMultiPropertySet xICModelMPSet = (XMultiPropertySet) UnoRuntime.queryInterface(XMultiPropertySet.class, oICModel);
+                  
+      String imgPath = createTemporaryFile(img.ImgURL());
+      xICModelMPSet.setPropertyValues(
+      new String[] {"Border",  "Height", "ImageURL", "Name", "PositionX", "PositionY", "ScaleImage", "Width"},
+      new Object[] { new Short((short) 2) ,new Integer(rect.height),"file:///"+imgPath, "ImageControl"+pos, new Integer(rect.x),
+      new Integer(rect.y), Boolean.TRUE, new Integer(rect.width)});
+ 
+      if (!getNameContainer().hasByName("ImageControl"+pos))
+      {
+            getNameContainer().insertByName("ImageControl"+pos, oICModel); 
+      }
+      Object lblImage = null;
+      if (getNameContainer().hasByName("ImageLabel"+pos))
+      {
+          lblImage = getNameContainer().getByName("ImageLabel"+pos);
+      }
+      else
+          lblImage = xMultiServiceFactory.createInstance("com.sun.star.awt.UnoControlFixedTextModel");
+          
+      createAWTControl(lblImage, "ImageLabel"+pos, "aaaaaaaaaaaaaaaaaa", new Rectangle(rect.x+rect.height+3, rect.y, rect.height, rect.width));        
+             
+      } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+     }
+         
+         private String createTemporaryFile(String imgURL) {
+             
+             try
+             {
+             URL url = new URL(imgURL);
+    // input from image
+    InputStream in = new BufferedInputStream(url.openStream());
+    // downloaded bytes
+    ByteArrayOutputStream out = new ByteArrayOutputStream();
+    // output file
+    //url.getFile() is not giving the correct file name(ex : /23213/filename.jpg)
+    String fileName = url.getFile().substring(url.getFile().lastIndexOf("/"));
+    File f =new File(System.getProperty("java.io.tmpdir"), fileName);
+    f.deleteOnExit();
+    RandomAccessFile file = new RandomAccessFile(f,"rw");
+    // download buffer
+    byte[] buffer = new byte[4096]; 
+ 
+    // download the bytes
+    for (int read=0;(read=in.read(buffer))!=-1;out.write(buffer,0,read));
+    // write all data out to the file
+    file.write(out.toByteArray());
+    // close file
+    file.close();
+    
+    return f.getAbsolutePath();
+             
+             } catch (java.net.MalformedURLException ex) {
+            ex.printStackTrace();
+        } catch (java.io.IOException ex) {
+            ex.printStackTrace();
+        }
+             
+             return "";
+    }
+     
+     public String GetLicense() {
+         Object oLicense = xControlCont.getControl(LISTBOX_LICENSE);
+         XListBox cmbJList = (XListBox)UnoRuntime.queryInterface(XListBox.class, oLicense);
+        
+         String selectedItem = cmbJList.getSelectedItem();
+         if (selectedItem.length()>0)
+         {
+             return selectedItem.substring(0, 1);
+         }
+         
+         return "0";
+     }
+    
      public XNameContainer getNameContainer() {
         return xNameCont;
-    }
-    
-    public boolean isCancelled() {
-        return cancelled;
-    }    
-    public void setCancelled(boolean cancelled) {
-        this.cancelled = cancelled;
-    }
+    }     
     
     public void close() {
         this.xDialog.endExecute();
