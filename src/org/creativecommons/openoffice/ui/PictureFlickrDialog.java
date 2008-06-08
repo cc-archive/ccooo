@@ -33,6 +33,7 @@ import com.sun.star.lang.XComponent;
 import com.sun.star.lang.XMultiComponentFactory;
 import com.sun.star.lang.XMultiServiceFactory;
 import com.sun.star.uno.UnoRuntime;
+import com.sun.star.awt.XFixedHyperlink;
 import com.sun.star.uno.XComponentContext;
 import java.util.Iterator;
 import java.util.ArrayList;
@@ -71,10 +72,10 @@ public class PictureFlickrDialog {
     protected XComponentContext m_xContext = null;
     protected XMultiComponentFactory xMultiComponentFactory = null;
     private XNameContainer xNameCont = null;
-    private XControlContainer xControlCont = null;
-    
+    private XControlContainer xControlCont = null;    
     private XDialog xDialog = null;
     private CcOOoAddin addin = null;
+    private int currentPositionInList = -1;
     
     public static final String LBL_TAGS = "lblTags";
     public static final String TXT_TAGS = "txtTags";
@@ -85,6 +86,8 @@ public class PictureFlickrDialog {
     public static final String GB_RESULTS = "gbResults";
     
     public static final int SHOWRESULTSPERPAGE = 3;
+    
+    
     
     /**
      * Creates a new instance of ChooserDialog
@@ -259,29 +262,36 @@ public class PictureFlickrDialog {
          // create a controlmodel at the multiservicefactory of the dialog model... 
                 oICModel = xMultiServiceFactory.createInstance("com.sun.star.awt.UnoControlImageControlModel");
              }
-      XMultiPropertySet xICModelMPSet = (XMultiPropertySet) UnoRuntime.queryInterface(XMultiPropertySet.class, oICModel);
+      
+             XMultiPropertySet xICModelMPSet = (XMultiPropertySet) UnoRuntime.queryInterface(XMultiPropertySet.class, oICModel);
                   
-      String imgPath = createTemporaryFile(img.ImgURL());
-      xICModelMPSet.setPropertyValues(
-      new String[] {"Border",  "Height", "ImageURL", "Name", "PositionX", "PositionY", "ScaleImage", "Width"},
-      new Object[] { new Short((short) 2) ,new Integer(rect.height),"file:///"+imgPath, "ImageControl"+pos, new Integer(rect.x),
-      new Integer(rect.y), Boolean.TRUE, new Integer(rect.width)});
+            String imgPath = createTemporaryFile(img.ImgURL());
+            xICModelMPSet.setPropertyValues(
+                new String[] {"Border",  "Height", "ImageURL", "Name", "PositionX", "PositionY", "ScaleImage", "Width"},
+                new Object[] { new Short((short) 2) ,new Integer(rect.height),"file:///"+imgPath, "ImageControl"+pos, new Integer(rect.x),
+                new Integer(rect.y), Boolean.TRUE, new Integer(rect.width)});
  
-      if (!getNameContainer().hasByName("ImageControl"+pos))
-      {
-            getNameContainer().insertByName("ImageControl"+pos, oICModel); 
-      }
-      Object lblImage = null;
-      if (getNameContainer().hasByName("ImageLabel"+pos))
-      {
-          lblImage = getNameContainer().getByName("ImageLabel"+pos);
-      }
-      else
-          lblImage = xMultiServiceFactory.createInstance("com.sun.star.awt.UnoControlFixedTextModel");
+            if (!getNameContainer().hasByName("ImageControl"+pos))
+            {
+                getNameContainer().insertByName("ImageControl"+pos, oICModel); 
+            }
+      
+            Object lblImage = null;
+            if (getNameContainer().hasByName("ImageLabel"+pos))
+            {
+                lblImage = getNameContainer().getByName("ImageLabel"+pos);
+            }
+            else
+                lblImage = xMultiServiceFactory.createInstance("com.sun.star.awt.UnoControlFixedTextModel");
           
-      createAWTControl(lblImage, "ImageLabel"+pos, "aaaaaaaaaaaaaaaaaa", new Rectangle(rect.x+rect.height+3, rect.y, rect.height, rect.width));        
-             
-      } catch (Exception ex) {
+            createAWTControl(lblImage, "ImageLabel"+pos, "aaaaaaaaaaaaaaaaaa", new Rectangle(rect.x+rect.height+3, rect.y, rect.height, rect.width));        
+            
+            Object ededed = xMultiServiceFactory.createInstance("com.sun.star.awt.UnoControlFixedHyperlinkModel");
+        XPropertySet xpsProperties = (XPropertySet) UnoRuntime.queryInterface(XPropertySet.class, ededed);
+       //     xpsProperties.setPropertyValue("http://www.google.com");
+         //   xpsProperties.setText("google");
+            
+        } catch (Exception ex) {
             ex.printStackTrace();
         }
      }
