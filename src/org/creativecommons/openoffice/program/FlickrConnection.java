@@ -14,6 +14,9 @@ import com.aetrion.flickr.photos.SearchParameters;
 import com.aetrion.flickr.people.User;
 import java.util.ArrayList;
 import org.creativecommons.license.License;
+import com.aetrion.flickr.people.PeopleInterface;
+import java.io.IOException;
+import org.xml.sax.SAXException;
 
 /**
  *
@@ -45,8 +48,8 @@ public class FlickrConnection {
         PhotosInterface pInterf = flickr.getPhotosInterface();
         PhotoList list=null;
         try
-        {
-           list = pInterf.search(sp, 1000, 1);  
+        {          
+           list = pInterf.search(sp, 3, 3);  
         }
         catch(com.aetrion.flickr.FlickrException ex){
         ex.printStackTrace(); 
@@ -57,21 +60,39 @@ public class FlickrConnection {
         }
     
        ArrayList<Image> imgList = new ArrayList<Image>();
+       
+       int count = 0;
+       PeopleInterface people = new PeopleInterface(apiKEY, flickr.getTransport());
        for (Object p : list.toArray())
-       {          
-           Photo ph = ((Photo)p);           
-           
+       {                     
+           Photo ph = ((Photo)p);                      
            User user = ph.getOwner();
-         String aaaa =  ph.getLargeUrl();
-           String bbb = ph.getMediumUrl();
-          
-           String ddd  =ph.getSmallSquareUrl();
-           String eee = ph.getSmallUrl();
-           String fff = ph.getThumbnailUrl();
+           User userInfo = null;
            
-           Image img = new Image(ph.getTitle(), user.getUsername(), ph.getDateTaken(),
-                   ph.getDateAdded(), ph.getSmallUrl(), "", ph.getTags());
-           imgList.add(img);
+           count++;
+           if (count>10)
+           {
+               break;
+           }
+               
+           try
+           {
+                userInfo = people.getInfo(user.getId());
+           }
+           catch(com.aetrion.flickr.FlickrException ex){
+        ex.printStackTrace(); 
+        } catch(java.io.IOException ex){
+        ex.printStackTrace();
+        } catch(org.xml.sax.SAXException ex){
+        ex.printStackTrace(); 
+        }
+
+         String profile = ph.getUrl();
+         profile = profile.substring(0, profile.lastIndexOf("/"));
+         Image img = new Image(ph.getTitle(), userInfo.getUsername(), ph.getDateTaken(),
+                   ph.getDateAdded(), ph.getSmallUrl(), profile, ph.getTags(), ph.getUrl());
+           imgList.add(img);      
+           
        }
        
        return imgList;

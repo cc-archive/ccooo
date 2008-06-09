@@ -76,6 +76,7 @@ public class PictureFlickrDialog {
     private XDialog xDialog = null;
     private CcOOoAddin addin = null;
     private int currentPositionInList = -1;
+    public ArrayList<Image> currentList = null;
     
     public static final String LBL_TAGS = "lblTags";
     public static final String TXT_TAGS = "txtTags";
@@ -84,10 +85,10 @@ public class PictureFlickrDialog {
     public static final String BTN_SEARCH = "btnSearch";
     public static final String searchButtonLabel = "Search";
     public static final String GB_RESULTS = "gbResults";
+    public static final String BTN_NEXT = "btnNext";
+    public static final String BTN_NEXTLABEL = "Next";
     
     public static final int SHOWRESULTSPERPAGE = 3;
-    
-    
     
     /**
      * Creates a new instance of ChooserDialog
@@ -116,7 +117,7 @@ public class PictureFlickrDialog {
                 XMultiServiceFactory.class, dlgLicenseSelector);
         
         XPropertySet xPSetDialog = createAWTControl(dlgLicenseSelector, "dlgMainForm",
-                "", new Rectangle(100, 100, 190, 380));
+                "", new Rectangle(100, 100, 250, 400));
         xPSetDialog.setPropertyValue("Title", new String("Insert Picture From Flickr"));
         xPSetDialog.setPropertyValue("Step", (short)1 );        
         
@@ -163,19 +164,19 @@ public class PictureFlickrDialog {
                                
         Object oLicense = xControlCont.getControl(LISTBOX_LICENSE);
         XListBox cmbJList = (XListBox)UnoRuntime.queryInterface(XListBox.class, oLicense);
-        cmbJList.addItem("0.None", new Short((short)0));
+        //cmbJList.addItem("0.None", new Short((short)0));
         cmbJList.addItem("1.Attribution-NonCommercial-ShareAlike License", new Short((short)1));
         cmbJList.addItem("2.Attribution-NonCommercial License", new Short((short)2));
         cmbJList.addItem("3.Attribution-NonCommercial-NoDerivs License", new Short((short)3));
         cmbJList.addItem("4.Attribution License", new Short((short)4));
         cmbJList.addItem("5.Attribution-ShareAlike License", new Short((short)5));
         cmbJList.addItem("6.Attribution-NoDerivs License", new Short((short)6));
-        cmbJList.selectItemPos((short)0, true);
-        cmbJList.makeVisible((short)0);
+        cmbJList.selectItem("4.Attribution License", true);
+       // cmbJList.makeVisible((short)4);
         cmbJList.addItemListener(new LicenseListListener(this));
        
         Object oGBResults = msfLicenseSelector.createInstance("com.sun.star.awt.UnoControlGroupBoxModel");   
-        createAWTControl(oGBResults, GB_RESULTS, "Results", new Rectangle(10, 75, 170, 300));                            
+        createAWTControl(oGBResults, GB_RESULTS, "Results", new Rectangle(10, 75, 230, 320));                            
         
         // create a peer
         Object toolkit = xMultiComponentFactory.createInstanceWithContext("com.sun.star.awt.Toolkit", m_xContext);
@@ -245,21 +246,41 @@ public class PictureFlickrDialog {
          createImageControl(imgList.get(0), new Rectangle(15, 90, 90, 90), "1");
          createImageControl(imgList.get(1), new Rectangle(15, 185, 90, 90), "2");
          createImageControl(imgList.get(2), new Rectangle(15, 280, 90, 90), "3");
+         
+         try
+         {             
+             Object nextButton = null;
+             if (getNameContainer().hasByName(BTN_NEXT))
+             {
+                 nextButton = getNameContainer().getByName(BTN_NEXT);
+             }
+             else
+             {             
+                nextButton = xMultiServiceFactory.createInstance("com.sun.star.awt.UnoControlButtonModel");   
+             }
+          
+            createAWTControl(nextButton, BTN_NEXT, BTN_NEXTLABEL, new Rectangle(100, 375, 40, 15));  
+            
+            //Object objSearchButton = xControlCont.getControl(BTN_NEXT);
+            XButton xNextButton = (XButton)UnoRuntime.queryInterface(XButton.class, nextButton);
+            xNextButton.addActionListener(new NextClickListener(this, this.addin));
+            
+         } catch (Exception ex) {
+            ex.printStackTrace();
+        }
      }
      
      private void createImageControl(Image img, Rectangle rect, String pos) {
          
          try
-         {
-             
+         {             
              Object oICModel = null;
-             if (getNameContainer().hasByName("ImageControl"+pos))
+             if (getNameContainer().hasByName("ImageControl" + pos))
              {
                  oICModel = getNameContainer().getByName("ImageControl"+pos);
              }
              else
              {             
-         // create a controlmodel at the multiservicefactory of the dialog model... 
                 oICModel = xMultiServiceFactory.createInstance("com.sun.star.awt.UnoControlImageControlModel");
              }
       
@@ -276,19 +297,29 @@ public class PictureFlickrDialog {
                 getNameContainer().insertByName("ImageControl"+pos, oICModel); 
             }
       
-            Object lblImage = null;
-            if (getNameContainer().hasByName("ImageLabel"+pos))
+            Object lblUser = null;
+            if (getNameContainer().hasByName("ImageLabelUser"+pos))
             {
-                lblImage = getNameContainer().getByName("ImageLabel"+pos);
+                lblUser = getNameContainer().getByName("ImageLabelUser"+pos);
+                
             }
             else
-                lblImage = xMultiServiceFactory.createInstance("com.sun.star.awt.UnoControlFixedTextModel");
+                lblUser = xMultiServiceFactory.createInstance("com.sun.star.awt.UnoControlFixedHyperlinkModel");
           
-            createAWTControl(lblImage, "ImageLabel"+pos, "aaaaaaaaaaaaaaaaaa", new Rectangle(rect.x+rect.height+3, rect.y, rect.height, rect.width));        
-            
-            Object ededed = xMultiServiceFactory.createInstance("com.sun.star.awt.UnoControlFixedHyperlinkModel");
-        XPropertySet xpsProperties = createAWTControl(ededed, "url  image", "dadasda", new Rectangle(10, 35, 50, 12));        
-        xpsProperties.setPropertyValue("URL", img.ImgURL());
+        XPropertySet xpsProperties = createAWTControl(lblUser, "ImageLabelUser"+pos, "Photo taken by :" +img.UserName(), new Rectangle(rect.x+rect.height+3, rect.y, rect.height, 20));        
+        xpsProperties.setPropertyValue("URL", img.Profile());
+        
+        Object lblMainPageImage = null;
+            if (getNameContainer().hasByName("ImageLabelMainPage"+pos))
+            {
+                lblMainPageImage = getNameContainer().getByName("ImageLabelMainPage"+pos);
+                
+            }
+            else
+                lblMainPageImage = xMultiServiceFactory.createInstance("com.sun.star.awt.UnoControlFixedHyperlinkModel");
+          
+        xpsProperties = createAWTControl(lblMainPageImage, "ImageLabelMainPage"+pos, "Title :" +img.Title(), new Rectangle(rect.x+rect.height+3, rect.y+23, rect.height, 20));        
+        xpsProperties.setPropertyValue("URL", img.ImgUrlMainPage());
             //http://hermione.s41.xrea.com/pukiwiki/index.php?OOoBasic%2FDialog%2FFixedHyperLink
         } catch (Exception ex) {
             ex.printStackTrace();

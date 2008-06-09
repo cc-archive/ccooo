@@ -21,19 +21,20 @@ public class Image {
     private Date uploaded;
     private String imgUrl;
     private String profile;
+    private String imgUrlMainPage;
     private Collection tags;
     
     public Image(String _title,String _username,Date _taken,Date _uploaded,
-            String _imgUrl, String _profile, Collection _tags) {
+            String _imgUrl, String _profile, Collection _tags, String _imgUrlMainPage) {
             
         this.title = _title;
         this.username = _username;
         this.taken = _taken;
         this.uploaded = _uploaded;
-    //    _imgUrl="file:///F:/img_0023.jpg";
         this.imgUrl = _imgUrl;
         this.profile = _profile;
         this.tags = _tags;
+        this.imgUrlMainPage = _imgUrlMainPage;
     }
     
     public String Title()
@@ -46,6 +47,11 @@ public class Image {
         return username;
     }
 
+    public String ImgUrlMainPage()
+    {
+        return imgUrlMainPage;
+    }
+    
     public Date Taken()
     {
         return taken;
