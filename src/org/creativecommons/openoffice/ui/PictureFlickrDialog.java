@@ -287,10 +287,9 @@ public class PictureFlickrDialog {
             createAWTControl(lblImage, "ImageLabel"+pos, "aaaaaaaaaaaaaaaaaa", new Rectangle(rect.x+rect.height+3, rect.y, rect.height, rect.width));        
             
             Object ededed = xMultiServiceFactory.createInstance("com.sun.star.awt.UnoControlFixedHyperlinkModel");
-        XPropertySet xpsProperties = (XPropertySet) UnoRuntime.queryInterface(XPropertySet.class, ededed);
-       //     xpsProperties.setPropertyValue("http://www.google.com");
-         //   xpsProperties.setText("google");
-            
+        XPropertySet xpsProperties = createAWTControl(ededed, "url  image", "dadasda", new Rectangle(10, 35, 50, 12));        
+        xpsProperties.setPropertyValue("URL", img.ImgURL());
+            //http://hermione.s41.xrea.com/pukiwiki/index.php?OOoBasic%2FDialog%2FFixedHyperLink
         } catch (Exception ex) {
             ex.printStackTrace();
         }
