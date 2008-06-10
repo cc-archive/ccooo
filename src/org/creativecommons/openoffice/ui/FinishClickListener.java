@@ -38,7 +38,7 @@ class FinishClickListener implements XActionListener {
     } // OnFinishClick - public constructor
         
     public void actionPerformed(ActionEvent a) {
-        
+               
         this.chooserDialog.setCancelled(false);
         this.chooserDialog.close();
         
