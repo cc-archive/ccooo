@@ -75,7 +75,7 @@ public class PictureFlickrDialog {
     private XControlContainer xControlCont = null;    
     private XDialog xDialog = null;
     private CcOOoAddin addin = null;
-    private int currentPositionInList = -1;
+    private int currentPositionInList = 0;
     public ArrayList<Image> currentList = null;
     
     public static final String LBL_TAGS = "lblTags";
@@ -241,33 +241,49 @@ public class PictureFlickrDialog {
      public void showResults(ArrayList<Image> imgList) {
      //clear previous ones
          
-         Image img = imgList.get(0);
-         
-         createImageControl(imgList.get(0), new Rectangle(15, 90, 90, 90), "1");
-         createImageControl(imgList.get(1), new Rectangle(15, 185, 90, 90), "2");
-         createImageControl(imgList.get(2), new Rectangle(15, 280, 90, 90), "3");
-         
+        for (int i = 0;i<SHOWRESULTSPERPAGE;i++)
+         {
+             
+             if (imgList.size()>currentPositionInList)
+             {
+                createImageControl(imgList.get(currentPositionInList), new Rectangle(15, (i+1)*90+5, 90, 90), String.valueOf(i));
+                currentPositionInList++;
+             }
+             else
+                 createImageControl(null, new Rectangle(15, (i+1)*90+5, 90, 90), String.valueOf(i));                                    
+             
+            //createImageControl(imgList.get(currentPositionInList), new Rectangle(15, 90, 90, 90), "1");
+            //createImageControl(imgList.get(1), new Rectangle(15, 185, 90, 90), "2");
+            //createImageControl(imgList.get(2), new Rectangle(15, 280, 90, 90), "3");
+         }
+     
+     
          try
          {             
              Object nextButton = null;
+             boolean isNewCreated = false;
              if (getNameContainer().hasByName(BTN_NEXT))
              {
                  nextButton = getNameContainer().getByName(BTN_NEXT);
              }
              else
              {             
-                nextButton = xMultiServiceFactory.createInstance("com.sun.star.awt.UnoControlButtonModel");   
+                nextButton = xMultiServiceFactory.createInstance("com.sun.star.awt.UnoControlButtonModel");                  
+                isNewCreated = true;
              }
           
-            createAWTControl(nextButton, BTN_NEXT, BTN_NEXTLABEL, new Rectangle(100, 375, 40, 15));  
+            createAWTControl(nextButton, BTN_NEXT, BTN_NEXTLABEL, new Rectangle(100, 375, 40, 15)); 
             
-            //Object objSearchButton = xControlCont.getControl(BTN_NEXT);
-            XButton xNextButton = (XButton)UnoRuntime.queryInterface(XButton.class, nextButton);
-            xNextButton.addActionListener(new NextClickListener(this, this.addin));
-            
+            if (isNewCreated)
+             {
+                XButton xNextButton = (XButton)UnoRuntime.queryInterface(XButton.class, nextButton);
+                xNextButton.addActionListener(new NextClickListener(this, this.addin));
+            }
+                                    
          } catch (Exception ex) {
             ex.printStackTrace();
-        }
+         }
+        
      }
      
      private void createImageControl(Image img, Rectangle rect, String pos) {
@@ -286,10 +302,20 @@ public class PictureFlickrDialog {
       
              XMultiPropertySet xICModelMPSet = (XMultiPropertySet) UnoRuntime.queryInterface(XMultiPropertySet.class, oICModel);
                   
-            String imgPath = createTemporaryFile(img.ImgURL());
+            String imgPath = "";
+            if (img!= null)
+            {
+                imgPath = createTemporaryFile(img.ImgURL());
+            }
+
+            if (imgPath != "")
+            {
+                imgPath = "file:///"+imgPath;
+            }
+            
             xICModelMPSet.setPropertyValues(
                 new String[] {"Border",  "Height", "ImageURL", "Name", "PositionX", "PositionY", "ScaleImage", "Width"},
-                new Object[] { new Short((short) 2) ,new Integer(rect.height),"file:///"+imgPath, "ImageControl"+pos, new Integer(rect.x),
+                new Object[] { new Short((short) 2) ,new Integer(rect.height), imgPath, "ImageControl"+pos, new Integer(rect.x),
                 new Integer(rect.y), Boolean.TRUE, new Integer(rect.width)});
  
             if (!getNameContainer().hasByName("ImageControl"+pos))
@@ -300,14 +326,24 @@ public class PictureFlickrDialog {
             Object lblUser = null;
             if (getNameContainer().hasByName("ImageLabelUser"+pos))
             {
-                lblUser = getNameContainer().getByName("ImageLabelUser"+pos);
-                
+                lblUser = getNameContainer().getByName("ImageLabelUser"+pos);                
             }
             else
                 lblUser = xMultiServiceFactory.createInstance("com.sun.star.awt.UnoControlFixedHyperlinkModel");
           
-        XPropertySet xpsProperties = createAWTControl(lblUser, "ImageLabelUser"+pos, "Photo taken by :" +img.UserName(), new Rectangle(rect.x+rect.height+3, rect.y, rect.height, 20));        
-        xpsProperties.setPropertyValue("URL", img.Profile());
+        String userName = "";
+            if (img!= null)
+            {
+                userName = "Photo taken by :" +img.UserName();
+            }
+            
+        XPropertySet xpsProperties = createAWTControl(lblUser, "ImageLabelUser"+pos, userName, new Rectangle(rect.x+rect.height+3, rect.y, rect.height, 20));        
+        if (img!= null)
+        {
+            xpsProperties.setPropertyValue("URL", img.Profile());
+        }
+        else
+            xpsProperties.setPropertyValue("URL", "");
         
         Object lblMainPageImage = null;
             if (getNameContainer().hasByName("ImageLabelMainPage"+pos))
@@ -318,9 +354,21 @@ public class PictureFlickrDialog {
             else
                 lblMainPageImage = xMultiServiceFactory.createInstance("com.sun.star.awt.UnoControlFixedHyperlinkModel");
           
-        xpsProperties = createAWTControl(lblMainPageImage, "ImageLabelMainPage"+pos, "Title :" +img.Title(), new Rectangle(rect.x+rect.height+3, rect.y+23, rect.height, 20));        
-        xpsProperties.setPropertyValue("URL", img.ImgUrlMainPage());
-            //http://hermione.s41.xrea.com/pukiwiki/index.php?OOoBasic%2FDialog%2FFixedHyperLink
+            String title = "";
+            if (img!= null)
+            {
+                title = "Title :" +img.Title();
+            }
+        
+        xpsProperties = createAWTControl(lblMainPageImage, "ImageLabelMainPage"+pos, title, new Rectangle(rect.x+rect.height+3, rect.y+23, rect.height, 20));        
+        if (img!= null)
+        {
+            xpsProperties.setPropertyValue("URL", img.ImgUrlMainPage());
+        }
+        else
+            xpsProperties.setPropertyValue("URL", "");
+            
+        //http://hermione.s41.xrea.com/pukiwiki/index.php?OOoBasic%2FDialog%2FFixedHyperLink
         } catch (Exception ex) {
             ex.printStackTrace();
         }
