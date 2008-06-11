@@ -5,6 +5,7 @@
 
 package org.creativecommons.openoffice.ui;
 
+import com.sun.star.awt.XButton;
 import com.sun.star.awt.ActionEvent;
 import com.sun.star.awt.XActionListener;
 import com.sun.star.beans.UnknownPropertyException;
@@ -27,12 +28,12 @@ import java.util.ArrayList;
  *
  * @author Administrator
  */
-public class NextClickListener implements XActionListener{
+public class ImageButtonListener implements XActionListener{
     
     private PictureFlickrDialog flickrDialog;
     private CcOOoAddin addin;
 
-    public NextClickListener(PictureFlickrDialog flickrDialog, CcOOoAddin addin){
+    public ImageButtonListener(PictureFlickrDialog flickrDialog, CcOOoAddin addin){
 
         this.flickrDialog = flickrDialog;
         this.addin = addin;
@@ -40,7 +41,13 @@ public class NextClickListener implements XActionListener{
     
     public void actionPerformed(ActionEvent a) {
 
-        flickrDialog.showNextPage();
+      if (a.ActionCommand != "")
+      {
+        Image img = flickrDialog.currentList.get(Integer.parseInt(a.ActionCommand));
+        
+        flickrDialog.close();
+        addin.getProgramWrapper().insertPictureFlickr(img);
+      } 
     }
     
     public void disposing(EventObject e) {

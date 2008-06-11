@@ -31,5 +31,5 @@ public interface IVisibleNotice {
     public License getDocumentLicense();
     // public boolean hasDocumentLicense();
     
-    public void insertPictureFlickr();
+    public void insertPictureFlickr(Image img);
 }

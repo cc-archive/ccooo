@@ -39,6 +39,7 @@ public class FlickrConnection {
     public ArrayList<Image> searchPhotos(String[] tags, String license)
     {
         SearchParameters sp = new SearchParameters();       
+        sp.setSort(SearchParameters.RELEVANCE);
         if (tags.length>0)
             sp.setTags(tags);
       
@@ -49,7 +50,7 @@ public class FlickrConnection {
         PhotoList list=null;
         try
         {          
-           list = pInterf.search(sp, 3, 3);  
+           list = pInterf.search(sp, 20, 3);  
         }
         catch(com.aetrion.flickr.FlickrException ex){
         ex.printStackTrace(); 
@@ -62,22 +63,38 @@ public class FlickrConnection {
        ArrayList<Image> imgList = new ArrayList<Image>();
        
        int count = 0;
-       PeopleInterface people = new PeopleInterface(apiKEY, flickr.getTransport());
+       
        for (Object p : list.toArray())
        {                     
            Photo ph = ((Photo)p);                      
-           User user = ph.getOwner();
-           User userInfo = null;
+           User user = ph.getOwner();           
            
            count++;
-           if (count>10)
+           if (count>20)
            {
                break;
-           }
-               
+           }               
+
+          
+         String profile = ph.getUrl();
+         profile = profile.substring(0, profile.lastIndexOf("/"));
+         Image img = new Image(ph.getTitle(), ph.getDateTaken(), ph.getDateAdded(), 
+                 ph.getSmallUrl(), profile, ph.getTags(), ph.getUrl(), user.getId());
+           imgList.add(img);      
+           
+       }
+       
+       return imgList;
+    }
+    
+    public String GetUserName(String userID)
+    {
+        User userInfo = null; 
+        PeopleInterface people = new PeopleInterface(apiKEY, flickr.getTransport());
            try
            {
-                userInfo = people.getInfo(user.getId());
+                userInfo = people.getInfo(userID);
+                return userInfo.getUsername();
            }
            catch(com.aetrion.flickr.FlickrException ex){
         ex.printStackTrace(); 
@@ -86,16 +103,7 @@ public class FlickrConnection {
         } catch(org.xml.sax.SAXException ex){
         ex.printStackTrace(); 
         }
-
-         String profile = ph.getUrl();
-         profile = profile.substring(0, profile.lastIndexOf("/"));
-         Image img = new Image(ph.getTitle(), userInfo.getUsername(), ph.getDateTaken(),
-                   ph.getDateAdded(), ph.getSmallUrl(), profile, ph.getTags(), ph.getUrl());
-           imgList.add(img);      
-           
-       }
-       
-       return imgList;
+        
+        return "";
     }
-    
 }

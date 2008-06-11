@@ -41,8 +41,74 @@ public class Writer extends OOoProgram {
         super(xTextComponent);
     }
     
-    public void insertPictureFlickr() {
+    public void insertPictureFlickr(Image img) {
+               
+            XTextDocument mxDoc = (XTextDocument)UnoRuntime.queryInterface(
+                    XTextDocument.class, this.getComponent());
+            
+            XText mxDocText = mxDoc.getText();
+            
+            XTextCursor docCursor = ((XTextViewCursorSupplier)UnoRuntime.queryInterface(
+                    XTextViewCursorSupplier.class, mxDoc.getCurrentController())).getViewCursor();
+            
+            XMultiServiceFactory mxDocFactory = (XMultiServiceFactory) UnoRuntime.queryInterface(
+                    XMultiServiceFactory.class, mxDoc );
+            
+            XTextFieldsSupplier mxTextFields = (XTextFieldsSupplier)UnoRuntime.queryInterface(
+                    XTextFieldsSupplier.class, mxDoc);
+            
+            embedGraphic(mxDocFactory, docCursor, img.getImgURL(), 5000,5000);
+                 
         
+    }
+    
+    /**
+     * Embeds the license "button" into a Textdocument at the given cursor position
+     *
+     * @param xMSF    the factory to create services from
+     * @param xCursor the cursor where to insert the graphic
+     * @param imgURL  URL of the license button
+     *
+     */
+    private void embedGraphic(XMultiServiceFactory mxDocFactory, XTextCursor xCursor, String imgURL,
+            Integer width, Integer height) {
+        
+        XNameContainer xBitmapContainer = null;
+        XTextContent xImage = null;
+        String internalURL = null;
+        
+        try {
+            
+            xBitmapContainer = (XNameContainer) UnoRuntime.queryInterface(
+                    XNameContainer.class, mxDocFactory.createInstance(
+                    "com.sun.star.drawing.BitmapTable"));
+            xImage = (XTextContent) UnoRuntime.queryInterface(
+                    XTextContent.class,     mxDocFactory.createInstance(
+                    "com.sun.star.text.TextGraphicObject"));
+            XPropertySet xProps = (XPropertySet) UnoRuntime.queryInterface(
+                    XPropertySet.class, xImage);
+            
+            // helper-stuff to let OOo create an internal name of the graphic
+            // that can be used later (internal name consists of various checksums)
+            xBitmapContainer.insertByName("imgID", imgURL);
+            
+            Object obj = xBitmapContainer.getByName("imgID");
+            internalURL = AnyConverter.toString(obj);
+            
+            xProps.setPropertyValue("AnchorType",
+                    com.sun.star.text.TextContentAnchorType.AS_CHARACTER);
+            xProps.setPropertyValue("GraphicURL", internalURL);
+            xProps.setPropertyValue("Width", (int) width); 
+            xProps.setPropertyValue("Height", (int) height);
+            
+            // insert the graphic at the cursor position
+            xCursor.getText().insertTextContent(xCursor, xImage, false);
+            
+            // remove the helper-entry
+            xBitmapContainer.removeByName("imgID");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
     
     /**

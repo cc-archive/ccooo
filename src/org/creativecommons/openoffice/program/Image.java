@@ -17,6 +17,7 @@ public class Image {
 
     private String title;
     private String username;
+    private String userID;
     private Date taken;
     private Date uploaded;
     private String imgUrl;
@@ -24,57 +25,68 @@ public class Image {
     private String imgUrlMainPage;
     private Collection tags;
     
-    public Image(String _title,String _username,Date _taken,Date _uploaded,
-            String _imgUrl, String _profile, Collection _tags, String _imgUrlMainPage) {
+    public Image(String _title,Date _taken,Date _uploaded,
+            String _imgUrl, String _profile, Collection _tags, String _imgUrlMainPage, String _userID) {
             
         this.title = _title;
-        this.username = _username;
         this.taken = _taken;
         this.uploaded = _uploaded;
         this.imgUrl = _imgUrl;
         this.profile = _profile;
         this.tags = _tags;
         this.imgUrlMainPage = _imgUrlMainPage;
+        this.userID = _userID;
     }
     
-    public String Title()
+    public String getTitle()
     {
         return title;
     }
     
-    public String UserName()
+    public String getUserName()
     {
         return username;
     }
+    
+    public void setUserName(String _userName)
+    {
+        username = _userName;
+    }
 
-    public String ImgUrlMainPage()
+    public String getImgUrlMainPage()
     {
         return imgUrlMainPage;
     }
     
-    public Date Taken()
+    public Date getTaken()
     {
         return taken;
     }
     
-    public Date Uploaded()
+    public Date getUploaded()
     {
         return uploaded;
     }
     
-    public String ImgURL()
+    public String getImgURL()
     {
         return imgUrl;
     }
     
-    public String Profile()
+    public String getProfile()
     {
         return profile;
     }
     
-    public Collection Tags()
+    public Collection getTags()
     {        
         return tags;
     }
+    
+    public String getUserID()
+    {
+        return userID;
+    }
+        
 }
 

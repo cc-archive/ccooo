@@ -286,37 +286,6 @@ public final class CcOOoAddin extends WeakBase
         
     } // insertVisibleNotice
     
-    public void selectPictureFlickr() {
-        
-        try {
-            
-            if (mxRemoteServiceManager == null) {
-                System.out.println("not available");
-                return;
-            }
-            
-            this.updateCurrentComponent();
-            
-            // Create the dialog for license selection
-            ChooserDialog dialog = new ChooserDialog(this, this.m_xContext);
-            dialog.showDialog();
-            
-            if (!dialog.isCancelled()) {
-                // retrieve the selected License
-                License selected = dialog.getSelectedLicense();
-                IVisibleNotice document = this.getProgramWrapper();
-
-                // store the license information in the document
-                document.setDocumentLicense(selected);
-                
-            }
-            
-        } catch (Exception ex) {
-            ex.printStackTrace();
-        }
-        
-    } // selectLicense
-    
     public void insertPictureFlickr() {
         
         try {
@@ -330,14 +299,7 @@ public final class CcOOoAddin extends WeakBase
             
             // Create the dialog for license selection
             PictureFlickrDialog dialog = new PictureFlickrDialog(this, this.m_xContext);
-            dialog.showDialog();
-            
-            //if (!dialog.isCancelled()) {
-                                
-                // insert the selected image 
-              //  this.getProgramWrapper(this.getCurrentComponent()).insertPictureFlickr();
-                
-            //}
+            dialog.showDialog();                         
             
         } catch (Exception ex) {
             ex.printStackTrace();

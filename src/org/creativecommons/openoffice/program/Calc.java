@@ -40,7 +40,7 @@ public class Calc extends OOoProgram {
         super(component);
     }
     
-    public void insertPictureFlickr() {
+    public void insertPictureFlickr(Image img) {
         
     }
 
