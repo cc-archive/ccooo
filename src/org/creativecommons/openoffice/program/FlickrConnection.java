@@ -68,7 +68,7 @@ public class FlickrConnection {
        {                     
            Photo ph = ((Photo)p);                      
            User user = ph.getOwner();           
-           
+             
            count++;
            if (count>20)
            {
