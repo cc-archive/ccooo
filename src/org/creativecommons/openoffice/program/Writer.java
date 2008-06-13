@@ -45,19 +45,14 @@ public class Writer extends OOoProgram {
                
             XTextDocument mxDoc = (XTextDocument)UnoRuntime.queryInterface(
                     XTextDocument.class, this.getComponent());
-            
-            XText mxDocText = mxDoc.getText();
-            
+           
             XTextCursor docCursor = ((XTextViewCursorSupplier)UnoRuntime.queryInterface(
                     XTextViewCursorSupplier.class, mxDoc.getCurrentController())).getViewCursor();
             
             XMultiServiceFactory mxDocFactory = (XMultiServiceFactory) UnoRuntime.queryInterface(
-                    XMultiServiceFactory.class, mxDoc );
+                    XMultiServiceFactory.class, mxDoc );            
             
-            XTextFieldsSupplier mxTextFields = (XTextFieldsSupplier)UnoRuntime.queryInterface(
-                    XTextFieldsSupplier.class, mxDoc);
-            
-            embedGraphic(mxDocFactory, docCursor, img.getImgURL(), 5000,5000);
+            embedGraphic(mxDocFactory, docCursor, img.getImgURL(), 8000,8000);
                  
         
     }
@@ -90,9 +85,9 @@ public class Writer extends OOoProgram {
             
             // helper-stuff to let OOo create an internal name of the graphic
             // that can be used later (internal name consists of various checksums)
-            xBitmapContainer.insertByName("imgID", imgURL);
+            xBitmapContainer.insertByName(imgURL, imgURL);
             
-            Object obj = xBitmapContainer.getByName("imgID");
+            Object obj = xBitmapContainer.getByName(imgURL);
             internalURL = AnyConverter.toString(obj);
             
             xProps.setPropertyValue("AnchorType",
@@ -105,7 +100,7 @@ public class Writer extends OOoProgram {
             xCursor.getText().insertTextContent(xCursor, xImage, false);
             
             // remove the helper-entry
-            xBitmapContainer.removeByName("imgID");
+            xBitmapContainer.removeByName(imgURL);
         } catch (Exception e) {
             e.printStackTrace();
         }
