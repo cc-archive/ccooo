@@ -11,6 +11,7 @@ import com.aetrion.flickr.photos.Photo;
 import com.aetrion.flickr.photos.PhotoList;
 import com.aetrion.flickr.photos.PhotosInterface;
 import com.aetrion.flickr.photos.SearchParameters;
+import com.aetrion.flickr.photos.Size;
 import com.aetrion.flickr.people.User;
 import java.util.ArrayList;
 import org.creativecommons.license.License;
@@ -74,12 +75,11 @@ public class FlickrConnection {
            {
                break;
            }               
-
           
          String profile = ph.getUrl();
          profile = profile.substring(0, profile.lastIndexOf("/"));
          Image img = new Image(ph.getTitle(), ph.getDateTaken(), ph.getDateAdded(), 
-                 ph.getSmallUrl(), profile, ph.getTags(), ph.getUrl(), user.getId());
+                 ph.getSmallSquareUrl(), profile, ph.getTags(), ph.getUrl(), user.getId(), ph.getId());
            imgList.add(img);      
            
        }
@@ -87,9 +87,10 @@ public class FlickrConnection {
        return imgList;
     }
     
-    public String GetUserName(String userID)
+    public String getUserName(String userID)
     {
         User userInfo = null; 
+        
         PeopleInterface people = new PeopleInterface(apiKEY, flickr.getTransport());
            try
            {
@@ -105,5 +106,44 @@ public class FlickrConnection {
         }
         
         return "";
+    }
+    
+    public java.util.Collection getPhotoSizes(String photoID)
+    {
+        PhotosInterface photos = flickr.getPhotosInterface();
+           try
+           {                
+                return photos.getSizes(photoID);
+           }
+           catch(com.aetrion.flickr.FlickrException ex){
+        ex.printStackTrace(); 
+        } catch(java.io.IOException ex){
+        ex.printStackTrace();
+        } catch(org.xml.sax.SAXException ex){
+        ex.printStackTrace(); 
+        }
+        
+        return null;
+    }
+    
+    public String getStringSize(int size) 
+    {
+        switch (size)
+        {
+            case Size.THUMB:
+                return "Thumbnail";
+            case Size.SQUARE :
+                return "Square";
+            case Size.SMALL :
+                return "Small";
+            case Size.MEDIUM :
+                return "Medium";
+            case Size.LARGE :
+                return "Large";
+            case Size.ORIGINAL :
+                return "Original";
+            default :
+                return "";
+        }
     }
 }

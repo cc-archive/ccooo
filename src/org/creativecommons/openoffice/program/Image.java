@@ -18,6 +18,7 @@ public class Image {
     private String title;
     private String username;
     private String userID;
+    private String photoID;
     private Date taken;
     private Date uploaded;
     private String imgUrl;
@@ -25,8 +26,8 @@ public class Image {
     private String imgUrlMainPage;
     private Collection tags;
     
-    public Image(String _title,Date _taken,Date _uploaded,
-            String _imgUrl, String _profile, Collection _tags, String _imgUrlMainPage, String _userID) {
+    public Image(String _title,Date _taken,Date _uploaded, String _imgUrl, String _profile, 
+            Collection _tags, String _imgUrlMainPage, String _userID, String _photoID) {
             
         this.title = _title;
         this.taken = _taken;
@@ -36,6 +37,7 @@ public class Image {
         this.tags = _tags;
         this.imgUrlMainPage = _imgUrlMainPage;
         this.userID = _userID;
+        this.photoID = _photoID;
     }
     
     public String getTitle()
@@ -87,6 +89,10 @@ public class Image {
     {
         return userID;
     }
-        
+     
+    public String getPhotoID()
+    {
+        return photoID;
+    }
 }
 

@@ -18,6 +18,8 @@ import com.sun.star.awt.XControlModel;
 import com.sun.star.awt.XDialog;
 import com.sun.star.awt.PushButtonType;
 import com.sun.star.awt.XListBox;
+import com.sun.star.awt.XPopupMenu;
+import com.sun.star.awt.XMenuExtended;
 import com.sun.star.awt.XFixedText;
 import com.sun.star.awt.XTextComponent;
 import com.sun.star.awt.XToolkit;
@@ -37,6 +39,7 @@ import com.sun.star.awt.XFixedHyperlink;
 import com.sun.star.uno.XComponentContext;
 import java.util.Iterator;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import com.sun.star.graphic.XGraphic;
 import org.creativecommons.license.Chooser;
@@ -75,6 +78,8 @@ public class PictureFlickrDialog {
     private XNameContainer xNameCont = null;
     private XControlContainer xControlCont = null;    
     private XDialog xDialog = null;
+    private XControl xControl;
+    
     private CcOOoAddin addin = null;
     private int currentPositionInList = 0;
     public ArrayList<Image> currentList = null;
@@ -89,7 +94,8 @@ public class PictureFlickrDialog {
     public static final String BTN_NEXT = "btnNext";
     public static final String BTN_NEXTLABEL = "Next";
     
-    public static final int SHOWRESULTSPERPAGE = 3;
+    public static final int SHOWRESULTSPERPAGE = 6;
+    public static final int POSITIONWIDTHHEIGHT = 50;
     
     /**
      * Creates a new instance of ChooserDialog
@@ -152,7 +158,7 @@ public class PictureFlickrDialog {
         
         // create the dialog control and set the model
         Object dialog = xMultiComponentFactory.createInstanceWithContext("com.sun.star.awt.UnoControlDialog", m_xContext); //esse
-        XControl xControl = (XControl)UnoRuntime.queryInterface(XControl.class, dialog );
+        xControl = (XControl)UnoRuntime.queryInterface(XControl.class, dialog );
         XControlModel xControlModel = (XControlModel)UnoRuntime.queryInterface(XControlModel.class, dlgLicenseSelector);
         xControl.setModel(xControlModel);                
         
@@ -258,11 +264,13 @@ public class PictureFlickrDialog {
          {             
              if (currentList.size()>currentPositionInList)
              {
-                createImageControl(currentList.get(currentPositionInList), new Rectangle(15, (i+1)*90+5, 90, 90), String.valueOf(i));
+                createImageControl(currentList.get(currentPositionInList), new Rectangle(15, 
+                        (i+2)*POSITIONWIDTHHEIGHT-15, POSITIONWIDTHHEIGHT, POSITIONWIDTHHEIGHT), String.valueOf(i));
                 currentPositionInList++;
              }
              else
-                 createImageControl(null, new Rectangle(15, (i+1)*90+5, 90, 90), String.valueOf(i));                                    
+                 createImageControl(null, new Rectangle(15, (i+2)*POSITIONWIDTHHEIGHT-15, POSITIONWIDTHHEIGHT, 
+                         POSITIONWIDTHHEIGHT), String.valueOf(i));                                    
         
          }
      
@@ -280,7 +288,7 @@ public class PictureFlickrDialog {
                 isNewCreated = true;
              }
           
-            createAWTControl(nextButton, BTN_NEXT, BTN_NEXTLABEL, new Rectangle(100, 375, 40, 15)); 
+            createAWTControl(nextButton, BTN_NEXT, BTN_NEXTLABEL, new Rectangle(150, 375, 40, 15)); 
             
             if (isNewCreated)
              {
@@ -322,11 +330,7 @@ public class PictureFlickrDialog {
             }
             else
                 imgPath = " ";
-            
-//            xICModelMPSet.setPropertyValues(
-//                new String[] {"Border",  "Height", "ImageURL", "Name", "PositionX", "PositionY", "ScaleImage", "Width"},
-//                new Object[] { new Short((short) 0) ,new Integer(rect.height), imgPath, "ImageControl"+pos, new Integer(rect.x),
-//                new Integer(rect.y), Boolean.TRUE, new Integer(rect.width)});
+      
             xICModelMPSet.setPropertyValues(
                 new String[] { "Height", "ImageURL", "Name", "PositionX", "PositionY", "Width"},
                 new Object[] {new Integer(rect.height), imgPath, "ImageControl"+pos, new Integer(rect.x),
@@ -346,6 +350,7 @@ public class PictureFlickrDialog {
                 XButton currentImageButton = (XButton)UnoRuntime.queryInterface(XButton.class, 
                         xControlCont.getControl("ImageControl"+pos));
                 currentImageButton.setActionCommand(String.valueOf(currentPositionInList));
+                
             }
       
             Object lblUser = null;
@@ -359,13 +364,13 @@ public class PictureFlickrDialog {
         String userName = "";
             if (img!= null)
             {
-                img.setUserName(FlickrConnection.instance.GetUserName(img.getUserID()));
+                img.setUserName(FlickrConnection.instance.getUserName(img.getUserID()));
                 userName = "Photo taken by :" +img.getUserName();
             }
             else
                 userName= " ";
             
-        XPropertySet xpsProperties = createAWTControl(lblUser, "ImageLabelUser"+pos, userName, new Rectangle(rect.x+rect.height+3, rect.y, rect.height, 20));        
+        XPropertySet xpsProperties = createAWTControl(lblUser, "ImageLabelUser"+pos, userName, new Rectangle(rect.x+rect.height+3, rect.y, 150, 20));        
         if (img!= null)
         {
             xpsProperties.setPropertyValue("URL", img.getProfile());
@@ -390,7 +395,7 @@ public class PictureFlickrDialog {
             else
                 title = " ";
         
-        xpsProperties = createAWTControl(lblMainPageImage, "ImageLabelMainPage"+pos, title, new Rectangle(rect.x+rect.height+3, rect.y+23, rect.height, 20));        
+        xpsProperties = createAWTControl(lblMainPageImage, "ImageLabelMainPage"+pos, title, new Rectangle(rect.x+rect.height+3, rect.y+23, 150, 20));        
         if (img!= null)
         {
             xpsProperties.setPropertyValue("URL", img.getImgUrlMainPage());
@@ -403,6 +408,37 @@ public class PictureFlickrDialog {
             ex.printStackTrace();
         }
      }
+     
+     public XPopupMenu executePopupMenu(Image img, Integer positionX, Integer positionY){
+        
+         Collection sizes = FlickrConnection.instance.getPhotoSizes(img.getPhotoID());
+         
+         XPopupMenu xPopupMenu = null;
+        try{
+        // create a popup menu
+        Object oPopupMenu = xMultiComponentFactory.createInstanceWithContext("stardiv.Toolkit.VCLXPopupMenu", m_xContext);
+        xPopupMenu = (XPopupMenu) UnoRuntime.queryInterface(XPopupMenu.class, oPopupMenu);
+
+        for (Object p : sizes.toArray())
+        {              
+            com.aetrion.flickr.photos.Size currentSize = ((com.aetrion.flickr.photos.Size)p);   
+            xPopupMenu.insertItem((short) currentSize.getLabel(), 
+                    FlickrConnection.instance.getStringSize(currentSize.getLabel()), 
+                    (short)0, (short) 0);
+        }
+        
+        com.sun.star.awt.Rectangle rect = new com.sun.star.awt.Rectangle();
+        rect.Height =100;rect.Width = 100;
+        rect.X = positionX;
+        rect.Y = positionY;
+        
+        xPopupMenu.execute(xControl.getPeer(), rect  , (short)1);
+       // xPopupMenu.addMenuListener(this);
+       }catch( Exception e ) {
+        e.printStackTrace();
+    }
+        return xPopupMenu;
+    } 
          
          private String createTemporaryFile(String imgURL) {
              
