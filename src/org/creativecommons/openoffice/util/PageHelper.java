@@ -59,6 +59,7 @@ import com.sun.star.drawing.XMasterPagesSupplier;
 import com.sun.star.presentation.XPresentationPage;
 import com.sun.star.presentation.XHandoutMasterSupplier;
 
+import com.sun.star.container.XNameAccess; 
 
 public class PageHelper
 {
@@ -228,4 +229,23 @@ public class PageHelper
 				XHandoutMasterSupplier.class, xComponent );
 		return aHandoutMasterSupplier.getHandoutMasterPage();
 	}
+        
+        /** makes a String unique by appending a numerical suffix
+     * @param _xElementContainer the com.sun.star.container.XNameAccess container
+     * that the new Element is going to be inserted to
+     * @param _sElementName the StemName of the Element
+     */
+    public static String createUniqueName(XNameAccess _xElementContainer, String _sElementName) {
+        boolean bElementexists = true;
+        int i = 1;
+        String BaseName = _sElementName;
+        while (bElementexists) {
+            bElementexists = _xElementContainer.hasByName(_sElementName);
+            if (bElementexists) {
+                i += 1;
+                _sElementName = BaseName + Integer.toString(i);
+            }
+        }
+        return _sElementName;
+    }
 }

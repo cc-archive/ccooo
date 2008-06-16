@@ -8,6 +8,7 @@
 
 package org.creativecommons.openoffice.program;
 
+import com.sun.star.awt.Size;
 import com.sun.star.beans.PropertyVetoException;
 import com.sun.star.beans.UnknownPropertyException;
 import com.sun.star.beans.XPropertySet;
@@ -30,6 +31,7 @@ import com.sun.star.uno.UnoRuntime;
 import com.sun.star.util.XRefreshable;
 import com.sun.star.util.XUpdatable;
 import org.creativecommons.license.License;
+import org.creativecommons.openoffice.util.PageHelper;
 
 /**
  *
@@ -43,32 +45,15 @@ public class Writer extends OOoProgram {
     
     public void insertPictureFlickr(Image img) {
                
-            XTextDocument mxDoc = (XTextDocument)UnoRuntime.queryInterface(
-                    XTextDocument.class, this.getComponent());
+        XTextDocument mxDoc = (XTextDocument)UnoRuntime.queryInterface(
+                XTextDocument.class, this.getComponent());
            
-            XTextCursor docCursor = ((XTextViewCursorSupplier)UnoRuntime.queryInterface(
-                    XTextViewCursorSupplier.class, mxDoc.getCurrentController())).getViewCursor();
+        XTextCursor docCursor = ((XTextViewCursorSupplier)UnoRuntime.queryInterface(
+                XTextViewCursorSupplier.class, mxDoc.getCurrentController())).getViewCursor();
             
-            XMultiServiceFactory mxDocFactory = (XMultiServiceFactory) UnoRuntime.queryInterface(
-                    XMultiServiceFactory.class, mxDoc );            
+        XMultiServiceFactory mxDocFactory = (XMultiServiceFactory) UnoRuntime.queryInterface(
+                XMultiServiceFactory.class, mxDoc );            
             
-            embedGraphic(mxDocFactory, docCursor, img.getSelectedImageURL(), img.getSelectedImageWidth(),
-                    img.getSelectedImageHeigth());
-                 
-        
-    }
-    
-    /**
-     * Embeds the license "button" into a Textdocument at the given cursor position
-     *
-     * @param xMSF    the factory to create services from
-     * @param xCursor the cursor where to insert the graphic
-     * @param imgURL  URL of the license button
-     *
-     */
-    private void embedGraphic(XMultiServiceFactory mxDocFactory, XTextCursor xCursor, String imgURL,
-            Integer width, Integer height) {
-        
         XNameContainer xBitmapContainer = null;
         XTextContent xImage = null;
         String internalURL = null;
@@ -86,12 +71,8 @@ public class Writer extends OOoProgram {
             
             // helper-stuff to let OOo create an internal name of the graphic
             // that can be used later (internal name consists of various checksums)
-            
-            //TODO CHANGE getting unique name
-            java.util.Random r = new java.util.Random();
-            String sName =String.valueOf(r.nextInt(100000));
-            sName = imgURL + ":" + sName;
-            xBitmapContainer.insertByName(sName, imgURL);
+            String sName = PageHelper.createUniqueName(xBitmapContainer, img.getPhotoID());
+            xBitmapContainer.insertByName(sName, img.getSelectedImageURL());
             
             Object obj = xBitmapContainer.getByName(sName);
             internalURL = AnyConverter.toString(obj);
@@ -99,22 +80,35 @@ public class Writer extends OOoProgram {
             xProps.setPropertyValue("AnchorType",
                     com.sun.star.text.TextContentAnchorType.AS_CHARACTER);
             xProps.setPropertyValue("GraphicURL", internalURL);
-           // com.sun.star.awt.Size size = new com.sun.star.awt.Size();
-       //     size.Height = height;
-         //   size.Width = width;
-            //xProps.setPropertyValue("ActualSize", size);
-            
-            xProps.setPropertyValue("Width",  width*35); 
-            xProps.setPropertyValue("Height",  height*35);
             
             // insert the graphic at the cursor position
-             xCursor.getText().insertTextContent(xCursor, xImage, false);
+            docCursor.getText().insertTextContent(docCursor, xImage, false);
             
+            //to change !!!
+            Size size = (Size)xProps.getPropertyValue("ActualSize");
+            if (size.Width != 0) {
+                xProps.setPropertyValue("Width",  size.Width); 
+            }
+            else
+                xProps.setPropertyValue("Width",  img.getSelectedImageWidth()*30);
+            if (size.Height != 0) {
+                xProps.setPropertyValue("Height", size.Height);
+            }
+            else
+                xProps.setPropertyValue("Height",  img.getSelectedImageHeigth()*30);
+                
             // remove the helper-entry
             xBitmapContainer.removeByName(sName);
         } catch (Exception e) {
             e.printStackTrace();
         }
+            
+    }
+    
+    private void insertPictureFromFlickr(XMultiServiceFactory mxDocFactory, XTextCursor xCursor, String imgURL,
+            Integer width, Integer height) {
+        
+  
     }
     
     /**
