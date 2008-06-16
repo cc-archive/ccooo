@@ -60,12 +60,8 @@ public class ImageButtonListener implements XActionListener{
               ex.printStackTrace();
           }
           
-          
           Image img = flickrDialog.currentList.get(Integer.parseInt(a.ActionCommand));
           flickrDialog.executePopupMenu(img, posX, posY);
-        
-       // flickrDialog.close();
-        //addin.getProgramWrapper().insertPictureFlickr(img);
       } 
     }
     

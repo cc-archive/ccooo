@@ -83,6 +83,7 @@ public class PictureFlickrDialog {
     private CcOOoAddin addin = null;
     private int currentPositionInList = 0;
     public ArrayList<Image> currentList = null;
+    private Image selectedImage = null;
     
     public static final String LBL_TAGS = "lblTags";
     public static final String TXT_TAGS = "txtTags";
@@ -411,9 +412,13 @@ public class PictureFlickrDialog {
      
      public XPopupMenu executePopupMenu(Image img, Integer positionX, Integer positionY){
         
-         Collection sizes = FlickrConnection.instance.getPhotoSizes(img.getPhotoID());
+         //i can change into image control, do a right click thing for popup : UnoMenu2.java, maybe TODO
          
-         XPopupMenu xPopupMenu = null;
+        this.selectedImage = img;        
+        Collection sizes = FlickrConnection.instance.getPhotoSizes(img.getPhotoID());
+        img.setSelectedImageSizes(sizes);
+        
+        XPopupMenu xPopupMenu = null;
         try{
         // create a popup menu
         Object oPopupMenu = xMultiComponentFactory.createInstanceWithContext("stardiv.Toolkit.VCLXPopupMenu", m_xContext);
@@ -428,12 +433,13 @@ public class PictureFlickrDialog {
         }
         
         com.sun.star.awt.Rectangle rect = new com.sun.star.awt.Rectangle();
-        rect.Height =100;rect.Width = 100;
+        rect.Height =0;rect.Width = 0;
         rect.X = positionX;
         rect.Y = positionY;
         
+        xPopupMenu.addMenuListener(new SizesMenuListener(this, addin));
         xPopupMenu.execute(xControl.getPeer(), rect  , (short)1);
-       // xPopupMenu.addMenuListener(this);
+        
        }catch( Exception e ) {
         e.printStackTrace();
     }
@@ -491,7 +497,12 @@ public class PictureFlickrDialog {
     
      public XNameContainer getNameContainer() {
         return xNameCont;
-    }     
+    }   
+     
+     public Image getSelectedImage() {
+         
+         return selectedImage;
+     }
     
     public void close() {
         this.xDialog.endExecute();

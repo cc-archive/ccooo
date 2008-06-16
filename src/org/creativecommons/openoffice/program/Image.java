@@ -7,7 +7,8 @@ package org.creativecommons.openoffice.program;
 
 import java.util.Collection;
 import java.util.Date;
-
+import com.aetrion.flickr.photos.Size;
+import java.util.Collection;
 
 /**
  *
@@ -24,7 +25,11 @@ public class Image {
     private String imgUrl;
     private String profile;
     private String imgUrlMainPage;
-    private Collection tags;
+    private Collection tags;    
+    private String selectedImageURL;
+    private Integer selectedImageWidth;
+    private Integer selectedImageHeigth;    
+    private Collection selectedImageSizes;
     
     public Image(String _title,Date _taken,Date _uploaded, String _imgUrl, String _profile, 
             Collection _tags, String _imgUrlMainPage, String _userID, String _photoID) {
@@ -94,5 +99,57 @@ public class Image {
     {
         return photoID;
     }
+    
+//    public void setSelectedImageURL(String url) {
+//        
+//        this.selectedImageURL = url;
+//    }
+    
+    public String getSelectedImageURL() {
+        
+        return selectedImageURL;
+    }
+    
+//    public void setSelectedImageWidth(Integer width) {
+//        
+//        this.selectedImageWidth = width;
+//    }
+    
+    public Integer getSelectedImageWidth() {
+        
+        return selectedImageWidth;
+    }
+    
+//    public void setSelectedImageHeigth(Integer heigth) {
+//        
+//        this.selectedImageHeigth = heigth;
+//    }
+    
+    public Integer getSelectedImageHeigth() {
+        
+        return selectedImageHeigth;
+    }
+    
+    public void setSelectedImageSizes(Collection sizes) {
+        
+        this.selectedImageSizes = sizes;
+    }
+    
+    public void RefreshSelectedImageData(short selectedSize){
+        
+        for (Object p : selectedImageSizes.toArray())
+        {              
+             com.aetrion.flickr.photos.Size currentSize = ((com.aetrion.flickr.photos.Size)p);   
+            
+             if (currentSize.getLabel()  == (int)selectedSize) {
+                 
+                 this.selectedImageHeigth = currentSize.getHeight();
+                 this.selectedImageWidth = currentSize.getWidth();
+                 this.selectedImageURL = currentSize.getSource();
+                 break;
+             }
+        }
+    }
+    
 }
 

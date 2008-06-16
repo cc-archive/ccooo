@@ -52,7 +52,8 @@ public class Writer extends OOoProgram {
             XMultiServiceFactory mxDocFactory = (XMultiServiceFactory) UnoRuntime.queryInterface(
                     XMultiServiceFactory.class, mxDoc );            
             
-            embedGraphic(mxDocFactory, docCursor, img.getImgURL(), 8000,8000);
+            embedGraphic(mxDocFactory, docCursor, img.getSelectedImageURL(), img.getSelectedImageWidth(),
+                    img.getSelectedImageHeigth());
                  
         
     }
@@ -85,22 +86,32 @@ public class Writer extends OOoProgram {
             
             // helper-stuff to let OOo create an internal name of the graphic
             // that can be used later (internal name consists of various checksums)
-            xBitmapContainer.insertByName(imgURL, imgURL);
             
-            Object obj = xBitmapContainer.getByName(imgURL);
+            //TODO CHANGE getting unique name
+            java.util.Random r = new java.util.Random();
+            String sName =String.valueOf(r.nextInt(100000));
+            sName = imgURL + ":" + sName;
+            xBitmapContainer.insertByName(sName, imgURL);
+            
+            Object obj = xBitmapContainer.getByName(sName);
             internalURL = AnyConverter.toString(obj);
             
             xProps.setPropertyValue("AnchorType",
                     com.sun.star.text.TextContentAnchorType.AS_CHARACTER);
             xProps.setPropertyValue("GraphicURL", internalURL);
-            xProps.setPropertyValue("Width", (int) width); 
-            xProps.setPropertyValue("Height", (int) height);
+           // com.sun.star.awt.Size size = new com.sun.star.awt.Size();
+       //     size.Height = height;
+         //   size.Width = width;
+            //xProps.setPropertyValue("ActualSize", size);
+            
+            xProps.setPropertyValue("Width",  width*35); 
+            xProps.setPropertyValue("Height",  height*35);
             
             // insert the graphic at the cursor position
-            xCursor.getText().insertTextContent(xCursor, xImage, false);
+             xCursor.getText().insertTextContent(xCursor, xImage, false);
             
             // remove the helper-entry
-            xBitmapContainer.removeByName(imgURL);
+            xBitmapContainer.removeByName(sName);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -166,8 +177,7 @@ public class Writer extends OOoProgram {
                 XTextFieldsSupplier.class, mxDoc);
         
         try {
-            
-            
+                        
             XPropertySet licenseNameMaster = getMasterField("License Name", mxTextFields, mxDocFactory);
             return (((Object[])licenseNameMaster.getPropertyValue("DependentTextFields")).length != 0);
             
