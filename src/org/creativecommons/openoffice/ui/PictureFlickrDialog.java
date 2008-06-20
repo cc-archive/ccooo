@@ -8,6 +8,8 @@
  
 package org.creativecommons.openoffice.ui;
 
+import com.sun.star.uno.AnyConverter;
+import com.sun.star.ucb.XFileIdentifierConverter;
 import com.sun.star.beans.UnknownPropertyException;
 import java.awt.Rectangle;
 import com.sun.star.awt.XButton;
@@ -310,51 +312,35 @@ public class PictureFlickrDialog {
              Object oICModel = null;
              if (getNameContainer().hasByName("ImageControl" + pos))
              {
-                 oICModel = getNameContainer().getByName("ImageControl"+pos);
+                 getNameContainer().removeByName("ImageControl"+pos);
              }
-             else
-             {             
-                oICModel = xMultiServiceFactory.createInstance("com.sun.star.awt.UnoControlButtonModel");
-             }
-      
-             XMultiPropertySet xICModelMPSet = (XMultiPropertySet) UnoRuntime.queryInterface(XMultiPropertySet.class, oICModel);
-                  
-            String imgPath = "";
-            if (img!= null)
-            {
-                imgPath = createTemporaryFile(img.getImgURL());
+             
+             oICModel = xMultiServiceFactory.createInstance("com.sun.star.awt.UnoControlImageControlModel");
+             
+            XGraphic xGraphic = null;
+            if (img != null) {
+               
+               xGraphic = getGraphic(img.getImgURL());
             }
-
-            if (imgPath != "")
-            {
-                imgPath = "file:///"+imgPath;
-            }
-            else
-                imgPath = " ";
-      
-            xICModelMPSet.setPropertyValues(
-                new String[] { "Height", "ImageURL", "Name", "PositionX", "PositionY", "Width"},
-                new Object[] {new Integer(rect.height), imgPath, "ImageControl"+pos, new Integer(rect.x),
-                new Integer(rect.y), new Integer(rect.width)});
+             
+           XPropertySet xpsImageControl = (XPropertySet) UnoRuntime.queryInterface(XPropertySet.class, oICModel);
  
+           xpsImageControl.setPropertyValue("Border", (short)0);           
+           xpsImageControl.setPropertyValue("Height", new Integer(rect.height));
+           xpsImageControl.setPropertyValue("Name", "ImageControl"+pos);
+           xpsImageControl.setPropertyValue("PositionX", new Integer(rect.x));
+           xpsImageControl.setPropertyValue("PositionY", new Integer(rect.y));
+           xpsImageControl.setPropertyValue("Width", new Integer(rect.width));
             
-            if (!getNameContainer().hasByName("ImageControl"+pos))
-            {
-                getNameContainer().insertByName("ImageControl"+pos, oICModel);                                 
-                XButton currentImageButton = (XButton)UnoRuntime.queryInterface(XButton.class, 
-                        xControlCont.getControl("ImageControl"+pos));
-                currentImageButton.addActionListener(new ImageButtonListener(this, this.addin));                
-                currentImageButton.setActionCommand(String.valueOf(currentPositionInList));
-            }
-            else
-            {
-                XButton currentImageButton = (XButton)UnoRuntime.queryInterface(XButton.class, 
-                        xControlCont.getControl("ImageControl"+pos));
-                currentImageButton.setActionCommand(String.valueOf(currentPositionInList));
-                
-            }
-      
-            Object lblUser = null;
+           getNameContainer().insertByName("ImageControl"+pos, oICModel);    
+            
+           XControl xImageControl = xControlCont.getControl("ImageControl"+pos); 
+           XWindow xWindow = (XWindow) UnoRuntime.queryInterface(XWindow.class, xImageControl);
+           xWindow.addMouseListener(new ImageButtonListener(this, this.addin, img));            
+           
+           xpsImageControl.setPropertyValue("Graphic", xGraphic);
+            
+           Object lblUser = null;
             if (getNameContainer().hasByName("ImageLabelUser"+pos))
             {
                 lblUser = getNameContainer().getByName("ImageLabelUser"+pos);                
@@ -433,7 +419,7 @@ public class PictureFlickrDialog {
         }
         
         com.sun.star.awt.Rectangle rect = new com.sun.star.awt.Rectangle();
-        rect.Height =0;rect.Width = 0;
+        rect.Height =100;rect.Width = 100;
         rect.X = positionX;
         rect.Y = positionY;
         
@@ -445,42 +431,26 @@ public class PictureFlickrDialog {
     }
         return xPopupMenu;
     } 
-         
-         private String createTemporaryFile(String imgURL) {
-             
-             try
-             {
-             URL url = new URL(imgURL);
-    // input from image
-    InputStream in = new BufferedInputStream(url.openStream());
-    // downloaded bytes
-    ByteArrayOutputStream out = new ByteArrayOutputStream();
-    // output file
-    //url.getFile() is not giving the correct file name(ex : /23213/filename.jpg)
-    String fileName = url.getFile().substring(url.getFile().lastIndexOf("/"));
-    File f =new File(System.getProperty("java.io.tmpdir"), fileName);
-    f.deleteOnExit();
-    RandomAccessFile file = new RandomAccessFile(f,"rw");
-    // download buffer
-    byte[] buffer = new byte[4096]; 
- 
-    // download the bytes
-    for (int read=0;(read=in.read(buffer))!=-1;out.write(buffer,0,read));
-    // write all data out to the file
-    file.write(out.toByteArray());
-    // close file
-    file.close();
-    
-    return f.getAbsolutePath();
-             
-             } catch (java.net.MalformedURLException ex) {
-            ex.printStackTrace();
-        } catch (java.io.IOException ex) {
-            ex.printStackTrace();
-        }
-             
-             return "";
-    }
+          
+     // creates a UNO graphic object that can be used to be assigned 
+  // to the property "Graphic" of a controlmodel
+  public XGraphic getGraphic(String _sImageUrl){
+  XGraphic xGraphic = null;
+  try{
+      // create a GraphicProvider at the global service manager...
+      Object oGraphicProvider = xMultiComponentFactory.createInstanceWithContext("com.sun.star.graphic.GraphicProvider", m_xContext);
+      XGraphicProvider xGraphicProvider = (XGraphicProvider) UnoRuntime.queryInterface(XGraphicProvider.class, oGraphicProvider);
+      // create the graphic object
+      PropertyValue[] aPropertyValues = new PropertyValue[1];
+      PropertyValue aPropertyValue = new PropertyValue();
+      aPropertyValue.Name = "URL";
+      aPropertyValue.Value = _sImageUrl;
+      aPropertyValues[0] = aPropertyValue;
+      xGraphic = xGraphicProvider.queryGraphic(aPropertyValues);
+      return xGraphic;
+  }catch (com.sun.star.uno.Exception ex){
+      throw new java.lang.RuntimeException("cannot happen...");
+  }}
      
      public String GetLicense() {
          Object oLicense = xControlCont.getControl(LISTBOX_LICENSE);

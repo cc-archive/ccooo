@@ -96,26 +96,13 @@ public class Writer extends OOoProgram {
             }
             else
                 xProps.setPropertyValue("Height",  img.getSelectedImageHeigth());
-            
-//            com.sun.star.uno.Any xGraphic =  (com.sun.star.uno.Any)xProps.getPropertyValue("Graphic");
-//            XPropertySet propGraphic = (XPropertySet) UnoRuntime.queryInterface(XPropertySet.class, xGraphic);
-//            Size graphicSize = (Size) propGraphic.getPropertyValue("Size100thMM");
-//            Size graphicSize1 = (Size) propGraphic.getPropertyValue("SizePixel");
-//             xProps.setPropertyValue("Width",  graphicSize.Width); 
-//             xProps.setPropertyValue("Height",  graphicSize.Height); 
-            
+          
             // remove the helper-entry
             xBitmapContainer.removeByName(sName);
         } catch (Exception e) {
             e.printStackTrace();
         }
             
-    }
-    
-    private void insertPictureFromFlickr(XMultiServiceFactory mxDocFactory, XTextCursor xCursor, String imgURL,
-            Integer width, Integer height) {
-        
-  
     }
     
     /**

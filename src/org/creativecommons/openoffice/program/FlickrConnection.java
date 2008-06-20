@@ -51,7 +51,7 @@ public class FlickrConnection {
         PhotoList list=null;
         try
         {          
-           list = pInterf.search(sp, 20, 3);  
+           list = pInterf.search(sp, 100, 3);  
         }
         catch(com.aetrion.flickr.FlickrException ex){
         ex.printStackTrace(); 
@@ -71,7 +71,7 @@ public class FlickrConnection {
            User user = ph.getOwner();           
              
            count++;
-           if (count>20)
+           if (count>100)
            {
                break;
            }               
