@@ -85,26 +85,24 @@ public class Writer extends OOoProgram {
             // insert the graphic at the cursor position
             docCursor.getText().insertTextContent(docCursor, xImage, false);
             
+            Size size = (Size)xProps.getPropertyValue("ActualSize");
+            if (size.Width != 0) {
+                xProps.setPropertyValue("Width",  size.Width); 
+            }
+            else
+                xProps.setPropertyValue("Width",  img.getSelectedImageWidth());
+            if (size.Height != 0) {
+                xProps.setPropertyValue("Height", size.Height);
+            }
+            else
+                xProps.setPropertyValue("Height",  img.getSelectedImageHeigth());
             
-//            //to change !!!
-//            Size size = (Size)xProps.getPropertyValue("ActualSize");
-//            if (size.Width != 0) {
-//                xProps.setPropertyValue("Width",  size.Width); 
-//            }
-//            else
-//                xProps.setPropertyValue("Width",  img.getSelectedImageWidth()*30);
-//            if (size.Height != 0) {
-//                xProps.setPropertyValue("Height", size.Height);
-//            }
-//            else
-//                xProps.setPropertyValue("Height",  img.getSelectedImageHeigth()*30);
-            
-            com.sun.star.uno.Any xGraphic =  (com.sun.star.uno.Any)xProps.getPropertyValue("Graphic");
-            XPropertySet propGraphic = (XPropertySet) UnoRuntime.queryInterface(XPropertySet.class, xGraphic);
-            Size graphicSize = (Size) propGraphic.getPropertyValue("Size100thMM");
-            Size graphicSize1 = (Size) propGraphic.getPropertyValue("SizePixel");
-             xProps.setPropertyValue("Width",  graphicSize.Width); 
-             xProps.setPropertyValue("Height",  graphicSize.Height); 
+//            com.sun.star.uno.Any xGraphic =  (com.sun.star.uno.Any)xProps.getPropertyValue("Graphic");
+//            XPropertySet propGraphic = (XPropertySet) UnoRuntime.queryInterface(XPropertySet.class, xGraphic);
+//            Size graphicSize = (Size) propGraphic.getPropertyValue("Size100thMM");
+//            Size graphicSize1 = (Size) propGraphic.getPropertyValue("SizePixel");
+//             xProps.setPropertyValue("Width",  graphicSize.Width); 
+//             xProps.setPropertyValue("Height",  graphicSize.Height); 
             
             // remove the helper-entry
             xBitmapContainer.removeByName(sName);
