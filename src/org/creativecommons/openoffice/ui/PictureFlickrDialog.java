@@ -416,7 +416,7 @@ public class PictureFlickrDialog {
             xPopupMenu.insertItem((short) currentSize.getLabel(), 
                     FlickrConnection.instance.getStringSize(currentSize.getLabel()), 
                     (short)0, (short) 0);
-        }
+        } 
         
         com.sun.star.awt.Rectangle rect = new com.sun.star.awt.Rectangle();
         rect.Height =100;rect.Width = 100;
