@@ -312,10 +312,12 @@ public class PictureFlickrDialog {
              Object oICModel = null;
              if (getNameContainer().hasByName("ImageControl" + pos))
              {
+                 XControl xImageControl = xControlCont.getControl("ImageControl"+pos); 
+                 xImageControl.dispose();                
                  getNameContainer().removeByName("ImageControl"+pos);
              }
              
-             oICModel = xMultiServiceFactory.createInstance("com.sun.star.awt.UnoControlImageControlModel");
+            oICModel = xMultiServiceFactory.createInstance("com.sun.star.awt.UnoControlImageControlModel");
              
             XGraphic xGraphic = null;
             if (img != null) {

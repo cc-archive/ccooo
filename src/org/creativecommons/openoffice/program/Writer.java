@@ -99,6 +99,15 @@ public class Writer extends OOoProgram {
           
             // remove the helper-entry
             xBitmapContainer.removeByName(sName);
+     
+//            XMultiServiceFactory xFactory = (XMultiServiceFactory)UnoRuntime.queryInterface(XMultiServiceFactory.class, mxDoc);
+//            Object objHyperLink = xFactory.createInstance("com.sun.star.text.TextField.URL");
+//            XPropertySet xPropset = (XPropertySet)UnoRuntime.queryInterface(XPropertySet.class, objHyperLink);
+//            xPropset.setPropertyValue("URL", "http://www.example.org");
+//            xPropset.setPropertyValue("Representation", "CC BY ");
+//            XTextContent xContent = (XTextContent) UnoRuntime.queryInterface( com.sun.star.text.XTextContent.class, objHyperLink );
+//            docCursor.getText().insertTextContent(docCursor.getEnd(), xContent, false);
+//         
         } catch (Exception e) {
             e.printStackTrace();
         }
