@@ -96,6 +96,7 @@ public class PictureFlickrDialog {
     public static final String GB_RESULTS = "gbResults";
     public static final String BTN_NEXT = "btnNext";
     public static final String BTN_NEXTLABEL = "Next";
+    public static final String PB_NAME = "progressBar";
     
     public static final int SHOWRESULTSPERPAGE = 6;
     public static final int POSITIONWIDTHHEIGHT = 50;
@@ -127,7 +128,7 @@ public class PictureFlickrDialog {
                 XMultiServiceFactory.class, dlgLicenseSelector);
         
         XPropertySet xPSetDialog = createAWTControl(dlgLicenseSelector, "dlgMainForm",
-                "", new Rectangle(100, 100, 250, 400));
+                "", new Rectangle(100, 100, 250, 430));
         xPSetDialog.setPropertyValue("Title", new String("Insert Picture From Flickr"));
         xPSetDialog.setPropertyValue("Step", (short)1 );        
         
@@ -187,6 +188,20 @@ public class PictureFlickrDialog {
        
         Object oGBResults = msfLicenseSelector.createInstance("com.sun.star.awt.UnoControlGroupBoxModel");   
         createAWTControl(oGBResults, GB_RESULTS, "Results", new Rectangle(10, 75, 230, 320));                            
+        
+        Object oPBar = msfLicenseSelector.createInstance("com.sun.star.awt.UnoControlProgressBarModel");   
+        XMultiPropertySet xPBModelMPSet = (XMultiPropertySet) UnoRuntime.queryInterface(XMultiPropertySet.class, oPBar);
+      // Set the properties at the model - keep in mind to pass the property names in alphabetical order!
+        xPBModelMPSet.setPropertyValues(
+            new String[] {"Height", "Name", "PositionX", "PositionY", "Width"},
+            new Object[] { new Integer(8), PB_NAME, new Integer(10), new Integer(400), new Integer(230)});
+ 
+       // The controlmodel is not really available until inserted to the Dialog container
+       getNameContainer().insertByName(PB_NAME, oPBar);
+       XPropertySet xPBModelPSet = (XPropertySet) UnoRuntime.queryInterface(XPropertySet.class, oPBar);
+
+       xPBModelPSet.setPropertyValue("ProgressValueMin", new Integer(0));
+       xPBModelPSet.setPropertyValue("ProgressValueMax", new Integer(100));
         
         // create a peer
         Object toolkit = xMultiComponentFactory.createInstanceWithContext("com.sun.star.awt.Toolkit", m_xContext);
@@ -391,17 +406,32 @@ public class PictureFlickrDialog {
         }
         else
             xpsProperties.setPropertyValue("URL", "");
-            
-        //http://hermione.s41.xrea.com/pukiwiki/index.php?OOoBasic%2FDialog%2FFixedHyperLink
-        } catch (Exception ex) {
+                    
+         } catch (Exception ex) {
             ex.printStackTrace();
         }
      }
      
+     public void SetProgressValue(int step) {
+         
+         if (!getNameContainer().hasByName(PB_NAME)) {
+             
+             return;
+         }
+         
+         try
+         {
+         Object oPBar = getNameContainer().getByName(PB_NAME);
+         XPropertySet xPBModelPSet = (XPropertySet) UnoRuntime.queryInterface(XPropertySet.class, oPBar);
+
+         xPBModelPSet.setPropertyValue("ProgressValue", new Integer(step));
+         } catch (Exception ex) {
+            ex.printStackTrace();
+         }
+     }
+     
      public XPopupMenu executePopupMenu(Image img, Integer positionX, Integer positionY){
         
-         //i can change into image control, do a right click thing for popup : UnoMenu2.java, maybe TODO
-         
         this.selectedImage = img;        
         Collection sizes = FlickrConnection.instance.getPhotoSizes(img.getPhotoID());
         img.setSelectedImageSizes(sizes);
