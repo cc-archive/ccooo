@@ -40,7 +40,8 @@ public class NextClickListener implements XActionListener{
     
     public void actionPerformed(ActionEvent a) {
 
-        flickrDialog.showNextPage();
+        flickrDialog.showNextPage(0);
+        flickrDialog.setProgressValue(100);
     }
     
     public void disposing(EventObject e) {

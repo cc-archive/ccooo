@@ -263,21 +263,23 @@ public class PictureFlickrDialog {
          return new String[0];
      }
      
-     public void showResults(ArrayList<Image> imgList) {
+     public void showResults(ArrayList<Image> imgList, int progressValue) {
      
          this.currentList = imgList;
          this.currentPositionInList = 0;
          
-         showNextPage();        
+         showNextPage(progressValue);        
      }
      
-     public void showNextPage()
+     public void showNextPage(int progressValue)
      {
          if (currentList == null)
          {             
             return;
          }
          
+         double rateProgress = (double)(95 - progressValue) / SHOWRESULTSPERPAGE;
+         double currentProgress = progressValue;
          for (int i = 0;i<SHOWRESULTSPERPAGE;i++)
          {             
              if (currentList.size()>currentPositionInList)
@@ -288,8 +290,10 @@ public class PictureFlickrDialog {
              }
              else
                  createImageControl(null, new Rectangle(15, (i+2)*POSITIONWIDTHHEIGHT-15, POSITIONWIDTHHEIGHT, 
-                         POSITIONWIDTHHEIGHT), String.valueOf(i));                                    
-        
+                         POSITIONWIDTHHEIGHT), String.valueOf(i));                                            
+             
+             currentProgress+= rateProgress;
+             this.setProgressValue((int)currentProgress );
          }
      
          try
@@ -412,7 +416,19 @@ public class PictureFlickrDialog {
         }
      }
      
-     public void SetProgressValue(int step) {
+     public void enableControl(String controlName, boolean enable) {
+          try
+         {
+         Object oControl = getNameContainer().getByName(controlName);
+         XPropertySet xModelPSet = (XPropertySet) UnoRuntime.queryInterface(XPropertySet.class, oControl);
+
+         xModelPSet.setPropertyValue("Enabled", enable);
+         } catch (Exception ex) {
+            ex.printStackTrace();
+         }   
+     }
+     
+     public void setProgressValue(int step) {
          
          if (!getNameContainer().hasByName(PB_NAME)) {
              

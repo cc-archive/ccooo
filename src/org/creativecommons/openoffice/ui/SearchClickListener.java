@@ -44,7 +44,7 @@ public class SearchClickListener implements XActionListener{
 //                flickrDialog.GetLicense());
 //        flickrDialog.showResults(imgList);        
         
-        flickrDialog.SetProgressValue(0);
+        //flickrDialog.SetProgressValue(0);
         SearchThread th = new SearchThread(flickrDialog);
         th.start();
         

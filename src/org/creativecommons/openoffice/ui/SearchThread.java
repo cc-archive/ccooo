@@ -25,11 +25,14 @@ public class SearchThread extends Thread {
 
     public void run() {
         
+        flickrDialog.enableControl(PictureFlickrDialog.BTN_SEARCH, false);
+        flickrDialog.setProgressValue(0);
         ArrayList<Image> imgList = flickrConn.instance.searchPhotos(flickrDialog.GetTags(),
                 flickrDialog.GetLicense());
-        flickrDialog.SetProgressValue(50);
-        flickrDialog.showResults(imgList);
-        flickrDialog.SetProgressValue(100);
+        flickrDialog.setProgressValue(30);
+        flickrDialog.showResults(imgList, 30);
+        flickrDialog.setProgressValue(100);
+        flickrDialog.enableControl(PictureFlickrDialog.BTN_SEARCH, true);
     }
     
 }
