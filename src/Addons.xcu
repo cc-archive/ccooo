@@ -64,26 +64,7 @@
                                         <value>Set Document License</value>
                                         <value xml:lang="en">Set Document License</value>
                                     </prop>
-                                </node>
-                                 <node oor:name="m3" oor:op="replace">
-                                    <prop oor:name="URL" oor:type="xs:string">
-                                        <value>org.creativecommons.openoffice.ccooo:InsertPictureFlickr</value>
-                                    </prop>
-                                    <prop oor:name="ImageIdentifier" oor:type="xs:string">
-                                        <value/>
-                                    </prop>
-                                    <prop oor:name="Target" oor:type="xs:string">
-                                        <value>_self</value>
-                                    </prop>
-                                    <prop oor:name="Context" oor:type="xs:string">
-                                        <value>com.sun.star.presentation.PresentationDocument,com.sun.star.sheet.SpreadsheetDocument,com.sun.star.text.TextDocument</value>
-                                    </prop>
-                                    <prop oor:name="Title" oor:type="xs:string">
-                                        <value>Insert Picture From Flickr</value>
-                                        <value xml:lang="en">Insert Picture From Flickr</value>
-                                    </prop>
-                                </node>
-                                
+                                </node>                                 
                             </node>
                             
                         </node>

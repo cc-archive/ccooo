@@ -12,11 +12,13 @@ import com.aetrion.flickr.photos.PhotoList;
 import com.aetrion.flickr.photos.PhotosInterface;
 import com.aetrion.flickr.photos.SearchParameters;
 import com.aetrion.flickr.photos.Size;
+import com.aetrion.flickr.photos.licenses.LicensesInterface;
 import com.aetrion.flickr.people.User;
 import java.util.ArrayList;
 import org.creativecommons.license.License;
 import com.aetrion.flickr.people.PeopleInterface;
 import java.io.IOException;
+import org.creativecommons.openoffice.ui.PictureFlickrDialog;
 import org.xml.sax.SAXException;
 
 /**
@@ -37,15 +39,15 @@ public class FlickrConnection {
         return instance;
     }
     
-    public ArrayList<Image> searchPhotos(String[] tags, String license)
+    public ArrayList<Image> searchPhotos(String[] tags, String licenseId, String licenseURL, String licenseNumber)
     {
         SearchParameters sp = new SearchParameters();       
         sp.setSort(SearchParameters.RELEVANCE);
         if (tags.length>0)
             sp.setTags(tags);
       
-        if (license.length()>0)
-            sp.setLicense(license);
+        if (licenseId.length()>0)
+            sp.setLicense(licenseId);
        
         PhotosInterface pInterf = flickr.getPhotosInterface();
         PhotoList list=null;
@@ -61,10 +63,9 @@ public class FlickrConnection {
         ex.printStackTrace(); 
         }
     
-       ArrayList<Image> imgList = new ArrayList<Image>();
+       ArrayList<Image> imgList = new ArrayList<Image>();     
        
-       int count = 0;
-       
+       int count = 0;       
        for (Object p : list.toArray())
        {                     
            Photo ph = ((Photo)p);                      
@@ -75,16 +76,38 @@ public class FlickrConnection {
            {
                break;
            }               
-          
+                   
          String profile = ph.getUrl();
          profile = profile.substring(0, profile.lastIndexOf("/"));
          Image img = new Image(ph.getTitle(), ph.getDateTaken(), ph.getDateAdded(), 
                  ph.getSmallSquareUrl(), profile, ph.getTags(), ph.getUrl(), user.getId(), ph.getId());
-           imgList.add(img);      
+         img.setLicenseID(licenseId);
+         img.setLicenseNumber(licenseNumber);
+         img.setLicenseURL(licenseURL);
+         imgList.add(img);      
            
        }
        
        return imgList;
+    }
+    
+    public java.util.Collection getLicenses() {
+        
+        LicensesInterface lic = new LicensesInterface(apiKEY, flickr.getTransport());
+        
+        try
+           {                
+                return lic.getInfo();
+           }
+           catch(com.aetrion.flickr.FlickrException ex){
+        ex.printStackTrace(); 
+        } catch(java.io.IOException ex){
+        ex.printStackTrace();
+        } catch(org.xml.sax.SAXException ex){
+        ex.printStackTrace(); 
+        }
+        
+        return null;
     }
     
     public String getUserName(String userID)
@@ -111,6 +134,7 @@ public class FlickrConnection {
     public java.util.Collection getPhotoSizes(String photoID)
     {
         PhotosInterface photos = flickr.getPhotosInterface();
+      
            try
            {                
                 return photos.getSizes(photoID);

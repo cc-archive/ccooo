@@ -47,8 +47,8 @@ public class Writer extends OOoProgram {
     public void insertPictureFlickr(Image img) {
                
         XTextDocument mxDoc = (XTextDocument)UnoRuntime.queryInterface(
-                XTextDocument.class, this.getComponent());
-           
+                XTextDocument.class, this.getComponent());                  
+        
         XTextCursor docCursor = ((XTextViewCursorSupplier)UnoRuntime.queryInterface(
                 XTextViewCursorSupplier.class, mxDoc.getCurrentController())).getViewCursor();
             
@@ -61,61 +61,63 @@ public class Writer extends OOoProgram {
         
         try {
             
-//            xBitmapContainer = (XNameContainer) UnoRuntime.queryInterface(
-//                    XNameContainer.class, mxDocFactory.createInstance(
-//                    "com.sun.star.drawing.BitmapTable"));
-//            xImage = (XTextContent) UnoRuntime.queryInterface(
-//                    XTextContent.class,     mxDocFactory.createInstance(
-//                    "com.sun.star.text.TextGraphicObject"));
-//            XPropertySet xProps = (XPropertySet) UnoRuntime.queryInterface(
-//                    XPropertySet.class, xImage);
-//            
+            xBitmapContainer = (XNameContainer) UnoRuntime.queryInterface(
+                    XNameContainer.class, mxDocFactory.createInstance(
+                    "com.sun.star.drawing.BitmapTable"));
+            xImage = (XTextContent) UnoRuntime.queryInterface(
+                    XTextContent.class,     mxDocFactory.createInstance(
+                    "com.sun.star.text.TextGraphicObject"));
+            XPropertySet xProps = (XPropertySet) UnoRuntime.queryInterface(
+                    XPropertySet.class, xImage);
+            
 //            // helper-stuff to let OOo create an internal name of the graphic
 //            // that can be used later (internal name consists of various checksums)
-//            String sName = PageHelper.createUniqueName(xBitmapContainer, img.getPhotoID());
-//            xBitmapContainer.insertByName(sName, img.getSelectedImageURL());
-//            
-//            Object obj = xBitmapContainer.getByName(sName);
-//            internalURL = AnyConverter.toString(obj);
-//            
-//            xProps.setPropertyValue("AnchorType",
-//                    com.sun.star.text.TextContentAnchorType.AS_CHARACTER);
-//            xProps.setPropertyValue("GraphicURL", internalURL);
-//            
-            // insert the graphic at the cursor position
-            //docCursor.getText().insertTextContent(docCursor, xImage, false);
+            String sName = PageHelper.createUniqueName(xBitmapContainer, img.getPhotoID());
+            xBitmapContainer.insertByName(sName, img.getSelectedImageURL());
             
-//            Size size = (Size)xProps.getPropertyValue("ActualSize");
-//            if (size.Width != 0) {
-//                xProps.setPropertyValue("Width",  size.Width); 
-//            }
-//            else
-//                xProps.setPropertyValue("Width",  img.getSelectedImageWidth());
-//            if (size.Height != 0) {
-//                xProps.setPropertyValue("Height", size.Height);
-//            }
-//            else
-//                xProps.setPropertyValue("Height",  img.getSelectedImageHeigth());
+            Object obj = xBitmapContainer.getByName(sName);
+            internalURL = AnyConverter.toString(obj);
+            
+            xProps.setPropertyValue("AnchorType",
+                    com.sun.star.text.TextContentAnchorType.AS_CHARACTER);
+            xProps.setPropertyValue("GraphicURL", internalURL);
+            
+            // insert the graphic at the cursor position
+            docCursor.getText().insertTextContent(docCursor, xImage, false);
+            
+            Size size = (Size)xProps.getPropertyValue("ActualSize");
+            if (size.Width != 0) {
+                xProps.setPropertyValue("Width",  size.Width); 
+            }
+            else
+                xProps.setPropertyValue("Width",  img.getSelectedImageWidth());
+            if (size.Height != 0) {
+                xProps.setPropertyValue("Height", size.Height);
+            }
+            else
+                xProps.setPropertyValue("Height",  img.getSelectedImageHeigth());
           
             // remove the helper-entry
-           // xBitmapContainer.removeByName(sName);
+          xBitmapContainer.removeByName(sName);
      
-            com.sun.star.text.XText xText = docCursor.getText();
-        com.sun.star.text.XTextCursor xTextCursor = xText.createTextCursor();
-
-           // create a hyperlink
-        com.sun.star.beans.XPropertySet xPropSet = null;
-        com.sun.star.lang.XMultiServiceFactory xServiceMan = (com.sun.star.lang.XMultiServiceFactory)
-            UnoRuntime.queryInterface( com.sun.star.lang.XMultiServiceFactory.class, mxDoc );
-        Object aHyperlinkObj = xServiceMan.createInstance( "com.sun.star.text.TextField.URL" );
-        xPropSet = (com.sun.star.beans.XPropertySet)
-            UnoRuntime.queryInterface( com.sun.star.beans.XPropertySet.class, aHyperlinkObj );
-        xPropSet.setPropertyValue( "URL", "http://www.example.org" );
-        xPropSet.setPropertyValue( "Representation", "hyperlink" );
-        // ... and insert
-        com.sun.star.text.XTextContent xContent = (com.sun.star.text.XTextContent)
-            UnoRuntime.queryInterface( com.sun.star.text.XTextContent.class, aHyperlinkObj );
-        xText.insertTextContent( xTextCursor, xContent, false );
+          docCursor.getText().insertControlCharacter(docCursor, ControlCharacter.PARAGRAPH_BREAK, false );
+          String caption = img.getTitle()+" ("+img.getImgUrlMainPage()+") / CC BY "+ img.getLicenseNumber() +
+                  " (" + img.getLicenseURL() + ")";
+          docCursor.getText().insertString(docCursor, caption, false);
+          
+//           // create a hyperlink
+//        com.sun.star.beans.XPropertySet xPropSet = null;
+//        com.sun.star.lang.XMultiServiceFactory xServiceMan = (com.sun.star.lang.XMultiServiceFactory)
+//            UnoRuntime.queryInterface( com.sun.star.lang.XMultiServiceFactory.class, mxDoc );
+//        Object aHyperlinkObj = xServiceMan.createInstance( "com.sun.star.text.TextField.URL" );
+//        xPropSet = (com.sun.star.beans.XPropertySet)
+//            UnoRuntime.queryInterface( com.sun.star.beans.XPropertySet.class, aHyperlinkObj );
+//        xPropSet.setPropertyValue( "URL", "http://www.example.org" );
+//        xPropSet.setPropertyValue( "Representation", "hyperlink" );
+//        // ... and insert
+//        com.sun.star.text.XTextContent xContent = (com.sun.star.text.XTextContent)
+//            UnoRuntime.queryInterface( com.sun.star.text.XTextContent.class, aHyperlinkObj );
+//        docCursor.insertTextContent( docCursor.getEnd(), xContent, false );
          
         } catch (Exception e) {
             e.printStackTrace();

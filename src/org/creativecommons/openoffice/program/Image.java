@@ -30,6 +30,9 @@ public class Image {
     private Integer selectedImageWidth;
     private Integer selectedImageHeigth;    
     private Collection selectedImageSizes;
+    private String licenseId;
+    private String licenseURL;
+    private String licenseNumber;
     
     public Image(String _title,Date _taken,Date _uploaded, String _imgUrl, String _profile, 
             Collection _tags, String _imgUrlMainPage, String _userID, String _photoID) {
@@ -110,21 +113,12 @@ public class Image {
         return selectedImageURL;
     }
     
-//    public void setSelectedImageWidth(Integer width) {
-//        
-//        this.selectedImageWidth = width;
-//    }
     
     public Integer getSelectedImageWidth() {
         
         return selectedImageWidth;
     }
-    
-//    public void setSelectedImageHeigth(Integer heigth) {
-//        
-//        this.selectedImageHeigth = heigth;
-//    }
-    
+        
     public Integer getSelectedImageHeigth() {
         
         return selectedImageHeigth;
@@ -133,6 +127,36 @@ public class Image {
     public void setSelectedImageSizes(Collection sizes) {
         
         this.selectedImageSizes = sizes;
+    }
+    
+    public void setLicenseID(String licID) {
+        
+        this.licenseId  = licID;
+    }
+    
+    public String getLicenseID() {
+        
+        return licenseId;
+    }
+    
+    public void setLicenseURL(String licURL) {
+        
+        this.licenseURL  = licURL;
+    }
+    
+    public String getLicenseURL() {
+        
+        return licenseURL;
+    }
+    
+    public void setLicenseNumber(String licNumber) {
+        
+        this.licenseNumber  = licNumber;
+    }
+    
+    public String getLicenseNumber() {
+        
+        return licenseNumber;
     }
     
     public void RefreshSelectedImageData(short selectedSize){

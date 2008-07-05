@@ -40,11 +40,6 @@ public class SearchClickListener implements XActionListener{
     
     public void actionPerformed(ActionEvent a) {
         
-//        ArrayList<Image> imgList = flickrConn.instance.searchPhotos(flickrDialog.GetTags(),
-//                flickrDialog.GetLicense());
-//        flickrDialog.showResults(imgList);        
-        
-        //flickrDialog.SetProgressValue(0);
         SearchThread th = new SearchThread(flickrDialog);
         th.start();
         

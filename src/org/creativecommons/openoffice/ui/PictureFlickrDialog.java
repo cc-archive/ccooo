@@ -86,6 +86,7 @@ public class PictureFlickrDialog {
     private int currentPositionInList = 0;
     public ArrayList<Image> currentList = null;
     private Image selectedImage = null;
+    private Collection flickrLicenses = null;
     
     public static final String LBL_TAGS = "lblTags";
     public static final String TXT_TAGS = "txtTags";
@@ -172,17 +173,21 @@ public class PictureFlickrDialog {
         Object objSearchButton = xControlCont.getControl(BTN_SEARCH);
         XButton xFinishButton = (XButton)UnoRuntime.queryInterface(XButton.class, objSearchButton);
         xFinishButton.addActionListener(new SearchClickListener(this, this.addin));
-                               
+        
         Object oLicense = xControlCont.getControl(LISTBOX_LICENSE);
         XListBox cmbJList = (XListBox)UnoRuntime.queryInterface(XListBox.class, oLicense);
-        //cmbJList.addItem("0.None", new Short((short)0));
-        cmbJList.addItem("1.Attribution-NonCommercial-ShareAlike License", new Short((short)1));
-        cmbJList.addItem("2.Attribution-NonCommercial License", new Short((short)2));
-        cmbJList.addItem("3.Attribution-NonCommercial-NoDerivs License", new Short((short)3));
-        cmbJList.addItem("4.Attribution License", new Short((short)4));
-        cmbJList.addItem("5.Attribution-ShareAlike License", new Short((short)5));
-        cmbJList.addItem("6.Attribution-NoDerivs License", new Short((short)6));
-        cmbJList.selectItem("4.Attribution License", true);
+        
+        this.flickrLicenses = FlickrConnection.instance.getLicenses();
+        for (Object p : this.flickrLicenses.toArray())
+        {
+            com.aetrion.flickr.photos.licenses.License currentLicense = ((com.aetrion.flickr.photos.licenses.License)p);   
+            if ( (currentLicense !=  null)&& (!currentLicense.getUrl().equalsIgnoreCase(""))) {
+                
+                cmbJList.addItem(currentLicense.getId()+"."+currentLicense.getName(), new Short(currentLicense.getId()));                
+            }
+        }
+                
+        //cmbJList.selectItem("4.Attribution License", true);
        // cmbJList.makeVisible((short)4);
         cmbJList.addItemListener(new LicenseListListener(this));
        
@@ -419,10 +424,12 @@ public class PictureFlickrDialog {
      public void enableControl(String controlName, boolean enable) {
           try
          {
-         Object oControl = getNameContainer().getByName(controlName);
-         XPropertySet xModelPSet = (XPropertySet) UnoRuntime.queryInterface(XPropertySet.class, oControl);
+              if (getNameContainer().hasByName(controlName)) {
+                Object oControl = getNameContainer().getByName(controlName);
+                XPropertySet xModelPSet = (XPropertySet) UnoRuntime.queryInterface(XPropertySet.class, oControl);
 
-         xModelPSet.setPropertyValue("Enabled", enable);
+                xModelPSet.setPropertyValue("Enabled", enable);
+              }
          } catch (Exception ex) {
             ex.printStackTrace();
          }   
@@ -499,15 +506,43 @@ public class PictureFlickrDialog {
   }catch (com.sun.star.uno.Exception ex){
       throw new java.lang.RuntimeException("cannot happen...");
   }}
+  
+  public String getLicenseURL(String licenseID) {
+      
+      for (Object p : this.flickrLicenses.toArray())
+        {
+            com.aetrion.flickr.photos.licenses.License currentLicense = ((com.aetrion.flickr.photos.licenses.License)p);   
+            if ( (currentLicense !=  null)&& (currentLicense.getId().equalsIgnoreCase(licenseID))) {
+                
+                return currentLicense.getUrl();
+            }
+        }
+      
+      return "";
+  }
+  
+  public String getLicenseNumber(String licenseURL) {
+      
+      String licenseNumber = "";
+      if (!licenseURL.equalsIgnoreCase("")) {
+            
+            if (licenseURL.endsWith("/")) {
+                licenseURL = licenseURL.substring(0, licenseURL.length()-1);
+            }
+            licenseNumber = licenseURL.substring(licenseURL.lastIndexOf("/")+1);
+        }
+      
+      return licenseNumber;
+  }
      
-     public String GetLicense() {
+     public String getLicense() {
          Object oLicense = xControlCont.getControl(LISTBOX_LICENSE);
          XListBox cmbJList = (XListBox)UnoRuntime.queryInterface(XListBox.class, oLicense);
         
          String selectedItem = cmbJList.getSelectedItem();
          if (selectedItem.length()>0)
          {
-             return selectedItem.substring(0, 1);
+             return selectedItem.substring(0, selectedItem.indexOf("."));
          }
          
          return "0";

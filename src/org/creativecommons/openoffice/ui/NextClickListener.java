@@ -27,7 +27,7 @@ import java.util.ArrayList;
  *
  * @author Administrator
  */
-public class NextClickListener implements XActionListener{
+public class NextClickListener implements XActionListener {
     
     private PictureFlickrDialog flickrDialog;
     private CcOOoAddin addin;
@@ -40,8 +40,8 @@ public class NextClickListener implements XActionListener{
     
     public void actionPerformed(ActionEvent a) {
 
-        flickrDialog.showNextPage(0);
-        flickrDialog.setProgressValue(100);
+        NextThread th = new NextThread(flickrDialog);
+        th.start();
     }
     
     public void disposing(EventObject e) {
