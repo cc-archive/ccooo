@@ -6,6 +6,7 @@
 package org.creativecommons.openoffice.ui;
 
 import java.util.ArrayList;
+import com.sun.star.awt.SystemPointer;
 import org.creativecommons.openoffice.program.Image;
 import org.creativecommons.openoffice.program.FlickrConnection;
 
@@ -25,6 +26,7 @@ public class SearchThread extends Thread {
 
     public void run() {
         
+        flickrDialog.setMousePointer(SystemPointer.WAIT);
         flickrDialog.enableControl(PictureFlickrDialog.BTN_SEARCH, false);
         flickrDialog.enableControl(PictureFlickrDialog.BTN_NEXT, false);
         flickrDialog.setProgressValue(0);
@@ -38,6 +40,7 @@ public class SearchThread extends Thread {
         flickrDialog.setProgressValue(100);
         flickrDialog.enableControl(PictureFlickrDialog.BTN_SEARCH, true);
         flickrDialog.enableControl(PictureFlickrDialog.BTN_NEXT, true);
+        flickrDialog.setMousePointer(SystemPointer.ARROW);
     }
     
 }

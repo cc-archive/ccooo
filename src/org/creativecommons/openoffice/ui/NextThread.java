@@ -5,6 +5,8 @@
 
 package org.creativecommons.openoffice.ui;
 
+import com.sun.star.awt.SystemPointer;
+
 /**
  *
  * @author mihu
@@ -20,6 +22,7 @@ public class NextThread extends Thread{
 
     public void run() {
         
+        flickrDialog.setMousePointer(SystemPointer.WAIT);
         flickrDialog.enableControl(PictureFlickrDialog.BTN_NEXT, false);
         flickrDialog.enableControl(PictureFlickrDialog.BTN_SEARCH, false);
         flickrDialog.setProgressValue(0);
@@ -27,6 +30,7 @@ public class NextThread extends Thread{
         flickrDialog.setProgressValue(100);
         flickrDialog.enableControl(PictureFlickrDialog.BTN_NEXT, true);
         flickrDialog.enableControl(PictureFlickrDialog.BTN_SEARCH, true);
+        flickrDialog.setMousePointer(SystemPointer.ARROW);
     }
 
 }

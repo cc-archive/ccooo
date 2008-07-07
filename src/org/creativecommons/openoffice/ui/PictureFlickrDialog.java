@@ -13,6 +13,7 @@ import com.sun.star.ucb.XFileIdentifierConverter;
 import com.sun.star.beans.UnknownPropertyException;
 import java.awt.Rectangle;
 import com.sun.star.awt.XButton;
+import com.sun.star.awt.XPointer;
 import com.sun.star.awt.XCheckBox;
 import com.sun.star.awt.XControl;
 import com.sun.star.awt.XControlContainer;
@@ -81,6 +82,7 @@ public class PictureFlickrDialog {
     private XControlContainer xControlCont = null;    
     private XDialog xDialog = null;
     private XControl xControl;
+    private XWindowPeer xWindowPeer;
     
     private CcOOoAddin addin = null;
     private int currentPositionInList = 0;
@@ -214,6 +216,8 @@ public class PictureFlickrDialog {
         XWindow xWindow = (XWindow)UnoRuntime.queryInterface(XWindow.class, xControl);
         xWindow.setVisible(false);
         xControl.createPeer(xToolkit, null);
+        xWindowPeer = xControl.getPeer();
+        
         
         // execute the dialog
         this.xDialog = (XDialog)UnoRuntime.queryInterface(XDialog.class, dialog);
@@ -383,13 +387,14 @@ public class PictureFlickrDialog {
             else
                 userName= " ";
             
-        XPropertySet xpsProperties = createAWTControl(lblUser, "ImageLabelUser"+pos, userName, new Rectangle(rect.x+rect.height+3, rect.y, 150, 20));        
+        XPropertySet xpsProperties = createAWTControl(lblUser, "ImageLabelUser"+pos, userName, new Rectangle(rect.x+rect.height+3, rect.y, 150, 20));                
         if (img!= null)
         {
             xpsProperties.setPropertyValue("URL", img.getProfile());
         }
         else
-            xpsProperties.setPropertyValue("URL", "");
+            xpsProperties.setPropertyValue("URL", "");   
+      //  Object preferedSize = xpsProperties.getPropertyValue("PreferredSize");
         
         Object lblMainPageImage = null;
             if (getNameContainer().hasByName("ImageLabelMainPage"+pos))
@@ -534,6 +539,32 @@ public class PictureFlickrDialog {
       
       return licenseNumber;
   }
+  
+  /**
+      * Canges the mouse pointer.
+      *
+      * @param xContext
+      * @param xWindowPeer
+      * @param nSystemPointer
+      */
+     public void setMousePointer( int nSystemPointer)
+     {
+         if ( xWindowPeer == null )
+             return;
+         
+         try {
+             Object oPointer =  xMultiComponentFactory.createInstanceWithContext(
+                     "com.sun.star.awt.Pointer", m_xContext);
+             if ( oPointer!=null ) {
+                 XPointer xPointer = (XPointer) UnoRuntime.queryInterface(
+                         XPointer.class, oPointer);
+                 xPointer.setType( new Integer( nSystemPointer ) );
+                 xWindowPeer.setPointer(xPointer);
+             }
+         } catch (java.lang.Exception ex) {
+             ex.printStackTrace();
+         }
+     }
      
      public String getLicense() {
          Object oLicense = xControlCont.getControl(LISTBOX_LICENSE);
