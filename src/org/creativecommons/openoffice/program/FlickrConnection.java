@@ -53,7 +53,7 @@ public class FlickrConnection {
         PhotoList list=null;
         try
         {          
-           list = pInterf.search(sp, 100, 3);  
+           list = pInterf.search(sp, 100, PictureFlickrDialog.SHOWRESULTSPERPAGE);  
         }
         catch(com.aetrion.flickr.FlickrException ex){
         ex.printStackTrace(); 
