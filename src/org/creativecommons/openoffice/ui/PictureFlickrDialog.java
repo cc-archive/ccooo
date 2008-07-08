@@ -8,60 +8,33 @@
  
 package org.creativecommons.openoffice.ui;
 
-import com.sun.star.uno.AnyConverter;
-import com.sun.star.ucb.XFileIdentifierConverter;
-import com.sun.star.beans.UnknownPropertyException;
 import java.awt.Rectangle;
 import com.sun.star.awt.XButton;
 import com.sun.star.awt.XPointer;
-import com.sun.star.awt.XCheckBox;
 import com.sun.star.awt.XControl;
 import com.sun.star.awt.XControlContainer;
 import com.sun.star.awt.XControlModel;
 import com.sun.star.awt.XDialog;
-import com.sun.star.awt.PushButtonType;
 import com.sun.star.awt.XListBox;
 import com.sun.star.awt.XPopupMenu;
-import com.sun.star.awt.XMenuExtended;
-import com.sun.star.awt.XFixedText;
-import com.sun.star.awt.XTextComponent;
 import com.sun.star.awt.XToolkit;
 import com.sun.star.awt.XWindow;
-import com.sun.star.beans.PropertyVetoException;
-import com.sun.star.beans.UnknownPropertyException;
 import com.sun.star.beans.XPropertySet;
 import com.sun.star.beans.XMultiPropertySet;
-import com.sun.star.container.NoSuchElementException;
 import com.sun.star.container.XNameContainer;
-import com.sun.star.lang.WrappedTargetException;
 import com.sun.star.lang.XComponent;
 import com.sun.star.lang.XMultiComponentFactory;
 import com.sun.star.lang.XMultiServiceFactory;
 import com.sun.star.uno.UnoRuntime;
-import com.sun.star.awt.XFixedHyperlink;
 import com.sun.star.uno.XComponentContext;
-import java.util.Iterator;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
 import com.sun.star.graphic.XGraphic;
-import org.creativecommons.license.Chooser;
-import org.creativecommons.license.IJurisdiction;
-import org.creativecommons.license.Jurisdiction;
-import org.creativecommons.license.License;
-import org.creativecommons.license.Store;
 import org.creativecommons.openoffice.*;
 import org.creativecommons.openoffice.program.Image;
 import com.sun.star.awt.XWindowPeer; 
 import com.sun.star.graphic.XGraphicProvider;
 import com.sun.star.beans.PropertyValue;
-import java.io.File;
-import java.io.ByteArrayOutputStream;
-import java.io.RandomAccessFile;
-import java.io.BufferedInputStream;
-import java.net.URL;
-import javax.imageio.ImageIO;
-import java.io.InputStream;
 import org.creativecommons.openoffice.program.FlickrConnection;
 
 /**
@@ -97,11 +70,13 @@ public class PictureFlickrDialog {
     public static final String BTN_SEARCH = "btnSearch";
     public static final String searchButtonLabel = "Search";
     public static final String GB_RESULTS = "gbResults";
-    public static final String BTN_NEXT = "btnNext";
+    public static final String BTN_NEXT = "btnNext";    
     public static final String BTN_NEXTLABEL = "Next";
+    public static final String BTN_PREVIOUS = "btnPrevious";
+    public static final String BTN_PREVIOUSLABEL = "Previous";
     public static final String PB_NAME = "progressBar";
     
-    public static final int SHOWRESULTSPERPAGE = 6;
+    public static final int SHOWRESULTSPERPAGE = 5;
     public static final int POSITIONWIDTHHEIGHT = 50;
     
     /**
@@ -277,28 +252,45 @@ public class PictureFlickrDialog {
          this.currentList = imgList;
          this.currentPositionInList = 0;
          
-         showNextPage(progressValue);        
+         showNextPage(progressValue, true);        
      }
      
-     public void showNextPage(int progressValue)
+     public void showNextPage(int progressValue, boolean showNext)
      {
          if (currentList == null)
          {             
             return;
          }
          
+         enableControl(BTN_PREVIOUS, false);
+         
          double rateProgress = (double)(95 - progressValue) / SHOWRESULTSPERPAGE;
          double currentProgress = progressValue;
+         int currentY = 0;
          for (int i = 0;i<SHOWRESULTSPERPAGE;i++)
          {             
              if (currentList.size()>currentPositionInList)
              {
+                 if (i==0) {
+                     currentY = (i+2)*POSITIONWIDTHHEIGHT-15;
+                 }
+                 else
+                     currentY += POSITIONWIDTHHEIGHT+5;
+                
+                 if (!showNext)
+                 {
+                    currentPositionInList = currentPositionInList- 2*SHOWRESULTSPERPAGE;
+                    showNext = true;
+                 }
+                 
                 createImageControl(currentList.get(currentPositionInList), new Rectangle(15, 
-                        (i+2)*POSITIONWIDTHHEIGHT-15, POSITIONWIDTHHEIGHT, POSITIONWIDTHHEIGHT), String.valueOf(i));
-                currentPositionInList++;
+                       currentY , POSITIONWIDTHHEIGHT, POSITIONWIDTHHEIGHT), String.valueOf(i));
+                
+                
+                currentPositionInList++;                
              }
              else
-                 createImageControl(null, new Rectangle(15, (i+2)*POSITIONWIDTHHEIGHT-15, POSITIONWIDTHHEIGHT, 
+                 createImageControl(null, new Rectangle(15, (i+2)*POSITIONWIDTHHEIGHT, POSITIONWIDTHHEIGHT, 
                          POSITIONWIDTHHEIGHT), String.valueOf(i));                                            
              
              currentProgress+= rateProgress;
@@ -307,27 +299,54 @@ public class PictureFlickrDialog {
      
          try
          {             
-             Object nextButton = null;
+             Object button = null;
              boolean isNewCreated = false;
              if (getNameContainer().hasByName(BTN_NEXT))
              {
-                 nextButton = getNameContainer().getByName(BTN_NEXT);
+                 button = getNameContainer().getByName(BTN_NEXT);
              }
              else
              {             
-                nextButton = xMultiServiceFactory.createInstance("com.sun.star.awt.UnoControlButtonModel");                  
+                button = xMultiServiceFactory.createInstance("com.sun.star.awt.UnoControlButtonModel");                  
                 isNewCreated = true;
              }
           
-            createAWTControl(nextButton, BTN_NEXT, BTN_NEXTLABEL, new Rectangle(150, 375, 40, 15)); 
+            createAWTControl(button, BTN_NEXT, BTN_NEXTLABEL, new Rectangle(150, 375, 40, 15)); 
             
             if (isNewCreated)
              {
                 XButton xNextButton = (XButton)UnoRuntime.queryInterface(XButton.class, 
                         xControlCont.getControl(BTN_NEXT));
-                xNextButton.addActionListener(new NextClickListener(this, this.addin));
+                xNextButton.addActionListener(new PrevNextClickListener(this, this.addin));
+                xNextButton.setActionCommand(BTN_NEXT);
             }
-                                    
+            
+             isNewCreated = false;
+             if (getNameContainer().hasByName(BTN_PREVIOUS))
+             {
+                 button = getNameContainer().getByName(BTN_PREVIOUS);
+             }
+             else
+             {             
+                button = xMultiServiceFactory.createInstance("com.sun.star.awt.UnoControlButtonModel");                  
+                isNewCreated = true;
+             }
+          
+            createAWTControl(button, BTN_PREVIOUS, BTN_PREVIOUSLABEL, new Rectangle(50, 375, 40, 15)); 
+            
+            if (isNewCreated)
+             {
+                XButton xPrevButton = (XButton)UnoRuntime.queryInterface(XButton.class, 
+                        xControlCont.getControl(BTN_PREVIOUS));
+                xPrevButton.addActionListener(new PrevNextClickListener(this, this.addin));
+                xPrevButton.setActionCommand(BTN_PREVIOUS);
+            }
+            
+            if (currentPositionInList<=SHOWRESULTSPERPAGE) 
+                enableControl(BTN_PREVIOUS, false);
+            else
+                enableControl(BTN_PREVIOUS, true);
+            
          } catch (Exception ex) {
             ex.printStackTrace();
          }
@@ -413,7 +432,7 @@ public class PictureFlickrDialog {
             else
                 title = " ";
         
-        xpsProperties = createAWTControl(lblMainPageImage, "ImageLabelMainPage"+pos, title, new Rectangle(rect.x+rect.height+3, rect.y+23, 150, 20));        
+        xpsProperties = createAWTControl(lblMainPageImage, "ImageLabelMainPage"+pos, title, new Rectangle(rect.x+rect.height+3, rect.y+10, 150, 20));        
         if (img!= null)
         {
             xpsProperties.setPropertyValue("URL", img.getImgUrlMainPage());
@@ -586,6 +605,11 @@ public class PictureFlickrDialog {
      public Image getSelectedImage() {
          
          return selectedImage;
+     }
+     
+     public void setSelectedImage(Image selImage) {
+         
+         this.selectedImage = selImage;
      }
     
     public void close() {

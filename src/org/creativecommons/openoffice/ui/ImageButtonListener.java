@@ -5,28 +5,18 @@
 
 package org.creativecommons.openoffice.ui;
 
+import java.util.Collection;
 import com.sun.star.awt.MouseEvent;
 import com.sun.star.awt.FocusEvent;
-import com.sun.star.awt.XButton;
 import com.sun.star.awt.ActionEvent;
-import com.sun.star.awt.XActionListener;
 import com.sun.star.awt.XControl;
 import com.sun.star.awt.XControlModel;
-import com.sun.star.beans.UnknownPropertyException;
 import com.sun.star.beans.XPropertySet;
-import com.sun.star.container.NoSuchElementException;
 import com.sun.star.lang.EventObject;
-import com.sun.star.lang.WrappedTargetException;
 import com.sun.star.uno.UnoRuntime;
-import org.creativecommons.license.Chooser;
-import org.creativecommons.license.License;
-import org.creativecommons.openoffice.program.Calc;
 import org.creativecommons.openoffice.CcOOoAddin;
-import org.creativecommons.openoffice.program.Impress;
-import org.creativecommons.openoffice.program.Writer;
 import org.creativecommons.openoffice.program.Image;
 import org.creativecommons.openoffice.program.FlickrConnection;
-import java.util.ArrayList;
 import com.sun.star.awt.XMouseListener;
 import com.sun.star.awt.MouseButton;
 
@@ -55,7 +45,8 @@ public class ImageButtonListener implements XMouseListener{
     
     public void mousePressed(MouseEvent _mouseEvent) {
         
-        if (_mouseEvent.Buttons == MouseButton.RIGHT) {
+        if ((_mouseEvent.Buttons == MouseButton.RIGHT)||
+            (_mouseEvent.Buttons == MouseButton.LEFT)) {
             
           //we have to add also the position of the image control within the main dialog
           XControl xControl = (XControl) UnoRuntime.queryInterface(XControl.class, _mouseEvent.Source);
@@ -73,10 +64,21 @@ public class ImageButtonListener implements XMouseListener{
               ex.printStackTrace();
           }
             
-          flickrDialog.executePopupMenu(this.currentImage, _mouseEvent.X + posX, _mouseEvent.Y + posY);
+          if (_mouseEvent.Buttons == MouseButton.RIGHT) 
+                flickrDialog.executePopupMenu(this.currentImage, _mouseEvent.X + posX, _mouseEvent.Y + posY);
+          else
+              if (_mouseEvent.Buttons == MouseButton.LEFT) 
+              {
+                  flickrDialog.close();
+                  flickrDialog.setSelectedImage(currentImage);
+                  Collection sizes = FlickrConnection.instance.getPhotoSizes(currentImage.getPhotoID());
+                  currentImage.setSelectedImageSizes(sizes);
+                  flickrDialog.getSelectedImage().RefreshSelectedImageData((short)com.aetrion.flickr.photos.Size.MEDIUM);
+                  addin.getProgramWrapper().insertPictureFlickr(flickrDialog.getSelectedImage()); 
+              }
         }
-        
-    }    
+    }
+         
     
     public void mouseExited(MouseEvent mouseEvent) {
     }

@@ -29,6 +29,7 @@ public class SearchThread extends Thread {
         flickrDialog.setMousePointer(SystemPointer.WAIT);
         flickrDialog.enableControl(PictureFlickrDialog.BTN_SEARCH, false);
         flickrDialog.enableControl(PictureFlickrDialog.BTN_NEXT, false);
+        //flickrDialog.enableControl(PictureFlickrDialog.BTN_PREVIOUS, false);
         flickrDialog.setProgressValue(0);
         String licenseID = flickrDialog.getLicense();
         String licenseURL = flickrDialog.getLicenseURL(licenseID);
@@ -40,6 +41,7 @@ public class SearchThread extends Thread {
         flickrDialog.setProgressValue(100);
         flickrDialog.enableControl(PictureFlickrDialog.BTN_SEARCH, true);
         flickrDialog.enableControl(PictureFlickrDialog.BTN_NEXT, true);
+        //flickrDialog.enableControl(PictureFlickrDialog.BTN_PREVIOUS, true);
         flickrDialog.setMousePointer(SystemPointer.ARROW);
     }
     
