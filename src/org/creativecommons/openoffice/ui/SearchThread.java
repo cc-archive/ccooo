@@ -17,7 +17,6 @@ import org.creativecommons.openoffice.program.FlickrConnection;
 public class SearchThread extends Thread {
     
     private PictureFlickrDialog flickrDialog;
-    private FlickrConnection flickrConn;
     
     public SearchThread(PictureFlickrDialog flickrDialog) {
         
@@ -34,7 +33,7 @@ public class SearchThread extends Thread {
         String licenseID = flickrDialog.getLicense();
         String licenseURL = flickrDialog.getLicenseURL(licenseID);
         String licenseNumber = flickrDialog.getLicenseNumber(licenseURL);        
-        ArrayList<Image> imgList = flickrConn.instance.searchPhotos(flickrDialog.GetTags(),
+        ArrayList<Image> imgList = FlickrConnection.instance.searchPhotos(flickrDialog.GetTags(),
                 licenseID, licenseURL, licenseNumber);        
         flickrDialog.setProgressValue(30);
         flickrDialog.showResults(imgList, 30);

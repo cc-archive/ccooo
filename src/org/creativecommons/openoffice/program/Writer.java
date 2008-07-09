@@ -101,8 +101,8 @@ public class Writer extends OOoProgram {
           xBitmapContainer.removeByName(sName);
      
           docCursor.getText().insertControlCharacter(docCursor, ControlCharacter.PARAGRAPH_BREAK, false );
-          String caption = img.getTitle()+" ("+img.getImgUrlMainPage()+") / CC BY "+ img.getLicenseNumber() +
-                  " (" + img.getLicenseURL() + ")";
+          String caption = img.getTitle()+" ( "+img.getImgUrlMainPage()+" ) / CC BY "+ img.getLicenseNumber() +
+                  " ( " + img.getLicenseURL() + " )";
           docCursor.getText().insertString(docCursor, caption, false);
           
 //           // create a hyperlink

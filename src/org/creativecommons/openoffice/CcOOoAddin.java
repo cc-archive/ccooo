@@ -85,6 +85,7 @@ public final class CcOOoAddin extends WeakBase
     protected XMultiComponentFactory xMultiComponentFactory = null;
     protected XMultiComponentFactory mxRemoteServiceManager = null;
     
+    private PictureFlickrDialog dlgPicture = null;
     
     /**
      * Constructs a new instance
@@ -297,10 +298,17 @@ public final class CcOOoAddin extends WeakBase
             
             this.updateCurrentComponent();
             
-            // Create the dialog for license selection
-            PictureFlickrDialog dialog = new PictureFlickrDialog(this, this.m_xContext);
-            dialog.showDialog();                         
+            if (dlgPicture == null)
+            {
+                dlgPicture = new PictureFlickrDialog(this, this.m_xContext);
+                dlgPicture.showDialog(false);                             
+            }
+            else 
+            {                
+                dlgPicture.showDialog(true);                
+            }
             
+
         } catch (Exception ex) {
             ex.printStackTrace();
         }

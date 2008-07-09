@@ -30,6 +30,7 @@ public class FlickrConnection {
     public  String  apiKEY= "c5e0a253b7f94e354d62c9b64d589f73";
     public final static FlickrConnection instance = new FlickrConnection();
     private Flickr flickr = new Flickr(apiKEY);
+    private SearchParameters currentSearch = null;
     
     protected FlickrConnection() {        
     }
@@ -41,19 +42,19 @@ public class FlickrConnection {
     
     public ArrayList<Image> searchPhotos(String[] tags, String licenseId, String licenseURL, String licenseNumber)
     {
-        SearchParameters sp = new SearchParameters();       
-        sp.setSort(SearchParameters.RELEVANCE);
+        currentSearch = new SearchParameters();       
+        currentSearch.setSort(SearchParameters.RELEVANCE);
         if (tags.length>0)
-            sp.setTags(tags);
+            currentSearch.setTags(tags);
       
         if (licenseId.length()>0)
-            sp.setLicense(licenseId);
+            currentSearch.setLicense(licenseId);
        
         PhotosInterface pInterf = flickr.getPhotosInterface();
         PhotoList list=null;
         try
         {          
-           list = pInterf.search(sp, 100, PictureFlickrDialog.SHOWRESULTSPERPAGE);  
+           list = pInterf.search(currentSearch, 100, PictureFlickrDialog.SHOWRESULTSPERPAGE);  
         }
         catch(com.aetrion.flickr.FlickrException ex){
         ex.printStackTrace(); 
@@ -169,5 +170,10 @@ public class FlickrConnection {
             default :
                 return "";
         }
+    }
+    
+    public SearchParameters getSearch() {
+        
+        return this.currentSearch;
     }
 }

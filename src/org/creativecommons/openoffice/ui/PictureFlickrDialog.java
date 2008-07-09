@@ -8,6 +8,7 @@
  
 package org.creativecommons.openoffice.ui;
 
+import com.sun.star.awt.SystemPointer;
 import java.awt.Rectangle;
 import com.sun.star.awt.XButton;
 import com.sun.star.awt.XPointer;
@@ -91,7 +92,7 @@ public class PictureFlickrDialog {
      * Method for creating a dialog at runtime
      *
      */
-    public void showDialog() throws com.sun.star.uno.Exception {
+    public void showDialog(boolean defaultSearch) throws com.sun.star.uno.Exception {
         
         try
         {
@@ -193,6 +194,11 @@ public class PictureFlickrDialog {
         xControl.createPeer(xToolkit, null);
         xWindowPeer = xControl.getPeer();
         
+        if (defaultSearch) {
+            
+            SavedSearchThread thread = new SavedSearchThread(this);
+            thread.start();
+        }
         
         // execute the dialog
         this.xDialog = (XDialog)UnoRuntime.queryInterface(XDialog.class, dialog);
@@ -613,10 +619,22 @@ public class PictureFlickrDialog {
      }
     
     public void close() {
-        this.xDialog.endExecute();
         
+        this.xDialog.endExecute();        
+    }
+    
+    public void startSavedSearch() {
+    
+        setMousePointer(SystemPointer.WAIT);
+        enableControl(PictureFlickrDialog.BTN_SEARCH, false);
+        enableControl(PictureFlickrDialog.BTN_NEXT, false);
+        currentPositionInList -= SHOWRESULTSPERPAGE;
+        showNextPage(0, true);
+        setProgressValue(100);
+        enableControl(PictureFlickrDialog.BTN_SEARCH, true);
+        enableControl(PictureFlickrDialog.BTN_NEXT, true);
+        setMousePointer(SystemPointer.ARROW);
     }
     
     
-} // ChooserDialog
-
+} // PictureFlickrDialog
