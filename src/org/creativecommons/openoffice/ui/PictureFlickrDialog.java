@@ -8,6 +8,7 @@
  
 package org.creativecommons.openoffice.ui;
 
+import com.sun.star.awt.XCheckBox;
 import com.sun.star.awt.SystemPointer;
 import java.awt.Rectangle;
 import com.sun.star.awt.XButton;
@@ -66,8 +67,14 @@ public class PictureFlickrDialog {
     
     public static final String LBL_TAGS = "lblTags";
     public static final String TXT_TAGS = "txtTags";
-    public static final String LBL_LICENSE = "lblLicense";
-    public static final String LISTBOX_LICENSE = "cmbLicense";    
+    public static final String CHK_COMMERCIALNAME = "chkCommercial";
+    public static final String CHK_COMMERCIALLABEL = "Search for works I can use for commercial purposes";
+    public static final String CHK_UPDATENAME = "chkUpdate";
+    public static final String CHK_UPDATELABEL = "Search for works I can modify, adapt, or build upon";
+    public static final String CHK_SHAREALKENAME = "chkShareAlike";
+    public static final String CHK_SHAREALKELABEL = "Include content which requires my to Share-Alike";
+    //public static final String LBL_LICENSE = "lblLicense";
+    //public static final String LISTBOX_LICENSE = "cmbLicense";    
     public static final String BTN_SEARCH = "btnSearch";
     public static final String searchButtonLabel = "Search";
     public static final String GB_RESULTS = "gbResults";
@@ -77,8 +84,9 @@ public class PictureFlickrDialog {
     public static final String BTN_PREVIOUSLABEL = "Previous";
     public static final String PB_NAME = "progressBar";
     
-    public static final int SHOWRESULTSPERPAGE = 5;
+    public static final int SHOWRESULTSPERPAGE = 4;
     public static final int POSITIONWIDTHHEIGHT = 50;
+    public static final int LOCATIONIMAGESY = 100;
     
     /**
      * Creates a new instance of ChooserDialog
@@ -107,7 +115,7 @@ public class PictureFlickrDialog {
                 XMultiServiceFactory.class, dlgLicenseSelector);
         
         XPropertySet xPSetDialog = createAWTControl(dlgLicenseSelector, "dlgMainForm",
-                "", new Rectangle(100, 100, 250, 430));
+                "", new Rectangle(100, 100, 250, 390));
         xPSetDialog.setPropertyValue("Title", new String("Insert Picture From Flickr"));
         xPSetDialog.setPropertyValue("Step", (short)1 );        
         
@@ -125,18 +133,36 @@ public class PictureFlickrDialog {
         Object txtTags = msfLicenseSelector.createInstance("com.sun.star.awt.UnoControlEditModel");
         createAWTControl(txtTags, TXT_TAGS, "", new Rectangle(30, 10, 150, 12));
         
-        Object lblLicense = msfLicenseSelector.createInstance("com.sun.star.awt.UnoControlFixedTextModel");
-        createAWTControl(lblLicense, LBL_LICENSE, "License", new Rectangle(10, 35, 50, 12));        
+//        Object lblLicense = msfLicenseSelector.createInstance("com.sun.star.awt.UnoControlFixedTextModel");
+//        createAWTControl(lblLicense, LBL_LICENSE, "License", new Rectangle(10, 35, 50, 12));        
         
-        Object cmbLicense = msfLicenseSelector.createInstance("com.sun.star.awt.UnoControlListBoxModel");   
-        XPropertySet xpsLicense = createAWTControl(cmbLicense, LISTBOX_LICENSE, "", new Rectangle(30, 35, 150, 12));                    
-        xpsLicense.setPropertyValue("MultiSelection", new Boolean("false"));
-        xpsLicense.setPropertyValue("Dropdown", new Boolean("true"));
-        xpsLicense.setPropertyValue("Step", new Short((short)1));
+//        Object cmbLicense = msfLicenseSelector.createInstance("com.sun.star.awt.UnoControlListBoxModel");   
+//        XPropertySet xpsLicense = createAWTControl(cmbLicense, LISTBOX_LICENSE, "", new Rectangle(30, 35, 150, 12));                    
+//        xpsLicense.setPropertyValue("MultiSelection", new Boolean("false"));
+//        xpsLicense.setPropertyValue("Dropdown", new Boolean("true"));
+//        xpsLicense.setPropertyValue("Step", new Short((short)1));
+        
+        Object chkCommercial = msfLicenseSelector.createInstance("com.sun.star.awt.UnoControlCheckBoxModel");   
+        XPropertySet xpsCHKProperties = createAWTControl(chkCommercial, CHK_COMMERCIALNAME, CHK_COMMERCIALLABEL, 
+                new Rectangle(10, 32, 150, 12));                                    
+        xpsCHKProperties.setPropertyValue("TriState", Boolean.FALSE);
+        xpsCHKProperties.setPropertyValue("State", new Short((short) 1));
+        
+        Object chkUpdate = msfLicenseSelector.createInstance("com.sun.star.awt.UnoControlCheckBoxModel");   
+        xpsCHKProperties = createAWTControl(chkUpdate, CHK_UPDATENAME, CHK_UPDATELABEL, 
+                new Rectangle(10, 49, 150, 12));                                    
+        xpsCHKProperties.setPropertyValue("TriState", Boolean.FALSE);
+        xpsCHKProperties.setPropertyValue("State", new Short((short) 1));
+        
+        Object chkShareAlike = msfLicenseSelector.createInstance("com.sun.star.awt.UnoControlCheckBoxModel");   
+        xpsCHKProperties = createAWTControl(chkShareAlike, CHK_SHAREALKENAME, CHK_SHAREALKELABEL, 
+                new Rectangle(50, 66, 150, 12));                                    
+        xpsCHKProperties.setPropertyValue("TriState", Boolean.FALSE);
+        xpsCHKProperties.setPropertyValue("State", new Short((short) 0));
         
         Object searchButton = msfLicenseSelector.createInstance("com.sun.star.awt.UnoControlButtonModel");   
         XPropertySet xPSetFinishButton = createAWTControl(searchButton, BTN_SEARCH, searchButtonLabel,
-                new Rectangle(30, 55, 40, 15));                    
+                new Rectangle(140, 85, 40, 15));                    
         xPSetFinishButton.setPropertyValue("DefaultButton", new Boolean("true"));
         
         // create the dialog control and set the model
@@ -152,32 +178,32 @@ public class PictureFlickrDialog {
         XButton xFinishButton = (XButton)UnoRuntime.queryInterface(XButton.class, objSearchButton);
         xFinishButton.addActionListener(new SearchClickListener(this, this.addin));
         
-        Object oLicense = xControlCont.getControl(LISTBOX_LICENSE);
-        XListBox cmbJList = (XListBox)UnoRuntime.queryInterface(XListBox.class, oLicense);
+//        Object oLicense = xControlCont.getControl(LISTBOX_LICENSE);
+//        XListBox cmbJList = (XListBox)UnoRuntime.queryInterface(XListBox.class, oLicense);
         
         this.flickrLicenses = FlickrConnection.instance.getLicenses();
-        for (Object p : this.flickrLicenses.toArray())
-        {
-            com.aetrion.flickr.photos.licenses.License currentLicense = ((com.aetrion.flickr.photos.licenses.License)p);   
-            if ( (currentLicense !=  null)&& (!currentLicense.getUrl().equalsIgnoreCase(""))) {
-                
-                cmbJList.addItem(currentLicense.getId()+"."+currentLicense.getName(), new Short(currentLicense.getId()));                
-            }
-        }
+//        for (Object p : this.flickrLicenses.toArray())
+//        {
+//            com.aetrion.flickr.photos.licenses.License currentLicense = ((com.aetrion.flickr.photos.licenses.License)p);   
+//            if ( (currentLicense !=  null)&& (!currentLicense.getUrl().equalsIgnoreCase(""))) {
+//                
+//                cmbJList.addItem(currentLicense.getId()+"."+currentLicense.getName(), new Short(currentLicense.getId()));                
+//            }
+//        }
                 
         //cmbJList.selectItem("4.Attribution License", true);
        // cmbJList.makeVisible((short)4);
-        cmbJList.addItemListener(new LicenseListListener(this));
+      //  cmbJList.addItemListener(new LicenseListListener(this));
        
         Object oGBResults = msfLicenseSelector.createInstance("com.sun.star.awt.UnoControlGroupBoxModel");   
-        createAWTControl(oGBResults, GB_RESULTS, "Results", new Rectangle(10, 75, 230, 320));                            
+        createAWTControl(oGBResults, GB_RESULTS, "Results", new Rectangle(10, LOCATIONIMAGESY, 230, 265));                            
         
         Object oPBar = msfLicenseSelector.createInstance("com.sun.star.awt.UnoControlProgressBarModel");   
         XMultiPropertySet xPBModelMPSet = (XMultiPropertySet) UnoRuntime.queryInterface(XMultiPropertySet.class, oPBar);
       // Set the properties at the model - keep in mind to pass the property names in alphabetical order!
         xPBModelMPSet.setPropertyValues(
             new String[] {"Height", "Name", "PositionX", "PositionY", "Width"},
-            new Object[] { new Integer(8), PB_NAME, new Integer(10), new Integer(400), new Integer(230)});
+            new Object[] { new Integer(8), PB_NAME, new Integer(10), new Integer(370), new Integer(230)});
  
        // The controlmodel is not really available until inserted to the Dialog container
        getNameContainer().insertByName(PB_NAME, oPBar);
@@ -272,16 +298,12 @@ public class PictureFlickrDialog {
          
          double rateProgress = (double)(95 - progressValue) / SHOWRESULTSPERPAGE;
          double currentProgress = progressValue;
-         int currentY = 0;
+         int currentY = LOCATIONIMAGESY - POSITIONWIDTHHEIGHT + 10;
          for (int i = 0;i<SHOWRESULTSPERPAGE;i++)
          {             
              if (currentList.size()>currentPositionInList)
              {
-                 if (i==0) {
-                     currentY = (i+2)*POSITIONWIDTHHEIGHT-15;
-                 }
-                 else
-                     currentY += POSITIONWIDTHHEIGHT+5;
+                 currentY += POSITIONWIDTHHEIGHT + 5;
                 
                  if (!showNext)
                  {
@@ -317,7 +339,7 @@ public class PictureFlickrDialog {
                 isNewCreated = true;
              }
           
-            createAWTControl(button, BTN_NEXT, BTN_NEXTLABEL, new Rectangle(150, 375, 40, 15)); 
+            createAWTControl(button, BTN_NEXT, BTN_NEXTLABEL, new Rectangle(150, 340, 40, 15)); 
             
             if (isNewCreated)
              {
@@ -338,7 +360,7 @@ public class PictureFlickrDialog {
                 isNewCreated = true;
              }
           
-            createAWTControl(button, BTN_PREVIOUS, BTN_PREVIOUSLABEL, new Rectangle(50, 375, 40, 15)); 
+            createAWTControl(button, BTN_PREVIOUS, BTN_PREVIOUSLABEL, new Rectangle(50, 340, 40, 15)); 
             
             if (isNewCreated)
              {
@@ -539,6 +561,7 @@ public class PictureFlickrDialog {
   
   public String getLicenseURL(String licenseID) {
       
+      //possible to change!!!
       for (Object p : this.flickrLicenses.toArray())
         {
             com.aetrion.flickr.photos.licenses.License currentLicense = ((com.aetrion.flickr.photos.licenses.License)p);   
@@ -592,14 +615,14 @@ public class PictureFlickrDialog {
      }
      
      public String getLicense() {
-         Object oLicense = xControlCont.getControl(LISTBOX_LICENSE);
-         XListBox cmbJList = (XListBox)UnoRuntime.queryInterface(XListBox.class, oLicense);
-        
-         String selectedItem = cmbJList.getSelectedItem();
-         if (selectedItem.length()>0)
-         {
-             return selectedItem.substring(0, selectedItem.indexOf("."));
-         }
+//         Object oLicense = xControlCont.getControl(LISTBOX_LICENSE);
+//         XListBox cmbJList = (XListBox)UnoRuntime.queryInterface(XListBox.class, oLicense);
+//        
+//         String selectedItem = cmbJList.getSelectedItem();
+//         if (selectedItem.length()>0)
+//         {
+//             return selectedItem.substring(0, selectedItem.indexOf("."));
+//         }
          
          return "0";
      }
