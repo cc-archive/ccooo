@@ -64,6 +64,10 @@ public class PictureFlickrDialog {
     public ArrayList<Image> currentList = null;
     private Image selectedImage = null;
     private Collection flickrLicenses = null;
+    private String savedTags;
+    private short savedCommercialStatus;
+    private short savedUpdateStatus;
+    private short savedShareAlikeStatus;
     
     public static final String LBL_TAGS = "lblTags";
     public static final String TXT_TAGS = "txtTags";
@@ -269,6 +273,11 @@ public class PictureFlickrDialog {
          try {
                
          String selTags = (String) xPSet.getPropertyValue("Text");
+         if (selTags.trim().equalsIgnoreCase("")) {
+             
+             return new String[0];
+         }
+         
          return selTags.split(" ");
          
          }
@@ -561,7 +570,6 @@ public class PictureFlickrDialog {
   
   public String getLicenseURL(String licenseID) {
       
-      //possible to change!!!
       for (Object p : this.flickrLicenses.toArray())
         {
             com.aetrion.flickr.photos.licenses.License currentLicense = ((com.aetrion.flickr.photos.licenses.License)p);   
@@ -615,18 +623,53 @@ public class PictureFlickrDialog {
      }
      
      public String getLicense() {
-//         Object oLicense = xControlCont.getControl(LISTBOX_LICENSE);
-//         XListBox cmbJList = (XListBox)UnoRuntime.queryInterface(XListBox.class, oLicense);
-//        
-//         String selectedItem = cmbJList.getSelectedItem();
-//         if (selectedItem.length()>0)
-//         {
-//             return selectedItem.substring(0, selectedItem.indexOf("."));
-//         }
          
-         return "0";
+         boolean commercial = getCheckBoxStatus(CHK_COMMERCIALNAME);
+         boolean update = getCheckBoxStatus(CHK_UPDATENAME);
+         boolean shareAlike = getCheckBoxStatus(CHK_SHAREALKENAME);
+         
+         if (commercial && update && shareAlike) {
+             return "4,5";
+         }
+         else
+             if (commercial && update) {
+                 return "1,2";
+             }
+             else
+                 if (update && shareAlike) {
+                     return "1,2,4,5";
+                 }
+                 else
+                     if  (commercial)  {
+                         return "4,5,6";
+                     }
+                     else
+                         if (update) {
+                             return "2,4";
+                         }
+         
+         //default atribution license
+         return "4";
      }
     
+     public boolean getCheckBoxStatus(String ctrlName) {
+         
+         Object oLicense = xControlCont.getControl(ctrlName);
+         XCheckBox checkBox = (XCheckBox) UnoRuntime.queryInterface(XCheckBox.class, oLicense);
+                
+         Object value = checkBox.getState();
+         if (value != null) {
+             
+             short chkStatus = new Short(value.toString());
+             if (chkStatus == 1)  {
+                 
+                 return true;
+             }
+         }
+         
+         return false;
+     }
+     
      public XNameContainer getNameContainer() {
         return xNameCont;
     }   
@@ -646,12 +689,97 @@ public class PictureFlickrDialog {
         this.xDialog.endExecute();        
     }
     
+    public boolean IsInputValid() {
+        
+        if (this.GetTags().length == 0) {
+            return false;
+        }
+        
+         boolean commercial = getCheckBoxStatus(CHK_COMMERCIALNAME);
+         boolean update = getCheckBoxStatus(CHK_UPDATENAME);
+         boolean shareAlike = getCheckBoxStatus(CHK_SHAREALKENAME);
+         
+         if (!commercial && !update && !shareAlike) {
+             
+             return false;
+         }
+         
+         if (commercial && !update && shareAlike)  {
+             
+             return false;
+         }
+         
+         if (!commercial && !update && shareAlike)  {
+             
+             return false;
+         }
+         
+         return true;
+    }
+    
+    public void saveSearch () {
+        
+         try {
+         
+            Object oTags = xControlCont.getControl(TXT_TAGS);
+            XControl txtTags = (XControl)UnoRuntime.queryInterface(XControl.class, oTags);
+            XControlModel xControlModel = txtTags.getModel();
+            XPropertySet xPSet = (XPropertySet) UnoRuntime.queryInterface(XPropertySet.class, xControlModel);
+            String selTags = (String) xPSet.getPropertyValue("Text");         
+            this.savedTags = selTags.trim();
+            
+            if (getCheckBoxStatus(CHK_COMMERCIALNAME)) 
+                savedCommercialStatus = 1;
+            else
+                savedCommercialStatus = 0;
+            
+            if (getCheckBoxStatus(CHK_UPDATENAME)) 
+                savedUpdateStatus = 1;
+            else
+                savedUpdateStatus = 0;
+            
+            if (getCheckBoxStatus(CHK_SHAREALKENAME)) 
+                savedShareAlikeStatus = 1;
+            else
+                savedShareAlikeStatus = 0;
+                        
+         }
+         catch ( Exception ex ) {
+             ex.printStackTrace();
+         }        
+    }
+    
     public void startSavedSearch() {
     
         setMousePointer(SystemPointer.WAIT);
         enableControl(PictureFlickrDialog.BTN_SEARCH, false);
         enableControl(PictureFlickrDialog.BTN_NEXT, false);
         currentPositionInList -= SHOWRESULTSPERPAGE;
+        
+        try
+        {
+            Object oTags = xControlCont.getControl(TXT_TAGS);
+            XControl txtTags = (XControl)UnoRuntime.queryInterface(XControl.class, oTags);
+            XControlModel xControlModel = txtTags.getModel();
+            XPropertySet xPSet = (XPropertySet) UnoRuntime.queryInterface(XPropertySet.class, xControlModel);
+            xPSet.setPropertyValue("Text", this.savedTags); 
+        
+            Object oLicense = xControlCont.getControl(CHK_COMMERCIALNAME);
+            XCheckBox checkBox = (XCheckBox) UnoRuntime.queryInterface(XCheckBox.class, oLicense);
+            checkBox.setState(savedCommercialStatus);
+            
+            oLicense = xControlCont.getControl(CHK_UPDATENAME);
+            checkBox = (XCheckBox) UnoRuntime.queryInterface(XCheckBox.class, oLicense);
+            checkBox.setState(savedUpdateStatus);
+            
+            oLicense = xControlCont.getControl(CHK_SHAREALKENAME);
+            checkBox = (XCheckBox) UnoRuntime.queryInterface(XCheckBox.class, oLicense);
+            checkBox.setState(savedShareAlikeStatus);
+        }
+        catch ( Exception ex ) {
+             ex.printStackTrace();
+        }
+        
         showNextPage(0, true);
         setProgressValue(100);
         enableControl(PictureFlickrDialog.BTN_SEARCH, true);

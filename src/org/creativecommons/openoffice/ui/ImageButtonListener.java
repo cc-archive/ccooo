@@ -73,7 +73,12 @@ public class ImageButtonListener implements XMouseListener{
                   flickrDialog.setSelectedImage(currentImage);
                   Collection sizes = FlickrConnection.instance.getPhotoSizes(currentImage.getPhotoID());
                   currentImage.setSelectedImageSizes(sizes);
-                  flickrDialog.getSelectedImage().RefreshSelectedImageData((short)com.aetrion.flickr.photos.Size.MEDIUM);
+                  flickrDialog.getSelectedImage().RefreshSelectedSizeImageData((short)com.aetrion.flickr.photos.Size.MEDIUM);                  
+                  com.aetrion.flickr.photos.Photo  ph = FlickrConnection.instance.getPhotoInfo(currentImage.getPhotoID(),
+                          currentImage.getSecret());
+                  currentImage.setLicenseID(ph.getLicense());
+                  currentImage.setLicenseURL(flickrDialog.getLicenseURL(ph.getLicense()));
+                  currentImage.setLicenseNumber(flickrDialog.getLicenseNumber(currentImage.getLicenseURL()));                  
                   addin.getProgramWrapper().insertPictureFlickr(flickrDialog.getSelectedImage()); 
               }
         }

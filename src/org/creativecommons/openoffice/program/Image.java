@@ -33,9 +33,10 @@ public class Image {
     private String licenseId;
     private String licenseURL;
     private String licenseNumber;
+    private String secret;
     
     public Image(String _title,Date _taken,Date _uploaded, String _imgUrl, String _profile, 
-            Collection _tags, String _imgUrlMainPage, String _userID, String _photoID) {
+            Collection _tags, String _imgUrlMainPage, String _userID, String _photoID, String _secret) {
             
         this.title = _title;
         this.taken = _taken;
@@ -46,6 +47,7 @@ public class Image {
         this.imgUrlMainPage = _imgUrlMainPage;
         this.userID = _userID;
         this.photoID = _photoID;
+        this.secret = _secret;
     }
     
     public String getTitle()
@@ -103,10 +105,10 @@ public class Image {
         return photoID;
     }
     
-//    public void setSelectedImageURL(String url) {
-//        
-//        this.selectedImageURL = url;
-//    }
+    public String getSecret()
+    {
+        return secret;
+    }
     
     public String getSelectedImageURL() {
         
@@ -159,7 +161,7 @@ public class Image {
         return licenseNumber;
     }
     
-    public void RefreshSelectedImageData(short selectedSize){
+    public void RefreshSelectedSizeImageData(short selectedSize){
         
         for (Object p : selectedImageSizes.toArray())
         {              
@@ -173,6 +175,8 @@ public class Image {
                  break;
              }
         }
+                
+        
     }
     
 }

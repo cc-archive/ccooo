@@ -10,6 +10,7 @@ import com.sun.star.awt.XMenuListener;
 import com.aetrion.flickr.photos.Size;
 import com.sun.star.awt.MenuEvent;
 import org.creativecommons.openoffice.CcOOoAddin;
+import org.creativecommons.openoffice.program.FlickrConnection;
 
 /**
  *
@@ -41,8 +42,13 @@ public class SizesMenuListener implements XMenuListener {
             case (short) Size.MEDIUM:
             case (short) Size.LARGE:
                 flickrDialog.close();
-                flickrDialog.getSelectedImage().RefreshSelectedImageData(me.MenuId);
-                addin.getProgramWrapper().insertPictureFlickr(flickrDialog.getSelectedImage());
+                flickrDialog.getSelectedImage().RefreshSelectedSizeImageData(me.MenuId);
+                com.aetrion.flickr.photos.Photo  ph = FlickrConnection.instance.getPhotoInfo(flickrDialog.getSelectedImage().getPhotoID(),
+                          flickrDialog.getSelectedImage().getSecret());
+                  flickrDialog.getSelectedImage().setLicenseID(ph.getLicense());
+                  flickrDialog.getSelectedImage().setLicenseURL(flickrDialog.getLicenseURL(ph.getLicense()));
+                  flickrDialog.getSelectedImage().setLicenseNumber(flickrDialog.getLicenseNumber(flickrDialog.getSelectedImage().getLicenseURL()));
+                  addin.getProgramWrapper().insertPictureFlickr(flickrDialog.getSelectedImage());
                 break;
         }
     }

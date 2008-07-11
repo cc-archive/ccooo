@@ -28,6 +28,11 @@ public class SearchClickListener implements XActionListener{
     
     public void actionPerformed(ActionEvent a) {
         
+        if (!flickrDialog.IsInputValid()) {
+            
+            return;
+        }
+        
         SearchThread th = new SearchThread(flickrDialog);
         th.start();
         

@@ -40,7 +40,7 @@ public class FlickrConnection {
         return instance;
     }
     
-    public ArrayList<Image> searchPhotos(String[] tags, String licenseId, String licenseURL, String licenseNumber)
+    public ArrayList<Image> searchPhotos(String[] tags, String licenseId)
     {
         currentSearch = new SearchParameters();       
         currentSearch.setSort(SearchParameters.RELEVANCE);
@@ -81,10 +81,8 @@ public class FlickrConnection {
          String profile = ph.getUrl();
          profile = profile.substring(0, profile.lastIndexOf("/"));
          Image img = new Image(ph.getTitle(), ph.getDateTaken(), ph.getDateAdded(), 
-                 ph.getSmallSquareUrl(), profile, ph.getTags(), ph.getUrl(), user.getId(), ph.getId());
-         img.setLicenseID(licenseId);
-         img.setLicenseNumber(licenseNumber);
-         img.setLicenseURL(licenseURL);
+                 ph.getSmallSquareUrl(), profile, ph.getTags(), ph.getUrl(), user.getId(), ph.getId(), ph.getSecret());
+
          imgList.add(img);      
            
        }
@@ -135,11 +133,30 @@ public class FlickrConnection {
     public java.util.Collection getPhotoSizes(String photoID)
     {
         PhotosInterface photos = flickr.getPhotosInterface();
-      
+     
            try
            {                
                 return photos.getSizes(photoID);
            }
+           catch(com.aetrion.flickr.FlickrException ex){
+        ex.printStackTrace(); 
+        } catch(java.io.IOException ex){
+        ex.printStackTrace();
+        } catch(org.xml.sax.SAXException ex){
+        ex.printStackTrace(); 
+        }
+        
+        return null;
+    }
+    
+    public Photo getPhotoInfo(String photoID, String secret)
+    {
+        PhotosInterface photos = flickr.getPhotosInterface();
+     
+        try
+        {                
+             return photos.getInfo(photoID, secret);
+        }
            catch(com.aetrion.flickr.FlickrException ex){
         ex.printStackTrace(); 
         } catch(java.io.IOException ex){
@@ -176,4 +193,5 @@ public class FlickrConnection {
         
         return this.currentSearch;
     }
+        
 }
