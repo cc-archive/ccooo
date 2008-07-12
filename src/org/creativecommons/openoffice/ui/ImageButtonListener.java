@@ -45,8 +45,8 @@ public class ImageButtonListener implements XMouseListener{
     
     public void mousePressed(MouseEvent _mouseEvent) {
         
-        if ((_mouseEvent.Buttons == MouseButton.RIGHT)||
-            (_mouseEvent.Buttons == MouseButton.LEFT)) {
+        if ((_mouseEvent.Buttons == MouseButton.RIGHT && !_mouseEvent.PopupTrigger)||
+            (_mouseEvent.Buttons == MouseButton.LEFT && !_mouseEvent.PopupTrigger)) {
             
           //we have to add also the position of the image control within the main dialog
           XControl xControl = (XControl) UnoRuntime.queryInterface(XControl.class, _mouseEvent.Source);

@@ -41,7 +41,7 @@ public class SearchThread extends Thread {
         flickrDialog.showResults(imgList, 30);
         flickrDialog.setProgressValue(100);
         flickrDialog.enableControl(PictureFlickrDialog.BTN_SEARCH, true);
-        flickrDialog.enableControl(PictureFlickrDialog.BTN_NEXT, true);
+//        flickrDialog.enableControl(PictureFlickrDialog.BTN_NEXT, true);
         //flickrDialog.enableControl(PictureFlickrDialog.BTN_PREVIOUS, true);
         flickrDialog.setMousePointer(SystemPointer.ARROW);
     }

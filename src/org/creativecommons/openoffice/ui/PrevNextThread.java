@@ -34,7 +34,7 @@ public class PrevNextThread extends Thread{
         else
             flickrDialog.showNextPage(0, true);            
         flickrDialog.setProgressValue(100);
-        flickrDialog.enableControl(PictureFlickrDialog.BTN_NEXT, true);
+//        flickrDialog.enableControl(PictureFlickrDialog.BTN_NEXT, true);
         //flickrDialog.enableControl(PictureFlickrDialog.BTN_PREVIOUS, true);
         flickrDialog.enableControl(PictureFlickrDialog.BTN_SEARCH, true);
         flickrDialog.setMousePointer(SystemPointer.ARROW);

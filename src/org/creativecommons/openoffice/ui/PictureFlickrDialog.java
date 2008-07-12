@@ -308,18 +308,24 @@ public class PictureFlickrDialog {
          double rateProgress = (double)(95 - progressValue) / SHOWRESULTSPERPAGE;
          double currentProgress = progressValue;
          int currentY = LOCATIONIMAGESY - POSITIONWIDTHHEIGHT + 10;
+         
+         if (!showNext)
+         {
+            currentPositionInList = currentPositionInList- 2*SHOWRESULTSPERPAGE;
+            if (currentPositionInList < 0) {
+                currentPositionInList = 0;
+            }
+            showNext = true;
+         }
+         
          for (int i = 0;i<SHOWRESULTSPERPAGE;i++)
          {       
              currentY += POSITIONWIDTHHEIGHT + 5;
              
+            
+             
              if (currentList.size()>currentPositionInList)
              {
-                 if (!showNext)
-                 {
-                    currentPositionInList = currentPositionInList- 2*SHOWRESULTSPERPAGE;
-                    showNext = true;
-                 }
-                 
                 createImageControl(currentList.get(currentPositionInList), new Rectangle(15, 
                        currentY , POSITIONWIDTHHEIGHT, POSITIONWIDTHHEIGHT), String.valueOf(i));
                 
@@ -354,8 +360,10 @@ public class PictureFlickrDialog {
              {
                 XButton xNextButton = (XButton)UnoRuntime.queryInterface(XButton.class, 
                         xControlCont.getControl(BTN_NEXT));
-                xNextButton.addActionListener(new PrevNextClickListener(this, this.addin));
-                xNextButton.setActionCommand(BTN_NEXT);
+                if (xNextButton != null) {
+                    xNextButton.addActionListener(new PrevNextClickListener(this, this.addin));
+                    xNextButton.setActionCommand(BTN_NEXT);
+                }
             }
             
              isNewCreated = false;
@@ -375,15 +383,31 @@ public class PictureFlickrDialog {
              {
                 XButton xPrevButton = (XButton)UnoRuntime.queryInterface(XButton.class, 
                         xControlCont.getControl(BTN_PREVIOUS));
-                xPrevButton.addActionListener(new PrevNextClickListener(this, this.addin));
-                xPrevButton.setActionCommand(BTN_PREVIOUS);
+                if (xPrevButton != null){
+                    xPrevButton.addActionListener(new PrevNextClickListener(this, this.addin));
+                    xPrevButton.setActionCommand(BTN_PREVIOUS);
+                }
             }
             
-            if (currentPositionInList<=SHOWRESULTSPERPAGE) 
+            if (currentPositionInList<=SHOWRESULTSPERPAGE) {
                 enableControl(BTN_PREVIOUS, false);
-            else
+            }
+            else {
                 enableControl(BTN_PREVIOUS, true);
+            }
+
+//            if (currentList.size()<=SHOWRESULTSPERPAGE) {
+//                enableControl(BTN_PREVIOUS, false);
+//                enableControl(BTN_NEXT, false);
+//            }
             
+            if ( currentList.size() - currentPositionInList  > 0) {
+                enableControl(BTN_NEXT, true);
+            }
+            else {
+                enableControl(BTN_NEXT, false);
+            }
+                
          } catch (Exception ex) {
             ex.printStackTrace();
          }
@@ -397,7 +421,9 @@ public class PictureFlickrDialog {
              if (getNameContainer().hasByName("ImageControl" + pos))
              {
                  XControl xImageControl = xControlCont.getControl("ImageControl"+pos); 
-                 xImageControl.dispose();                
+                 if (xImageControl!= null) {
+                    xImageControl.dispose();   
+                 }
                  getNameContainer().removeByName("ImageControl"+pos);
              }
              
@@ -422,7 +448,9 @@ public class PictureFlickrDialog {
             
            XControl xImageControl = xControlCont.getControl("ImageControl"+pos); 
            XWindow xWindow = (XWindow) UnoRuntime.queryInterface(XWindow.class, xImageControl);
-           xWindow.addMouseListener(new ImageButtonListener(this, this.addin, img));            
+           if (xWindow != null) {
+                xWindow.addMouseListener(new ImageButtonListener(this, this.addin, img));            
+           }
            
            xpsImageControl.setPropertyValue("Graphic", xGraphic);
             
@@ -787,7 +815,7 @@ public class PictureFlickrDialog {
         showNextPage(0, true);
         setProgressValue(100);
         enableControl(PictureFlickrDialog.BTN_SEARCH, true);
-        enableControl(PictureFlickrDialog.BTN_NEXT, true);
+       // enableControl(PictureFlickrDialog.BTN_NEXT, true);
         setMousePointer(SystemPointer.ARROW);
     }
     
