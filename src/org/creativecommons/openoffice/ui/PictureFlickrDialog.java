@@ -68,6 +68,7 @@ public class PictureFlickrDialog {
     private short savedCommercialStatus;
     private short savedUpdateStatus;
     private short savedShareAlikeStatus;
+    private int currentPage = 0;
     
     public static final String LBL_TAGS = "lblTags";
     public static final String TXT_TAGS = "txtTags";
@@ -137,15 +138,6 @@ public class PictureFlickrDialog {
         Object txtTags = msfLicenseSelector.createInstance("com.sun.star.awt.UnoControlEditModel");
         createAWTControl(txtTags, TXT_TAGS, "", new Rectangle(30, 10, 150, 12));
         
-//        Object lblLicense = msfLicenseSelector.createInstance("com.sun.star.awt.UnoControlFixedTextModel");
-//        createAWTControl(lblLicense, LBL_LICENSE, "License", new Rectangle(10, 35, 50, 12));        
-        
-//        Object cmbLicense = msfLicenseSelector.createInstance("com.sun.star.awt.UnoControlListBoxModel");   
-//        XPropertySet xpsLicense = createAWTControl(cmbLicense, LISTBOX_LICENSE, "", new Rectangle(30, 35, 150, 12));                    
-//        xpsLicense.setPropertyValue("MultiSelection", new Boolean("false"));
-//        xpsLicense.setPropertyValue("Dropdown", new Boolean("true"));
-//        xpsLicense.setPropertyValue("Step", new Short((short)1));
-        
         Object chkCommercial = msfLicenseSelector.createInstance("com.sun.star.awt.UnoControlCheckBoxModel");   
         XPropertySet xpsCHKProperties = createAWTControl(chkCommercial, CHK_COMMERCIALNAME, CHK_COMMERCIALLABEL, 
                 new Rectangle(10, 32, 150, 12));                                    
@@ -181,23 +173,9 @@ public class PictureFlickrDialog {
         Object objSearchButton = xControlCont.getControl(BTN_SEARCH);
         XButton xFinishButton = (XButton)UnoRuntime.queryInterface(XButton.class, objSearchButton);
         xFinishButton.addActionListener(new SearchClickListener(this, this.addin));
-        
-//        Object oLicense = xControlCont.getControl(LISTBOX_LICENSE);
-//        XListBox cmbJList = (XListBox)UnoRuntime.queryInterface(XListBox.class, oLicense);
+        xFinishButton.setActionCommand(BTN_SEARCH);
         
         this.flickrLicenses = FlickrConnection.instance.getLicenses();
-//        for (Object p : this.flickrLicenses.toArray())
-//        {
-//            com.aetrion.flickr.photos.licenses.License currentLicense = ((com.aetrion.flickr.photos.licenses.License)p);   
-//            if ( (currentLicense !=  null)&& (!currentLicense.getUrl().equalsIgnoreCase(""))) {
-//                
-//                cmbJList.addItem(currentLicense.getId()+"."+currentLicense.getName(), new Short(currentLicense.getId()));                
-//            }
-//        }
-                
-        //cmbJList.selectItem("4.Attribution License", true);
-       // cmbJList.makeVisible((short)4);
-      //  cmbJList.addItemListener(new LicenseListListener(this));
        
         Object oGBResults = msfLicenseSelector.createInstance("com.sun.star.awt.UnoControlGroupBoxModel");   
         createAWTControl(oGBResults, GB_RESULTS, "Results", new Rectangle(10, LOCATIONIMAGESY, 230, 265));                            
@@ -293,10 +271,10 @@ public class PictureFlickrDialog {
          this.currentList = imgList;
          this.currentPositionInList = 0;
          
-         showNextPage(progressValue, true);        
+         showNextPage(progressValue);        
      }
      
-     public void showNextPage(int progressValue, boolean showNext)
+     private void showNextPage(int progressValue)
      {
          if (currentList == null)
          {             
@@ -307,22 +285,11 @@ public class PictureFlickrDialog {
          
          double rateProgress = (double)(95 - progressValue) / SHOWRESULTSPERPAGE;
          double currentProgress = progressValue;
-         int currentY = LOCATIONIMAGESY - POSITIONWIDTHHEIGHT + 10;
-         
-         if (!showNext)
-         {
-            currentPositionInList = currentPositionInList- 2*SHOWRESULTSPERPAGE;
-            if (currentPositionInList < 0) {
-                currentPositionInList = 0;
-            }
-            showNext = true;
-         }
+         int currentY = LOCATIONIMAGESY - POSITIONWIDTHHEIGHT + 10;         
          
          for (int i = 0;i<SHOWRESULTSPERPAGE;i++)
          {       
-             currentY += POSITIONWIDTHHEIGHT + 5;
-             
-            
+             currentY += POSITIONWIDTHHEIGHT + 5;                        
              
              if (currentList.size()>currentPositionInList)
              {
@@ -361,7 +328,7 @@ public class PictureFlickrDialog {
                 XButton xNextButton = (XButton)UnoRuntime.queryInterface(XButton.class, 
                         xControlCont.getControl(BTN_NEXT));
                 if (xNextButton != null) {
-                    xNextButton.addActionListener(new PrevNextClickListener(this, this.addin));
+                    xNextButton.addActionListener(new SearchClickListener(this, this.addin));
                     xNextButton.setActionCommand(BTN_NEXT);
                 }
             }
@@ -384,28 +351,25 @@ public class PictureFlickrDialog {
                 XButton xPrevButton = (XButton)UnoRuntime.queryInterface(XButton.class, 
                         xControlCont.getControl(BTN_PREVIOUS));
                 if (xPrevButton != null){
-                    xPrevButton.addActionListener(new PrevNextClickListener(this, this.addin));
+                    xPrevButton.addActionListener(new SearchClickListener(this, this.addin));
                     xPrevButton.setActionCommand(BTN_PREVIOUS);
                 }
             }
             
-            if (currentPositionInList<=SHOWRESULTSPERPAGE) {
+            if (currentPage <= 1) {
                 enableControl(BTN_PREVIOUS, false);
             }
             else {
                 enableControl(BTN_PREVIOUS, true);
             }
 
-//            if (currentList.size()<=SHOWRESULTSPERPAGE) {
-//                enableControl(BTN_PREVIOUS, false);
-//                enableControl(BTN_NEXT, false);
-//            }
-            
-            if ( currentList.size() - currentPositionInList  > 0) {
-                enableControl(BTN_NEXT, true);
+            if (currentList.size()<SHOWRESULTSPERPAGE) {
+                
+                enableControl(BTN_NEXT, false);
             }
             else {
-                enableControl(BTN_NEXT, false);
+                
+                enableControl(BTN_NEXT, true);
             }
                 
          } catch (Exception ex) {
@@ -712,6 +676,16 @@ public class PictureFlickrDialog {
          
          this.selectedImage = selImage;
      }
+     
+     public int getCurrentPage() {
+         
+         return currentPage;
+     }
+     
+     public void setCurrentPage(int _currentPage) {
+         
+         this.currentPage = _currentPage;
+     } 
     
     public void close() {
         
@@ -783,10 +757,7 @@ public class PictureFlickrDialog {
         setMousePointer(SystemPointer.WAIT);
         enableControl(PictureFlickrDialog.BTN_SEARCH, false);
         enableControl(PictureFlickrDialog.BTN_NEXT, false);
-        currentPositionInList -= SHOWRESULTSPERPAGE;
-        if (currentPositionInList < 0) {
-            currentPositionInList = 0;
-        }
+        currentPositionInList = 0;
         
         try
         {
@@ -812,7 +783,7 @@ public class PictureFlickrDialog {
              ex.printStackTrace();
         }
         
-        showNextPage(0, true);
+        showResults(currentList,0);
         setProgressValue(100);
         enableControl(PictureFlickrDialog.BTN_SEARCH, true);
        // enableControl(PictureFlickrDialog.BTN_NEXT, true);

@@ -40,7 +40,7 @@ public class FlickrConnection {
         return instance;
     }
     
-    public ArrayList<Image> searchPhotos(String[] tags, String licenseId)
+    public ArrayList<Image> searchPhotos(String[] tags, String licenseId, int currentPage)
     {
         currentSearch = new SearchParameters();       
         currentSearch.setSort(SearchParameters.INTERESTINGNESS_DESC);
@@ -55,7 +55,7 @@ public class FlickrConnection {
         PhotoList list=null;
         try
         {          
-           list = pInterf.search(currentSearch, 100, 0);  
+           list = pInterf.search(currentSearch, PictureFlickrDialog.SHOWRESULTSPERPAGE, currentPage);  
         }
         catch(com.aetrion.flickr.FlickrException ex){
         ex.printStackTrace(); 

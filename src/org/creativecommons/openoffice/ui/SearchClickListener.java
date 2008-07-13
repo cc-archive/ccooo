@@ -33,7 +33,7 @@ public class SearchClickListener implements XActionListener{
             return;
         }
         
-        SearchThread th = new SearchThread(flickrDialog);
+        SearchThread th = new SearchThread(flickrDialog,a.ActionCommand);
         th.start();
         
     } // actionPerformed

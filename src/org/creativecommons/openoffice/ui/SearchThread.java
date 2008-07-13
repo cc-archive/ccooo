@@ -17,32 +17,44 @@ import org.creativecommons.openoffice.program.FlickrConnection;
 public class SearchThread extends Thread {
     
     private PictureFlickrDialog flickrDialog;
+    private String buttonName;
     
-    public SearchThread(PictureFlickrDialog flickrDialog) {
+    public SearchThread(PictureFlickrDialog flickrDialog, String btnName) {
         
         this.flickrDialog = flickrDialog;
+        this.buttonName = btnName;
     }
 
     public void run() {
         
         flickrDialog.setMousePointer(SystemPointer.WAIT);
-        flickrDialog.enableControl(PictureFlickrDialog.BTN_SEARCH, false);
         flickrDialog.enableControl(PictureFlickrDialog.BTN_NEXT, false);
-        //flickrDialog.enableControl(PictureFlickrDialog.BTN_PREVIOUS, false);
-        flickrDialog.setProgressValue(0);
+        flickrDialog.enableControl(PictureFlickrDialog.BTN_PREVIOUS, false);
+        flickrDialog.enableControl(PictureFlickrDialog.BTN_SEARCH, false);
         flickrDialog.saveSearch();
+        flickrDialog.setProgressValue(0);
         String licenseID = flickrDialog.getLicense();
-       // String licenseURL = flickrDialog.getLicenseURL(licenseID);
-        //String licenseNumber = flickrDialog.getLicenseNumber(licenseURL);        
-        ArrayList<Image> imgList = FlickrConnection.instance.searchPhotos(flickrDialog.GetTags(),licenseID
-                //, licenseURL, licenseNumber
-                );        
+                
+        if (buttonName.equalsIgnoreCase(PictureFlickrDialog.BTN_SEARCH)) {
+            
+            flickrDialog.setCurrentPage(1);
+        }
+            else
+                if (buttonName.equalsIgnoreCase(PictureFlickrDialog.BTN_PREVIOUS)) {
+                
+                    flickrDialog.setCurrentPage(flickrDialog.getCurrentPage() - 1);
+                }
+                else {
+            
+                    flickrDialog.setCurrentPage(flickrDialog.getCurrentPage() + 1);
+                }
+        
+        ArrayList<Image> imgList = FlickrConnection.instance.searchPhotos(flickrDialog.GetTags(),licenseID, 
+                flickrDialog.getCurrentPage());        
         flickrDialog.setProgressValue(30);
         flickrDialog.showResults(imgList, 30);
         flickrDialog.setProgressValue(100);
         flickrDialog.enableControl(PictureFlickrDialog.BTN_SEARCH, true);
-//        flickrDialog.enableControl(PictureFlickrDialog.BTN_NEXT, true);
-        //flickrDialog.enableControl(PictureFlickrDialog.BTN_PREVIOUS, true);
         flickrDialog.setMousePointer(SystemPointer.ARROW);
     }
     
