@@ -284,7 +284,7 @@ public class PictureFlickrDialog {
          
          enableControl(BTN_PREVIOUS, false);
          
-         double rateProgress = (double)(95 - progressValue) / (SHOWRESULTSPERROW * SHOWRESULTSPERCOLUMN);
+         double rateProgress = (double)(95 - progressValue) / currentList.size();
          double currentProgress = progressValue;
          int currentY = LOCATIONIMAGESY - POSITIONWIDTHHEIGHT - 5;         
          int currentX = 15 - POSITIONWIDTHHEIGHT - 10;
