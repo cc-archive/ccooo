@@ -51,8 +51,8 @@ public class SearchThread extends Thread {
         
         ArrayList<Image> imgList = FlickrConnection.instance.searchPhotos(flickrDialog.GetTags(),licenseID, 
                 flickrDialog.getCurrentPage());        
-        flickrDialog.setProgressValue(30);
-        flickrDialog.showResults(imgList, 30);
+        flickrDialog.setProgressValue(15);
+        flickrDialog.showResults(imgList, 15);
         flickrDialog.setProgressValue(100);
         flickrDialog.enableControl(PictureFlickrDialog.BTN_SEARCH, true);
         flickrDialog.setMousePointer(SystemPointer.ARROW);

@@ -89,7 +89,8 @@ public class PictureFlickrDialog {
     public static final String BTN_PREVIOUSLABEL = "Previous";
     public static final String PB_NAME = "progressBar";
     
-    public static final int SHOWRESULTSPERPAGE = 4;
+    public static final int SHOWRESULTSPERROW = 4;
+    public static final int SHOWRESULTSPERCOLUMN = 4;
     public static final int POSITIONWIDTHHEIGHT = 50;
     public static final int LOCATIONIMAGESY = 100;
     
@@ -120,7 +121,7 @@ public class PictureFlickrDialog {
                 XMultiServiceFactory.class, dlgLicenseSelector);
         
         XPropertySet xPSetDialog = createAWTControl(dlgLicenseSelector, "dlgMainForm",
-                "", new Rectangle(100, 100, 250, 390));
+                "", new Rectangle(100, 100, 260, 440));
         xPSetDialog.setPropertyValue("Title", new String("Insert Picture From Flickr"));
         xPSetDialog.setPropertyValue("Step", (short)1 );        
         
@@ -178,14 +179,14 @@ public class PictureFlickrDialog {
         this.flickrLicenses = FlickrConnection.instance.getLicenses();
        
         Object oGBResults = msfLicenseSelector.createInstance("com.sun.star.awt.UnoControlGroupBoxModel");   
-        createAWTControl(oGBResults, GB_RESULTS, "Results", new Rectangle(10, LOCATIONIMAGESY, 230, 265));                            
+        createAWTControl(oGBResults, GB_RESULTS, "Results", new Rectangle(10, LOCATIONIMAGESY, 240, 315));                            
         
         Object oPBar = msfLicenseSelector.createInstance("com.sun.star.awt.UnoControlProgressBarModel");   
         XMultiPropertySet xPBModelMPSet = (XMultiPropertySet) UnoRuntime.queryInterface(XMultiPropertySet.class, oPBar);
       // Set the properties at the model - keep in mind to pass the property names in alphabetical order!
         xPBModelMPSet.setPropertyValues(
             new String[] {"Height", "Name", "PositionX", "PositionY", "Width"},
-            new Object[] { new Integer(8), PB_NAME, new Integer(10), new Integer(370), new Integer(230)});
+            new Object[] { new Integer(8), PB_NAME, new Integer(10), new Integer(418), new Integer(240)});
  
        // The controlmodel is not really available until inserted to the Dialog container
        getNameContainer().insertByName(PB_NAME, oPBar);
@@ -283,28 +284,35 @@ public class PictureFlickrDialog {
          
          enableControl(BTN_PREVIOUS, false);
          
-         double rateProgress = (double)(95 - progressValue) / SHOWRESULTSPERPAGE;
+         double rateProgress = (double)(95 - progressValue) / (SHOWRESULTSPERROW * SHOWRESULTSPERCOLUMN);
          double currentProgress = progressValue;
-         int currentY = LOCATIONIMAGESY - POSITIONWIDTHHEIGHT + 10;         
+         int currentY = LOCATIONIMAGESY - POSITIONWIDTHHEIGHT - 5;         
+         int currentX = 15 - POSITIONWIDTHHEIGHT - 10;
          
-         for (int i = 0;i<SHOWRESULTSPERPAGE;i++)
-         {       
-             currentY += POSITIONWIDTHHEIGHT + 5;                        
+         for (int i = 0;i<SHOWRESULTSPERROW;i++) {       
              
-             if (currentList.size()>currentPositionInList)
-             {
-                createImageControl(currentList.get(currentPositionInList), new Rectangle(15, 
-                       currentY , POSITIONWIDTHHEIGHT, POSITIONWIDTHHEIGHT), String.valueOf(i));
-                
-                
-                currentPositionInList++;                
-             }
-             else
-                 createImageControl(null, new Rectangle(15, currentY, POSITIONWIDTHHEIGHT, 
-                         POSITIONWIDTHHEIGHT), String.valueOf(i));                                            
+             currentY += POSITIONWIDTHHEIGHT + 20;  
+             currentX = 15 - POSITIONWIDTHHEIGHT - 10;
              
-             currentProgress+= rateProgress;
-             this.setProgressValue((int)currentProgress );
+             for (int j = 0;j<SHOWRESULTSPERCOLUMN;j++) {       
+                 
+                currentX += POSITIONWIDTHHEIGHT + 10;
+             
+                if (currentList.size()>currentPositionInList)
+                {
+                    createImageControl(currentList.get(currentPositionInList), new Rectangle(currentX, 
+                           currentY , POSITIONWIDTHHEIGHT, POSITIONWIDTHHEIGHT), String.valueOf(currentPositionInList));                
+                
+                                   
+                 }
+                 else
+                     createImageControl(null, new Rectangle(currentX, currentY, POSITIONWIDTHHEIGHT, 
+                         POSITIONWIDTHHEIGHT),  String.valueOf(currentPositionInList));                                            
+             
+                currentPositionInList++; 
+                currentProgress+= rateProgress;
+                this.setProgressValue((int)currentProgress );
+                }
          }
      
          try
@@ -321,7 +329,7 @@ public class PictureFlickrDialog {
                 isNewCreated = true;
              }
           
-            createAWTControl(button, BTN_NEXT, BTN_NEXTLABEL, new Rectangle(150, 340, 40, 15)); 
+            createAWTControl(button, BTN_NEXT, BTN_NEXTLABEL, new Rectangle(150, 395, 40, 15)); 
             
             if (isNewCreated)
              {
@@ -344,7 +352,7 @@ public class PictureFlickrDialog {
                 isNewCreated = true;
              }
           
-            createAWTControl(button, BTN_PREVIOUS, BTN_PREVIOUSLABEL, new Rectangle(50, 340, 40, 15)); 
+            createAWTControl(button, BTN_PREVIOUS, BTN_PREVIOUSLABEL, new Rectangle(50, 395, 40, 15)); 
             
             if (isNewCreated)
              {
@@ -363,7 +371,7 @@ public class PictureFlickrDialog {
                 enableControl(BTN_PREVIOUS, true);
             }
 
-            if (currentList.size()<SHOWRESULTSPERPAGE) {
+            if (currentList.size()<SHOWRESULTSPERROW*SHOWRESULTSPERCOLUMN) {
                 
                 enableControl(BTN_NEXT, false);
             }
@@ -407,6 +415,16 @@ public class PictureFlickrDialog {
            xpsImageControl.setPropertyValue("PositionX", new Integer(rect.x));
            xpsImageControl.setPropertyValue("PositionY", new Integer(rect.y));
            xpsImageControl.setPropertyValue("Width", new Integer(rect.width));
+          
+            String title = "";
+            if (img!= null)
+            {
+                title = img.getTitle();
+            }
+            else
+                title = "";
+
+           xpsImageControl.setPropertyValue("HelpText", title);
             
            getNameContainer().insertByName("ImageControl"+pos, oICModel);    
             
@@ -430,12 +448,13 @@ public class PictureFlickrDialog {
         if (img!= null)
         {
             img.setUserName(FlickrConnection.instance.getUserName(img.getUserID()));
-            userName = "Photo taken by :" +img.getUserName();
+            userName = "From " +img.getUserName();
         }
         else
             userName= "";
             
-        XPropertySet xpsProperties = createAWTControl(lblUser, "ImageLabelUser"+pos, userName, new Rectangle(rect.x+rect.height+3, rect.y, 150, 20));                
+        XPropertySet xpsProperties = createAWTControl(lblUser, "ImageLabelUser"+pos, userName, 
+                new Rectangle(rect.x, rect.y + rect.height+3, 50, 20));                
         if (img!= null)
         {
             xpsProperties.setPropertyValue("URL", img.getProfile());
@@ -445,31 +464,31 @@ public class PictureFlickrDialog {
         xpsProperties.setPropertyValue("Label", userName);
       //  Object preferedSize = xpsProperties.getPropertyValue("PreferredSize");
         
-        Object lblMainPageImage = null;
-        if (getNameContainer().hasByName("ImageLabelMainPage"+pos))
-        {
-            lblMainPageImage = getNameContainer().getByName("ImageLabelMainPage"+pos);                
-        }
-        else
-            lblMainPageImage = xMultiServiceFactory.createInstance("com.sun.star.awt.UnoControlFixedHyperlinkModel");
-          
-        String title = "";
-        if (img!= null)
-        {
-            title = "Title :" +img.getTitle();
-        }
-        else
-            title = "";
-        
-        xpsProperties = createAWTControl(lblMainPageImage, "ImageLabelMainPage"+pos, title, new Rectangle(rect.x+rect.height+3, rect.y+17, 150, 20));        
-        if (img!= null)
-        {
-            xpsProperties.setPropertyValue("URL", img.getImgUrlMainPage());
-        }
-        else
-            xpsProperties.setPropertyValue("URL", "");
-        xpsProperties.setPropertyValue("Label", title);            
-        
+//        Object lblMainPageImage = null;
+//        if (getNameContainer().hasByName("ImageLabelMainPage"+pos))
+//        {
+//            lblMainPageImage = getNameContainer().getByName("ImageLabelMainPage"+pos);                
+//        }
+//        else
+//            lblMainPageImage = xMultiServiceFactory.createInstance("com.sun.star.awt.UnoControlFixedHyperlinkModel");
+//          
+//        String title = "";
+//        if (img!= null)
+//        {
+//            title = "Title :" +img.getTitle();
+//        }
+//        else
+//            title = "";
+//        
+//        xpsProperties = createAWTControl(lblMainPageImage, "ImageLabelMainPage"+pos, title, new Rectangle(rect.x+rect.height+3, rect.y+17, 150, 20));        
+//        if (img!= null)
+//        {
+//            xpsProperties.setPropertyValue("URL", img.getImgUrlMainPage());
+//        }
+//        else
+//            xpsProperties.setPropertyValue("URL", "");
+//        xpsProperties.setPropertyValue("Label", title);            
+//        
          } catch (Exception ex) {
             ex.printStackTrace();
         }
