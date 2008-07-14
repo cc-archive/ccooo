@@ -67,7 +67,7 @@ public class ImageButtonListener implements XMouseListener{
           if (_mouseEvent.Buttons == MouseButton.RIGHT) 
                 flickrDialog.executePopupMenu(this.currentImage, _mouseEvent.X + posX, _mouseEvent.Y + posY);
           else
-              if (_mouseEvent.Buttons == MouseButton.LEFT) 
+              if (_mouseEvent.Buttons == MouseButton.LEFT && _mouseEvent.ClickCount == 2) 
               {
                   flickrDialog.close();
                   flickrDialog.setSelectedImage(currentImage);

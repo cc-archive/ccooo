@@ -409,8 +409,16 @@ public class PictureFlickrDialog {
             XGraphic xGraphic = null;
             if (img != null) {
                
-               xGraphic = getGraphic(img.getImgURL());
+                if (img.getGraphic() != null){
+                    
+                    xGraphic = img.getGraphic();
+                }
+                else {
+                    xGraphic = getGraphic(img.getImgURL());
+                    img.setGraphic(xGraphic);
+                }
             }
+
              
            XPropertySet xpsImageControl = (XPropertySet) UnoRuntime.queryInterface(XPropertySet.class, oICModel);
  

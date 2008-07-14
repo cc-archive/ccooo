@@ -5,6 +5,7 @@
 
 package org.creativecommons.openoffice.program;
 
+import com.sun.star.graphic.XGraphic;
 import java.util.Collection;
 import java.util.Date;
 import com.aetrion.flickr.photos.Size;
@@ -34,6 +35,7 @@ public class Image {
     private String licenseURL;
     private String licenseNumber;
     private String secret;
+    private XGraphic xGraphic;
     
     public Image(String _title,Date _taken,Date _uploaded, String _imgUrl, String _profile, 
             Collection _tags, String _imgUrlMainPage, String _userID, String _photoID, String _secret) {
@@ -159,6 +161,16 @@ public class Image {
     public String getLicenseNumber() {
         
         return licenseNumber;
+    }
+    
+    public void setGraphic(XGraphic _xGrapic) {
+        
+        this.xGraphic  = _xGrapic;
+    }
+    
+    public XGraphic getGraphic() {
+        
+        return xGraphic;
     }
     
     public void RefreshSelectedSizeImageData(short selectedSize){
