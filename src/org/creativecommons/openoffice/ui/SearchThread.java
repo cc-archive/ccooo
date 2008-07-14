@@ -58,4 +58,5 @@ public class SearchThread extends Thread {
         flickrDialog.setMousePointer(SystemPointer.ARROW);
     }
     
+    
 }

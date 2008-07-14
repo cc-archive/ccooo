@@ -17,7 +17,6 @@ import com.sun.star.awt.XControl;
 import com.sun.star.awt.XControlContainer;
 import com.sun.star.awt.XControlModel;
 import com.sun.star.awt.XDialog;
-import com.sun.star.awt.XListBox;
 import com.sun.star.awt.XPopupMenu;
 import com.sun.star.awt.XToolkit;
 import com.sun.star.awt.XWindow;
@@ -69,6 +68,7 @@ public class PictureFlickrDialog {
     private short savedUpdateStatus;
     private short savedShareAlikeStatus;
     private int currentPage = 0;
+    private boolean isLoadable = false;
     
     public static final String LBL_TAGS = "lblTags";
     public static final String TXT_TAGS = "txtTags";
@@ -386,6 +386,11 @@ public class PictureFlickrDialog {
      }
      
      private void createImageControl(Image img, Rectangle rect, String pos) {
+         
+         if (!isLoadable) {
+             
+             return;
+         }
          
          try
          {             
@@ -809,5 +814,10 @@ public class PictureFlickrDialog {
         setMousePointer(SystemPointer.ARROW);
     }
     
+   public void setLoadable(boolean val) {
+   
+       this.isLoadable = val;
+   }
+   
     
 } // PictureFlickrDialog

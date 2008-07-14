@@ -301,16 +301,21 @@ public final class CcOOoAddin extends WeakBase
             if (dlgPicture == null)
             {
                 dlgPicture = new PictureFlickrDialog(this, this.m_xContext);
+                dlgPicture.setLoadable(true);
                 dlgPicture.showDialog(false);                             
             }
             else 
-            {                
+            {   
+                dlgPicture.setLoadable(true);
                 dlgPicture.showDialog(true);                
             }
             
-
         } catch (Exception ex) {
             ex.printStackTrace();
+        }
+        finally {
+            
+            dlgPicture.setLoadable(false);
         }
         
     } // insertPictureFlickr
