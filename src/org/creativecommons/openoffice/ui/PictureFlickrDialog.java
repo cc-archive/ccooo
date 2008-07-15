@@ -460,11 +460,12 @@ public class PictureFlickrDialog {
         String userName = "";
         if (img!= null)
         {
-            img.setUserName(FlickrConnection.instance.getUserName(img.getUserID()));
+            if (img.getUserName().equalsIgnoreCase("")) {
+                img.setUserName(FlickrConnection.instance.getUserName(img.getUserID()));
+            }
+
             userName = "From " +img.getUserName();
-        }
-        else
-            userName= "";
+        }      
             
         XPropertySet xpsProperties = createAWTControl(lblUser, "ImageLabelUser"+pos, userName, 
                 new Rectangle(rect.x, rect.y + rect.height+3, 50, 20));                

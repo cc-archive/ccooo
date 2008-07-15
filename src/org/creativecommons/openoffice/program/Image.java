@@ -18,7 +18,7 @@ import java.util.Collection;
 public class Image {
 
     private String title;
-    private String username;
+    private String username = "";
     private String userID;
     private String photoID;
     private Date taken;
@@ -172,7 +172,7 @@ public class Image {
         
         return xGraphic;
     }
-    
+   
     public void RefreshSelectedSizeImageData(short selectedSize){
         
         for (Object p : selectedImageSizes.toArray())
