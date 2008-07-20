@@ -8,6 +8,8 @@
 
 package org.creativecommons.openoffice.program;
 
+import com.sun.star.text.ControlCharacter;
+import com.sun.star.text.XText;
 import com.sun.star.awt.Point;
 import com.sun.star.awt.Size;
 import com.sun.star.beans.XPropertySet;
@@ -38,7 +40,72 @@ public class Impress extends OOoProgram {
     }
     
     public void insertPictureFlickr(Image img) {
+                    
+        XDrawPage xPage = null;        
+        XNameContainer xBitmapContainer = null;        
+        String internalURL = null;
+        XMultiServiceFactory xPresentationFactory = null;
         
+        try {
+
+            xPresentationFactory = (XMultiServiceFactory)UnoRuntime.queryInterface(XMultiServiceFactory.class, this.getComponent());
+            xPage = PageHelper.getMasterPageByIndex(this.getComponent(), 0);
+            xBitmapContainer = (XNameContainer) UnoRuntime.queryInterface(
+                    XNameContainer.class, xPresentationFactory.createInstance(
+                    "com.sun.star.drawing.BitmapTable"));
+            
+            Object graphicObject = xPresentationFactory.createInstance("com.sun.star.drawing.GraphicObjectShape");
+            XShape xGraphicShape = (XShape)UnoRuntime.queryInterface( XShape.class, graphicObject );
+            
+            xGraphicShape.setPosition(new Point(150,150));
+            
+            XPropertySet xProps = (XPropertySet) UnoRuntime.queryInterface(
+                    XPropertySet.class, xGraphicShape);
+            
+//            // helper-stuff to let OOo create an internal name of the graphic
+//            // that can be used later (internal name consists of various checksums)
+            String sName = PageHelper.createUniqueName(xBitmapContainer, img.getPhotoID());
+            xBitmapContainer.insertByName(sName, img.getSelectedImageURL());
+            
+            Object obj = xBitmapContainer.getByName(sName);
+            internalURL = AnyConverter.toString(obj);
+            
+            xProps.setPropertyValue("AnchorType",
+                    com.sun.star.text.TextContentAnchorType.AS_CHARACTER);
+            xProps.setPropertyValue("GraphicURL", internalURL);
+            
+            xPage.add(xGraphicShape);
+            
+            Object xGraphicObject = xProps.getPropertyValue( "Graphic" );
+            XPropertySet xGraphicPropsGOSX = ( XPropertySet ) UnoRuntime.queryInterface( XPropertySet.class,
+                xGraphicObject );
+            Object sizePixelObject = xGraphicPropsGOSX.getPropertyValue( "Size100thMM" );
+            Size actualSize = ( Size ) AnyConverter.toObject(Size.class, sizePixelObject );
+
+            xGraphicShape.setSize(actualSize);
+            
+            // remove the helper-entry
+            xBitmapContainer.removeByName(sName);
+            
+            Object oTextShape = xPresentationFactory.createInstance("com.sun.star.drawing.GraphicObjectShape");
+            XShape textShape = (XShape)UnoRuntime.queryInterface( XShape.class, oTextShape );
+            xPage.add(textShape);
+            textShape.setPosition(new Point(9500, 
+                    xGraphicShape.getPosition().Y + xGraphicShape.getSize().Height + 650) );
+     
+            XText xShapeText = (XText)UnoRuntime.queryInterface(XText.class, textShape);
+            
+          String caption = img.getTitle()+" ( "+img.getImgUrlMainPage()+" )";
+          xShapeText.insertString(xShapeText.getStart(), caption, false);
+          xShapeText.insertControlCharacter(xShapeText.getStart(), 
+                  ControlCharacter.PARAGRAPH_BREAK, false );
+          caption = "CC BY "+ img.getLicenseNumber() + " ( " + img.getLicenseURL() + " )";
+          xShapeText.insertString(xShapeText.getStart(), caption, false);
+          
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+            
     }
     
     public boolean hasVisibleNotice() {
@@ -58,8 +125,8 @@ public class Impress extends OOoProgram {
             
             XShapes xShapes = (XShapes)
             UnoRuntime.queryInterface( XShapes.class, xPage );
-            
-            
+                        
+
             XShape xRectangle;
             XPropertySet xTextPropSet, xShapePropSet;
             LineSpacing  aLineSpacing = new LineSpacing();
