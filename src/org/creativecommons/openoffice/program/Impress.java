@@ -95,11 +95,11 @@ public class Impress extends OOoProgram {
      
             XText xShapeText = (XText)UnoRuntime.queryInterface(XText.class, textShape);
             
-          String caption = img.getTitle()+" ( "+img.getImgUrlMainPage()+" )";
+          String caption = "CC BY "+ img.getLicenseNumber() + " ( " + img.getLicenseURL() + " )";
           xShapeText.insertString(xShapeText.getStart(), caption, false);
           xShapeText.insertControlCharacter(xShapeText.getStart(), 
                   ControlCharacter.PARAGRAPH_BREAK, false );
-          caption = "CC BY "+ img.getLicenseNumber() + " ( " + img.getLicenseURL() + " )";
+          caption = img.getTitle()+" ( "+img.getImgUrlMainPage()+" )";
           xShapeText.insertString(xShapeText.getStart(), caption, false);
           
         } catch (Exception e) {
