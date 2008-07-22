@@ -9,6 +9,9 @@
 package org.creativecommons.openoffice.program;
 
 import com.sun.star.text.ControlCharacter;
+import com.sun.star.text.HoriOrientation;
+import com.sun.star.text.VertOrientation;
+import com.sun.star.text.TextContentAnchorType;
 import com.sun.star.text.XText;
 import org.creativecommons.openoffice.util.PageHelper;
 import com.sun.star.awt.Point;
@@ -105,22 +108,44 @@ public class Calc extends OOoProgram {
             // remove the helper-entry
             xBitmapContainer.removeByName(sName);
             
-            Object oTextShape = xSpreadsheetFactory.createInstance("com.sun.star.drawing.GraphicObjectShape");
-            XShape textShape = (XShape)UnoRuntime.queryInterface( XShape.class, oTextShape );
-            xPage.add(textShape);
-          //  textShape.setPosition(getAbsoluteCellPosition(xSpreadsheet, new Integer(0), 
-            //        xGraphicShape.getPosition().Y + xGraphicShape.getSize().Height + 500));
-            textShape.setPosition(new Point(6500,
-                xGraphicShape.getPosition().Y + xGraphicShape.getSize().Height + 500));
+            XShape xRectangle;
+            XPropertySet xTextPropSet, xShapePropSet;
+            LineSpacing  aLineSpacing = new LineSpacing();
+            aLineSpacing.Mode = LineSpacingMode.PROP;
             
-            XText xShapeText = (XText)UnoRuntime.queryInterface(XText.class, textShape);
+            // first shape
+            String caption = "CC BY "+ img.getLicenseNumber() + " ( " + img.getLicenseURL() + " )";                    
+            xRectangle = ShapeHelper.createShape( this.getComponent(),
+                    new Point(0, xGraphicShape.getPosition().Y + xGraphicShape.getSize().Height  ),
+                    new Size( caption.length()*176, 1500 ),
+                    "com.sun.star.drawing.RectangleShape" );
+            xPage.add( xRectangle );
+            xShapePropSet = (XPropertySet) UnoRuntime.queryInterface( XPropertySet.class, xRectangle );
             
-            String caption = "CC BY "+ img.getLicenseNumber() + " ( " + img.getLicenseURL() + " )";
-            xShapeText.insertString(xShapeText.getStart(), caption, false);
-            xShapeText.insertControlCharacter(xShapeText.getStart(), 
-                  ControlCharacter.PARAGRAPH_BREAK, false );
+            xShapePropSet.setPropertyValue("TextLeftDistance", new Long(0));
+            xShapePropSet.setPropertyValue("LineStyle", LineStyle.NONE);
+            xShapePropSet.setPropertyValue("FillStyle", FillStyle.NONE);
+                        
+            // first paragraph            
+            xTextPropSet = ShapeHelper.addPortion( xRectangle, caption, false );
+            xTextPropSet.setPropertyValue( "CharColor", new Integer( 0x000000 ) );
+            
+            // first shape
             caption = img.getTitle()+" ( "+img.getImgUrlMainPage()+" )";
-            xShapeText.insertString(xShapeText.getStart(), caption, false);
+            xRectangle = ShapeHelper.createShape( this.getComponent(),
+                    new Point(0, xGraphicShape.getPosition().Y + xGraphicShape.getSize().Height + 600 ),
+                    new Size( caption.length()*190, 1500 ),
+                    "com.sun.star.drawing.RectangleShape" );
+            xPage.add( xRectangle );
+            xShapePropSet = (XPropertySet) UnoRuntime.queryInterface( XPropertySet.class, xRectangle );
+            
+            xShapePropSet.setPropertyValue("TextLeftDistance", new Long(0));
+            xShapePropSet.setPropertyValue("LineStyle", LineStyle.NONE);
+            xShapePropSet.setPropertyValue("FillStyle", FillStyle.NONE);
+                        
+            //second one            
+            xTextPropSet = ShapeHelper.addPortion( xRectangle, caption, false );
+            xTextPropSet.setPropertyValue( "CharColor", new Integer( 0x000000 ) );
             
         } catch (Exception e) {
             e.printStackTrace();
@@ -157,13 +182,10 @@ public class Calc extends OOoProgram {
             XShapes xShapes = (XShapes)
             UnoRuntime.queryInterface( XShapes.class, xPage );
             
-            
             XShape xRectangle;
             XPropertySet xTextPropSet, xShapePropSet;
             LineSpacing  aLineSpacing = new LineSpacing();
             aLineSpacing.Mode = LineSpacingMode.PROP;
-            
-            
             
             // first shape
             xRectangle = ShapeHelper.createShape( this.getComponent(),

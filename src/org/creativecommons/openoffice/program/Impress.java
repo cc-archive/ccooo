@@ -87,20 +87,45 @@ public class Impress extends OOoProgram {
             // remove the helper-entry
             xBitmapContainer.removeByName(sName);
             
-            Object oTextShape = xPresentationFactory.createInstance("com.sun.star.drawing.GraphicObjectShape");
-            XShape textShape = (XShape)UnoRuntime.queryInterface( XShape.class, oTextShape );
-            xPage.add(textShape);
-            textShape.setPosition(new Point(9500, 
-                    xGraphicShape.getPosition().Y + xGraphicShape.getSize().Height + 650) );
-     
-            XText xShapeText = (XText)UnoRuntime.queryInterface(XText.class, textShape);
+            XShape xRectangle;
+            XPropertySet xTextPropSet, xShapePropSet;
+            LineSpacing  aLineSpacing = new LineSpacing();
+            aLineSpacing.Mode = LineSpacingMode.PROP;
             
-          String caption = "CC BY "+ img.getLicenseNumber() + " ( " + img.getLicenseURL() + " )";
-          xShapeText.insertString(xShapeText.getStart(), caption, false);
-          xShapeText.insertControlCharacter(xShapeText.getStart(), 
-                  ControlCharacter.PARAGRAPH_BREAK, false );
-          caption = img.getTitle()+" ( "+img.getImgUrlMainPage()+" )";
-          xShapeText.insertString(xShapeText.getStart(), caption, false);
+            // first shape
+            String caption = "CC BY "+ img.getLicenseNumber() + " ( " + img.getLicenseURL() + " )";                    
+            xRectangle = ShapeHelper.createShape( this.getComponent(),
+                    new Point(0, xGraphicShape.getPosition().Y + xGraphicShape.getSize().Height  ),
+                    new Size( caption.length()*300, 1000 ),
+                    "com.sun.star.drawing.RectangleShape" );
+            xPage.add( xRectangle );
+            xShapePropSet = (XPropertySet) UnoRuntime.queryInterface( XPropertySet.class, xRectangle );
+            
+            xShapePropSet.setPropertyValue("TextLeftDistance", new Long(0));
+            xShapePropSet.setPropertyValue("LineStyle", LineStyle.NONE);
+            xShapePropSet.setPropertyValue("FillStyle", FillStyle.NONE);
+                        
+            // first paragraph            
+            xTextPropSet = ShapeHelper.addPortion( xRectangle, caption, false );
+            xTextPropSet.setPropertyValue( "CharColor", new Integer( 0x000000 ) );
+            
+            // first shape
+            caption = img.getTitle()+" ( "+img.getImgUrlMainPage()+" )";
+            xRectangle = ShapeHelper.createShape( this.getComponent(),
+                    new Point(0, xGraphicShape.getPosition().Y + xGraphicShape.getSize().Height + 800 ),
+                    new Size( caption.length()*310, 1000 ),
+                    "com.sun.star.drawing.RectangleShape" );
+            xPage.add( xRectangle );
+            xShapePropSet = (XPropertySet) UnoRuntime.queryInterface( XPropertySet.class, xRectangle );
+            
+            xShapePropSet.setPropertyValue("TextLeftDistance", new Long(0));
+            xShapePropSet.setPropertyValue("LineStyle", LineStyle.NONE);
+            xShapePropSet.setPropertyValue("FillStyle", FillStyle.NONE);
+                        
+            //second one            
+            xTextPropSet = ShapeHelper.addPortion( xRectangle, caption, false );
+            xTextPropSet.setPropertyValue( "CharColor", new Integer( 0x000000 ) );
+            
           
         } catch (Exception e) {
             e.printStackTrace();
