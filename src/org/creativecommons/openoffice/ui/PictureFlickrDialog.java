@@ -8,6 +8,7 @@
  
 package org.creativecommons.openoffice.ui;
 
+import java.net.URL;
 import com.sun.star.awt.XCheckBox;
 import com.sun.star.awt.SystemPointer;
 import java.awt.Rectangle;
@@ -622,6 +623,28 @@ public class PictureFlickrDialog {
       return licenseNumber;
   }
   
+  public String getLicenseCode(String licenseURL) {
+      
+      String licenseNumber = "";
+      if (!licenseURL.equalsIgnoreCase("")) {
+            try {
+            URL licenseUrl = new URL(licenseURL);
+            String[] pieces = licenseUrl.getPath().split("/");
+            if (pieces.length > 2) {
+                return pieces[2];
+            }
+
+        } catch (java.net.MalformedURLException ex) {
+            ex.printStackTrace();
+        }
+
+        return null;
+            
+        }
+      
+      return licenseNumber;
+  }
+  
   /**
       * Canges the mouse pointer.
       *
@@ -659,7 +682,7 @@ public class PictureFlickrDialog {
          }
          else
              if (commercial && update) {
-                 return "1,2";
+                 return "4";
              }
              else
                  if (update && shareAlike) {

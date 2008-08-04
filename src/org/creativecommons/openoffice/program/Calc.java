@@ -113,8 +113,17 @@ public class Calc extends OOoProgram {
             LineSpacing  aLineSpacing = new LineSpacing();
             aLineSpacing.Mode = LineSpacingMode.PROP;
             
+            String byCaption = "";
+            if (img.getLicenseCode().equals("by")) {
+              
+                  byCaption = "CC BY ";
+            }
+            else {
+                  byCaption = img.getLicenseCode().toUpperCase()+ " ";
+              }
+            
             // first shape
-            String caption = "CC BY "+ img.getLicenseNumber() + " ( " + img.getLicenseURL() + " )";                    
+            String caption = byCaption + img.getLicenseNumber() + " ( " + img.getLicenseURL() + " )";                    
             xRectangle = ShapeHelper.createShape( this.getComponent(),
                     new Point(0, xGraphicShape.getPosition().Y + xGraphicShape.getSize().Height  ),
                     new Size( caption.length()*176, 1500 ),

@@ -100,8 +100,17 @@ public class Writer extends OOoProgram {
             // remove the helper-entry
           xBitmapContainer.removeByName(sName);
      
+          String byCaption = "";
+          if (img.getLicenseCode().equals("by")) {
+              
+              byCaption = "CC BY ";
+          }
+          else {
+              byCaption = img.getLicenseCode().toUpperCase()+ " ";
+          }               
+              
           docCursor.getText().insertControlCharacter(docCursor, ControlCharacter.PARAGRAPH_BREAK, false );
-          String caption = img.getTitle()+" ( "+img.getImgUrlMainPage()+" ) / CC BY "+ img.getLicenseNumber() +
+          String caption = img.getTitle()+" ( "+img.getImgUrlMainPage()+" ) / "+byCaption + img.getLicenseNumber() +
                   " ( " + img.getLicenseURL() + " )";
           docCursor.getText().insertString(docCursor, caption, false);
           

@@ -34,6 +34,7 @@ public class Image {
     private String licenseId;
     private String licenseURL;
     private String licenseNumber;
+    private String licenseCode;
     private String secret;
     private XGraphic xGraphic;
     
@@ -161,6 +162,16 @@ public class Image {
     public String getLicenseNumber() {
         
         return licenseNumber;
+    }
+    
+    public void setLicenseCode(String licCode) {
+        
+        this.licenseCode = licCode;
+    }
+    
+    public String getLicenseCode() {
+        
+        return licenseCode;
     }
     
     public void setGraphic(XGraphic _xGrapic) {

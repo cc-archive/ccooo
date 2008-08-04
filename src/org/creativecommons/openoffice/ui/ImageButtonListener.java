@@ -79,6 +79,7 @@ public class ImageButtonListener implements XMouseListener{
                   currentImage.setLicenseID(ph.getLicense());
                   currentImage.setLicenseURL(flickrDialog.getLicenseURL(ph.getLicense()));
                   currentImage.setLicenseNumber(flickrDialog.getLicenseNumber(currentImage.getLicenseURL()));                  
+                  currentImage.setLicenseCode(flickrDialog.getLicenseCode(currentImage.getLicenseURL()));                  
                   addin.getProgramWrapper().insertPictureFlickr(flickrDialog.getSelectedImage()); 
               }
         }
