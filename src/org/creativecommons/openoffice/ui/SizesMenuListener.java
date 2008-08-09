@@ -48,6 +48,7 @@ public class SizesMenuListener implements XMenuListener {
                   flickrDialog.getSelectedImage().setLicenseID(ph.getLicense());
                   flickrDialog.getSelectedImage().setLicenseURL(flickrDialog.getLicenseURL(ph.getLicense()));
                   flickrDialog.getSelectedImage().setLicenseNumber(flickrDialog.getLicenseNumber(flickrDialog.getSelectedImage().getLicenseURL()));
+                  flickrDialog.getSelectedImage().setLicenseCode(flickrDialog.getLicenseCode(flickrDialog.getSelectedImage().getLicenseURL()));                  
                   addin.getProgramWrapper().insertPictureFlickr(flickrDialog.getSelectedImage());
                 break;
         }

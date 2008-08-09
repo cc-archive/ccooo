@@ -19,6 +19,7 @@ import com.sun.star.awt.XControlContainer;
 import com.sun.star.awt.XControlModel;
 import com.sun.star.awt.XDialog;
 import com.sun.star.awt.XPopupMenu;
+import com.sun.star.awt.XMenuExtended;
 import com.sun.star.awt.XToolkit;
 import com.sun.star.awt.XWindow;
 import com.sun.star.beans.XPropertySet;
@@ -37,6 +38,7 @@ import org.creativecommons.openoffice.program.Image;
 import com.sun.star.awt.XWindowPeer; 
 import com.sun.star.graphic.XGraphicProvider;
 import com.sun.star.beans.PropertyValue;
+import java.awt.Point;
 import org.creativecommons.openoffice.program.FlickrConnection;
 
 /**
@@ -120,7 +122,7 @@ public class PictureFlickrDialog {
                 ("com.sun.star.awt.UnoControlDialogModel", m_xContext);
         XMultiServiceFactory msfLicenseSelector = (XMultiServiceFactory) UnoRuntime.queryInterface(
                 XMultiServiceFactory.class, dlgLicenseSelector);
-        
+
         XPropertySet xPSetDialog = createAWTControl(dlgLicenseSelector, "dlgMainForm",
                 "", new Rectangle(100, 100, 260, 440));
         xPSetDialog.setPropertyValue("Title", new String("Insert Picture From Flickr"));
@@ -129,7 +131,7 @@ public class PictureFlickrDialog {
         // get the name container for the dialog for inserting other elements
         this.xNameCont = (XNameContainer)UnoRuntime.queryInterface(
                 XNameContainer.class, dlgLicenseSelector);
-        
+
         // get the service manager from the dialog model
         this.xMultiServiceFactory = (XMultiServiceFactory)UnoRuntime.queryInterface(
                 XMultiServiceFactory.class, dlgLicenseSelector);
@@ -171,7 +173,7 @@ public class PictureFlickrDialog {
         
         xControlCont = (XControlContainer)UnoRuntime.queryInterface(
                 XControlContainer.class, dialog);
-        
+
         Object objSearchButton = xControlCont.getControl(BTN_SEARCH);
         XButton xFinishButton = (XButton)UnoRuntime.queryInterface(XButton.class, objSearchButton);
         xFinishButton.addActionListener(new SearchClickListener(this, this.addin));
@@ -198,7 +200,7 @@ public class PictureFlickrDialog {
         
         // create a peer
         Object toolkit = xMultiComponentFactory.createInstanceWithContext("com.sun.star.awt.Toolkit", m_xContext);
-        XToolkit xToolkit = (XToolkit)UnoRuntime.queryInterface(XToolkit.class, toolkit);
+        XToolkit xToolkit = (XToolkit)UnoRuntime.queryInterface(XToolkit.class, toolkit);        
         XWindow xWindow = (XWindow)UnoRuntime.queryInterface(XWindow.class, xControl);
         xWindow.setVisible(false);
         xControl.createPeer(xToolkit, null);
@@ -303,8 +305,6 @@ public class PictureFlickrDialog {
                 {
                     createImageControl(currentList.get(currentPositionInList), new Rectangle(currentX, 
                            currentY , POSITIONWIDTHHEIGHT, POSITIONWIDTHHEIGHT), String.valueOf(currentPositionInList));                
-                
-                                   
                  }
                  else
                      createImageControl(null, new Rectangle(currentX, currentY, POSITIONWIDTHHEIGHT, 
@@ -550,24 +550,26 @@ public class PictureFlickrDialog {
         XPopupMenu xPopupMenu = null;
         try{
         // create a popup menu
-        Object oPopupMenu = xMultiComponentFactory.createInstanceWithContext("stardiv.Toolkit.VCLXPopupMenu", m_xContext);
+        Object oPopupMenu = xMultiComponentFactory.createInstanceWithContext("com.sun.star.awt.PopupMenu", m_xContext);
         xPopupMenu = (XPopupMenu) UnoRuntime.queryInterface(XPopupMenu.class, oPopupMenu);
-
+        
         for (Object p : sizes.toArray())
         {              
             com.aetrion.flickr.photos.Size currentSize = ((com.aetrion.flickr.photos.Size)p);   
             xPopupMenu.insertItem((short) currentSize.getLabel(), 
                     FlickrConnection.instance.getStringSize(currentSize.getLabel()), 
-                    (short)0, (short) 0);
+                    (short)0, (short) currentSize.getLabel());
         } 
         
         com.sun.star.awt.Rectangle rect = new com.sun.star.awt.Rectangle();
-        rect.Height =100;rect.Width = 100;
-        rect.X = positionX;
-        rect.Y = positionY;
+        rect.Height =800;rect.Width = 800;
+        rect.X = positionX + 10;
+        rect.Y = positionY + 70;
+        //rect.X = 500;
+        //rect.Y = 500;
         
         xPopupMenu.addMenuListener(new SizesMenuListener(this, addin));
-        xPopupMenu.execute(xControl.getPeer(), rect  , (short)1);
+        xPopupMenu.execute(xWindowPeer, rect, com.sun.star.awt.PopupMenuDirection.EXECUTE_DEFAULT);
         
        }catch( Exception e ) {
         e.printStackTrace();
