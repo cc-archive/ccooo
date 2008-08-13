@@ -80,7 +80,7 @@ public class PictureFlickrDialog {
     public static final String CHK_UPDATENAME = "chkUpdate";
     public static final String CHK_UPDATELABEL = "Search for works I can modify, adapt, or build upon";
     public static final String CHK_SHAREALKENAME = "chkShareAlike";
-    public static final String CHK_SHAREALKELABEL = "Include content which requires my to Share-Alike";
+    public static final String CHK_SHAREALKELABEL = "Include content which requires me to Share-Alike";
     //public static final String LBL_LICENSE = "lblLicense";
     //public static final String LISTBOX_LICENSE = "cmbLicense";    
     public static final String BTN_SEARCH = "btnSearch";
