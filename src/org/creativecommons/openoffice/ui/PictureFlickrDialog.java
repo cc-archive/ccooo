@@ -19,7 +19,6 @@ import com.sun.star.awt.XControlContainer;
 import com.sun.star.awt.XControlModel;
 import com.sun.star.awt.XDialog;
 import com.sun.star.awt.XPopupMenu;
-import com.sun.star.awt.XMenuExtended;
 import com.sun.star.awt.XToolkit;
 import com.sun.star.awt.XWindow;
 import com.sun.star.beans.XPropertySet;
@@ -38,18 +37,11 @@ import org.creativecommons.openoffice.program.Image;
 import com.sun.star.awt.XWindowPeer; 
 import com.sun.star.graphic.XGraphicProvider;
 import com.sun.star.beans.PropertyValue;
-import java.awt.Point;
 import org.creativecommons.openoffice.program.FlickrConnection;
 
 /**
- *  The Creative Commons OpenOffice.org AddIn GUI class.
  *
- *
- *
- *
- * @author Cassio A. Melo
- * @author Creative Commons
- * @version 0.0.1
+ * @author Husleag Mihai
  */
 public class PictureFlickrDialog {
     private XMultiServiceFactory xMultiServiceFactory = null;
@@ -477,33 +469,7 @@ public class PictureFlickrDialog {
         else
             xpsProperties.setPropertyValue("URL", "");   
         xpsProperties.setPropertyValue("Label", userName);
-      //  Object preferedSize = xpsProperties.getPropertyValue("PreferredSize");
-        
-//        Object lblMainPageImage = null;
-//        if (getNameContainer().hasByName("ImageLabelMainPage"+pos))
-//        {
-//            lblMainPageImage = getNameContainer().getByName("ImageLabelMainPage"+pos);                
-//        }
-//        else
-//            lblMainPageImage = xMultiServiceFactory.createInstance("com.sun.star.awt.UnoControlFixedHyperlinkModel");
-//          
-//        String title = "";
-//        if (img!= null)
-//        {
-//            title = "Title :" +img.getTitle();
-//        }
-//        else
-//            title = "";
-//        
-//        xpsProperties = createAWTControl(lblMainPageImage, "ImageLabelMainPage"+pos, title, new Rectangle(rect.x+rect.height+3, rect.y+17, 150, 20));        
-//        if (img!= null)
-//        {
-//            xpsProperties.setPropertyValue("URL", img.getImgUrlMainPage());
-//        }
-//        else
-//            xpsProperties.setPropertyValue("URL", "");
-//        xpsProperties.setPropertyValue("Label", title);            
-//        
+
          } catch (Exception ex) {
             ex.printStackTrace();
         }
@@ -578,24 +544,25 @@ public class PictureFlickrDialog {
     } 
           
      // creates a UNO graphic object that can be used to be assigned 
-  // to the property "Graphic" of a controlmodel
-  public XGraphic getGraphic(String _sImageUrl){
-  XGraphic xGraphic = null;
-  try{
-      // create a GraphicProvider at the global service manager...
-      Object oGraphicProvider = xMultiComponentFactory.createInstanceWithContext("com.sun.star.graphic.GraphicProvider", m_xContext);
-      XGraphicProvider xGraphicProvider = (XGraphicProvider) UnoRuntime.queryInterface(XGraphicProvider.class, oGraphicProvider);
-      // create the graphic object
-      PropertyValue[] aPropertyValues = new PropertyValue[1];
-      PropertyValue aPropertyValue = new PropertyValue();
-      aPropertyValue.Name = "URL";
-      aPropertyValue.Value = _sImageUrl;
-      aPropertyValues[0] = aPropertyValue;
-      xGraphic = xGraphicProvider.queryGraphic(aPropertyValues);
-      return xGraphic;
-  }catch (com.sun.star.uno.Exception ex){
-      throw new java.lang.RuntimeException("cannot happen...");
-  }}
+    // to the property "Graphic" of a controlmodel
+    public XGraphic getGraphic(String _sImageUrl){
+      XGraphic xGraphic = null;
+      try{
+          // create a GraphicProvider at the global service manager...
+          Object oGraphicProvider = xMultiComponentFactory.createInstanceWithContext("com.sun.star.graphic.GraphicProvider", m_xContext);
+          XGraphicProvider xGraphicProvider = (XGraphicProvider) UnoRuntime.queryInterface(XGraphicProvider.class, oGraphicProvider);
+          // create the graphic object
+          PropertyValue[] aPropertyValues = new PropertyValue[1];
+          PropertyValue aPropertyValue = new PropertyValue();
+          aPropertyValue.Name = "URL";
+          aPropertyValue.Value = _sImageUrl;
+          aPropertyValues[0] = aPropertyValue;
+          xGraphic = xGraphicProvider.queryGraphic(aPropertyValues);
+          return xGraphic;
+      }catch (com.sun.star.uno.Exception ex){
+          throw new java.lang.RuntimeException("cannot happen...");
+      }
+    }
   
   public String getLicenseURL(String licenseID) {
       
@@ -852,6 +819,5 @@ public class PictureFlickrDialog {
    
        this.isLoadable = val;
    }
-   
-    
+      
 } // PictureFlickrDialog

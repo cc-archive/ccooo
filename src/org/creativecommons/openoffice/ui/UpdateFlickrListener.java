@@ -11,7 +11,7 @@ import com.sun.star.lang.EventObject;
 
 /**
  *
- * @author Administrator
+ * @author Husleag Mihai
  */
 public class UpdateFlickrListener
     implements XItemListener{
@@ -24,8 +24,7 @@ public class UpdateFlickrListener
     }
     
     public void itemStateChanged(ItemEvent event) {
-        
-       
+               
     }
 
     public void disposing(EventObject event) {

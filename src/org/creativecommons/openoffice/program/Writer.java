@@ -113,20 +113,6 @@ public class Writer extends OOoProgram {
           String caption = img.getTitle()+" ( "+img.getImgUrlMainPage()+" ) / "+byCaption + img.getLicenseNumber() +
                   " ( " + img.getLicenseURL() + " )";
           docCursor.getText().insertString(docCursor, caption, false);
-          
-//           // create a hyperlink
-//        com.sun.star.beans.XPropertySet xPropSet = null;
-//        com.sun.star.lang.XMultiServiceFactory xServiceMan = (com.sun.star.lang.XMultiServiceFactory)
-//            UnoRuntime.queryInterface( com.sun.star.lang.XMultiServiceFactory.class, mxDoc );
-//        Object aHyperlinkObj = xServiceMan.createInstance( "com.sun.star.text.TextField.URL" );
-//        xPropSet = (com.sun.star.beans.XPropertySet)
-//            UnoRuntime.queryInterface( com.sun.star.beans.XPropertySet.class, aHyperlinkObj );
-//        xPropSet.setPropertyValue( "URL", "http://www.example.org" );
-//        xPropSet.setPropertyValue( "Representation", "hyperlink" );
-//        // ... and insert
-//        com.sun.star.text.XTextContent xContent = (com.sun.star.text.XTextContent)
-//            UnoRuntime.queryInterface( com.sun.star.text.XTextContent.class, aHyperlinkObj );
-//        docCursor.insertTextContent( docCursor.getEnd(), xContent, false );
          
         } catch (Exception e) {
             e.printStackTrace();

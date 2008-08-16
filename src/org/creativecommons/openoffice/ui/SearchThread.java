@@ -12,7 +12,7 @@ import org.creativecommons.openoffice.program.FlickrConnection;
 
 /**
  *
- * @author Administrator
+ * @author Husleag Mihai
  */
 public class SearchThread extends Thread {
     

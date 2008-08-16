@@ -13,7 +13,7 @@ import java.util.Collection;
 
 /**
  *
- * @author Administrator
+ * @author Husleag Mihai
  */
 public class Image {
 
@@ -197,9 +197,7 @@ public class Image {
                  this.selectedImageURL = currentSize.getSource();
                  break;
              }
-        }
-                
-        
+        }                        
     }
     
 }

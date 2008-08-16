@@ -14,7 +14,7 @@ import org.creativecommons.openoffice.program.FlickrConnection;
 
 /**
  *
- * @author mihu
+ * @author Husleag Mihai
  */
 public class SizesMenuListener implements XMenuListener {
 

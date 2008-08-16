@@ -7,7 +7,7 @@ package org.creativecommons.openoffice.ui;
 
 /**
  *
- * @author Administrator
+ * @author Husleag Mihai
  */
 public class SavedSearchThread extends Thread {
     

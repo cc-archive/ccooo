@@ -23,7 +23,7 @@ import org.xml.sax.SAXException;
 
 /**
  *
- * @author Administrator
+ * @author Husleag Mihai
  */
 public class FlickrConnection {
 
@@ -116,12 +116,12 @@ public class FlickrConnection {
         User userInfo = null; 
         
         PeopleInterface people = new PeopleInterface(apiKEY, flickr.getTransport());
-           try
-           {
-                userInfo = people.getInfo(userID);
-                return userInfo.getUsername();
-           }
-           catch(com.aetrion.flickr.FlickrException ex){
+        try
+        {
+            userInfo = people.getInfo(userID);
+            return userInfo.getUsername();
+        }
+        catch(com.aetrion.flickr.FlickrException ex){
         ex.printStackTrace(); 
         } catch(java.io.IOException ex){
         ex.printStackTrace();
@@ -136,11 +136,11 @@ public class FlickrConnection {
     {
         PhotosInterface photos = flickr.getPhotosInterface();
      
-           try
-           {                
-                return photos.getSizes(photoID);
-           }
-           catch(com.aetrion.flickr.FlickrException ex){
+        try
+        {                
+            return photos.getSizes(photoID);
+        }
+        catch(com.aetrion.flickr.FlickrException ex){
         ex.printStackTrace(); 
         } catch(java.io.IOException ex){
         ex.printStackTrace();

@@ -22,7 +22,7 @@ import com.sun.star.awt.MouseButton;
 
 /**
  *
- * @author Administrator
+ * @author Husleag Mihai
  */
 public class ImageButtonListener implements XMouseListener{
     
@@ -99,26 +99,6 @@ public class ImageButtonListener implements XMouseListener{
     
     public void actionPerformed(ActionEvent a) {
 
-//      if (a.ActionCommand != "")
-//      {
-//          XControl xControl = (XControl) UnoRuntime.queryInterface(XControl.class, a.Source);
-//          XControlModel xControlModel = xControl.getModel();
-//          XPropertySet xPSet = (XPropertySet) UnoRuntime.queryInterface(XPropertySet.class, xControlModel);
-//      
-//          Integer posX =100;
-//          Integer posY =100;
-//          try
-//          {
-//            posX = (Integer) xPSet.getPropertyValue("PositionX");
-//            posY = (Integer) xPSet.getPropertyValue("PositionY");
-//          }
-//          catch (Exception ex) {
-//              ex.printStackTrace();
-//          }
-//          
-//          Image img = flickrDialog.currentList.get(Integer.parseInt(a.ActionCommand));
-//          flickrDialog.executePopupMenu(img, posX, posY);
-//      } 
     }
     
     public void disposing(EventObject e) {
