@@ -19,6 +19,7 @@ import org.creativecommons.openoffice.program.Image;
 import org.creativecommons.openoffice.program.FlickrConnection;
 import com.sun.star.awt.XMouseListener;
 import com.sun.star.awt.MouseButton;
+import com.sun.star.awt.XWindowPeer;
 
 /**
  *
@@ -51,23 +52,14 @@ public class ImageButtonListener implements XMouseListener{
           //we have to add also the position of the image control within the main dialog
           XControl xControl = (XControl) UnoRuntime.queryInterface(XControl.class, _mouseEvent.Source);
           XControlModel xControlModel = xControl.getModel();
-          XPropertySet xPSet = (XPropertySet) UnoRuntime.queryInterface(XPropertySet.class, xControlModel);
-      
-          Integer posX =0;
-          Integer posY =0;
-       
-          try
-          {
-            posX = (Integer) xPSet.getPropertyValue("PositionX");
-            posY = (Integer) xPSet.getPropertyValue("PositionY");
-          }
-          catch (Exception ex) {
-              ex.printStackTrace();
-          }
+          XPropertySet xPSet = (XPropertySet) UnoRuntime.queryInterface(XPropertySet.class, xControlModel);      
             
-          if (_mouseEvent.Buttons == MouseButton.RIGHT) 
-
-                flickrDialog.executePopupMenu(this.currentImage, _mouseEvent.X + posX , _mouseEvent.Y + posY );
+          if (_mouseEvent.Buttons == MouseButton.RIGHT) {
+           
+           //   XWindowPeer xImagePeer = (XWindowPeer) UnoRuntime.queryInterface(XControl.class, xControl);
+              flickrDialog.executePopupMenu(this.currentImage, _mouseEvent.X  , _mouseEvent.Y ,
+                      xControl.getPeer());
+          }
           else
               if (_mouseEvent.Buttons == MouseButton.LEFT && _mouseEvent.ClickCount == 2) 
               {
@@ -86,8 +78,7 @@ public class ImageButtonListener implements XMouseListener{
               }
         }
     }
-         
-    
+             
     public void mouseExited(MouseEvent mouseEvent) {
     }
     

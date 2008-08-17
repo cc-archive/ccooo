@@ -461,7 +461,7 @@ public class PictureFlickrDialog {
         }      
             
         XPropertySet xpsProperties = createAWTControl(lblUser, "ImageLabelUser"+pos, userName, 
-                new Rectangle(rect.x, rect.y + rect.height+3, 50, 20));                
+                new Rectangle(rect.x, rect.y + rect.height+3, 50, 15));                
         if (img!= null)
         {
             xpsProperties.setPropertyValue("URL", img.getProfile());
@@ -507,7 +507,8 @@ public class PictureFlickrDialog {
          }
      }
      
-     public XPopupMenu executePopupMenu(Image img, Integer positionX, Integer positionY){
+     public XPopupMenu executePopupMenu(Image img, Integer positionX, Integer positionY,
+             XWindowPeer xImagePeer){
         
         this.selectedImage = img;        
         Collection sizes = FlickrConnection.instance.getPhotoSizes(img.getPhotoID());
@@ -527,15 +528,14 @@ public class PictureFlickrDialog {
                     (short)0, (short) currentSize.getLabel());
         } 
         
-        com.sun.star.awt.Rectangle rect = new com.sun.star.awt.Rectangle();
-        rect.Height =800;rect.Width = 800;
-        rect.X = positionX + 10;
-        rect.Y = positionY + 70;
-        //rect.X = 500;
-        //rect.Y = 500;
-        
+        com.sun.star.awt.Rectangle rect = new com.sun.star.awt.Rectangle();//100, 100, 260, 440);
+        rect.Height =POSITIONWIDTHHEIGHT;
+        rect.Width = POSITIONWIDTHHEIGHT + 50;
+        rect.X = positionX;
+        rect.Y = positionY - POSITIONWIDTHHEIGHT;
+
         xPopupMenu.addMenuListener(new SizesMenuListener(this, addin));
-        xPopupMenu.execute(xWindowPeer, rect, com.sun.star.awt.PopupMenuDirection.EXECUTE_DEFAULT);
+        xPopupMenu.execute(xImagePeer, rect, com.sun.star.awt.PopupMenuDirection.EXECUTE_DEFAULT);
         
        }catch( Exception e ) {
         e.printStackTrace();
