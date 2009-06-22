@@ -27,7 +27,10 @@ import org.xml.sax.SAXException;
  */
 public class FlickrConnection {
 
-    public  String  apiKEY= "c5e0a253b7f94e354d62c9b64d589f73";
+    public String  apiKEY= "0f92f6ce471474b52886a4ce2a512e85"; // used to ID the application
+    public String sharedSecret = "e2e9d20a7b2a1cf8"; 	// used for signed calls
+    // The above key is a Non-Commercial API key for NiMaL13 flickr user
+
     public final static FlickrConnection instance = new FlickrConnection();
     private Flickr flickr = new Flickr(apiKEY);
     private SearchParameters currentSearch = null;
@@ -94,7 +97,7 @@ public class FlickrConnection {
     
     public java.util.Collection getLicenses() {
         
-        LicensesInterface lic = new LicensesInterface(apiKEY, flickr.getTransport());
+        LicensesInterface lic = new LicensesInterface(apiKEY, sharedSecret, flickr.getTransport());
         
         try
            {                
@@ -115,7 +118,7 @@ public class FlickrConnection {
     {
         User userInfo = null; 
         
-        PeopleInterface people = new PeopleInterface(apiKEY, flickr.getTransport());
+        PeopleInterface people = new PeopleInterface(apiKEY, sharedSecret,flickr.getTransport());
         try
         {
             userInfo = people.getInfo(userID);
