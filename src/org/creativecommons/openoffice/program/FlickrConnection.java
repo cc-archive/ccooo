@@ -7,6 +7,7 @@ package org.creativecommons.openoffice.program;
 
 import com.aetrion.flickr.Flickr;
 import com.aetrion.flickr.FlickrException;
+import com.aetrion.flickr.REST;
 import com.aetrion.flickr.photos.Photo;
 import com.aetrion.flickr.photos.PhotoList;
 import com.aetrion.flickr.photos.PhotosInterface;

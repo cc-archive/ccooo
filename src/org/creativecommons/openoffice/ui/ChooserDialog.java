@@ -75,6 +75,7 @@ public class ChooserDialog {
     
     public static final String LBL_SELECTED_LICENSE = "lblSelectedLicense";
     public static final String LBL_SELECTED_LICENSE_LABEL = "lblSelectedLicense_lbl";
+    public static final String LBL_SELECTED_LICENSE_INFO = "lblSelectedLicense_info";
     public static final String LBL_JURISDICTION_LIST = "lblJurisdictionList";
     
     /**
@@ -130,6 +131,7 @@ public class ChooserDialog {
         
         getNameContainer().insertByName(LBL_SELECTED_LICENSE_LABEL, lblSelectedLicenseLabel);
         
+        //
         Object lblSelectedLicense = msfLicenseSelector.createInstance("com.sun.star.awt.UnoControlFixedTextModel");
         XPropertySet xpsSelectedLicense = (XPropertySet) UnoRuntime.queryInterface(XPropertySet.class, lblSelectedLicense);
         
@@ -141,8 +143,23 @@ public class ChooserDialog {
         // xpsSelectedLicense.setPropertyValue("Label", current_license);
         
         getNameContainer().insertByName(LBL_SELECTED_LICENSE, lblSelectedLicense);
-        
+
+        ////////////////////////////////
+        Object lblSelectedLicenseInfo = msfLicenseSelector.createInstance("com.sun.star.awt.UnoControlFixedTextModel");
+        XPropertySet xpsSelectedLicenseInfoLbl = (XPropertySet) UnoRuntime.queryInterface(XPropertySet.class, lblSelectedLicenseInfo);
+
+        xpsSelectedLicenseInfoLbl.setPropertyValue("PositionX", new Integer(300));
+        xpsSelectedLicenseInfoLbl.setPropertyValue("PositionY", new Integer(100));
+        xpsSelectedLicenseInfoLbl.setPropertyValue("Width", new Integer(100));
+        xpsSelectedLicenseInfoLbl.setPropertyValue("Height", new Integer(100));
+        xpsSelectedLicenseInfoLbl.setPropertyValue("Name", LBL_SELECTED_LICENSE_INFO);
+        xpsSelectedLicenseInfoLbl.setPropertyValue("Label", "Selected License Info This that this.");
+
+        getNameContainer().insertByName(LBL_SELECTED_LICENSE_INFO, lblSelectedLicenseInfo);
+        //////////////////////////////////////
+
         // create the boolean selection fields
+        // Remix
         Object chkAllowRemixing = msfLicenseSelector.createInstance("com.sun.star.awt.UnoControlCheckBoxModel");
         XPropertySet xpsAllowRemixing = (XPropertySet) UnoRuntime.queryInterface(XPropertySet.class, chkAllowRemixing);
         
@@ -157,7 +174,9 @@ public class ChooserDialog {
         xpsAllowRemixing.setPropertyValue("State", new Short((short) 1));
         
         getNameContainer().insertByName(CHK_ALLOW_REMIX, chkAllowRemixing);
-        
+
+        // Commercial
+        // The licensor permits others to copy, distribute, display, and perform the work, including for commercial purposes.
         Object chkProhibitCommercial = msfLicenseSelector.createInstance("com.sun.star.awt.UnoControlCheckBoxModel");
         XPropertySet xpsProhibitCommercial = (XPropertySet) UnoRuntime.queryInterface(XPropertySet.class, chkProhibitCommercial);
         
@@ -172,7 +191,8 @@ public class ChooserDialog {
         xpsProhibitCommercial.setPropertyValue("State", new Short((short) 0));
         
         getNameContainer().insertByName(CHK_PROHIBIT_COMMERCIAL, chkProhibitCommercial);
-        
+
+        // Share-Alike
         Object chkRequireShareAlike = msfLicenseSelector.createInstance("com.sun.star.awt.UnoControlCheckBoxModel");
         XPropertySet xpsRequireShareAlike = (XPropertySet) UnoRuntime.queryInterface(XPropertySet.class, chkRequireShareAlike);
         

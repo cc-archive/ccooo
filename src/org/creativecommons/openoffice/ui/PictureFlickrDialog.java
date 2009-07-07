@@ -116,7 +116,7 @@ public class PictureFlickrDialog {
                 XMultiServiceFactory.class, dlgLicenseSelector);
 
         XPropertySet xPSetDialog = createAWTControl(dlgLicenseSelector, "dlgMainForm",
-                "", new Rectangle(100, 100, 260, 440));
+                "", new Rectangle(100, 100, 260, 360));
         xPSetDialog.setPropertyValue("Title", new String("Insert Picture From Flickr"));
         xPSetDialog.setPropertyValue("Step", (short)1 );        
         

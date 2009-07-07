@@ -28,6 +28,9 @@
                             <prop oor:name="ImageIdentifier" oor:type="xs:string">
                                 <value/>
                             </prop>
+                            <prop oor:name="Context" oor:type="xs:string">
+                                <value>com.sun.star.presentation.PresentationDocument,com.sun.star.sheet.SpreadsheetDocument,com.sun.star.text.TextDocument</value>
+                            </prop>
                             <node oor:name="Submenu">
                                 <node oor:name="m1" oor:op="replace">
                                     <prop oor:name="URL" oor:type="xs:string">
@@ -106,7 +109,7 @@
             </node>
         </node>
         
-        <!--
+        <!-- Below un commented for OOo 3 Changes, Couldn't get in Insert menu -->
     <node oor:name="AddonMenu">
       <node oor:name="org.creativecommons.openoffice.CcOOoAddin" oor:op="replace">
         <prop oor:name="Title" oor:type="xs:string">
@@ -159,6 +162,7 @@
       </node>
     </node>
 
--->
+ <!-- Above un commented for OOo 3 Changes, Couldn't get in Insert menu-->
+ 
     </node>
 </oor:component-data>
