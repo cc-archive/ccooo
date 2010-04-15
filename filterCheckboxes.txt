@@ -1,0 +1,15 @@
+1 nc sa
+2 nc
+3 nc nd
+4 atribution (simple)
+5 sa
+6 nd
+
+
+first : 4 5 6
+second : 2, 4
+second+third : 1, 2, 4, 5
+first+second : 1, 2
+first+second+third : 4, 5
+checking only third not possible
+checking first+third not possible
