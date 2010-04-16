@@ -481,7 +481,7 @@ public class PictureFlickrDialog {
                 xGraphic = getGraphic("file://"+this.getClass().
                         getProtectionDomain().getCodeSource().
                         getLocation().getPath().
-                        replaceFirst("ccooo.jar", "images/loading.png"));// 
+                        replaceFirst("ccooo.jar", "images/loadingFlickr.png"));
                 loadingImage.setGraphic(xGraphic);
             }
 

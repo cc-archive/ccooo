@@ -411,12 +411,6 @@ public class OpenClipArtDialog {
     }
 
     private void createImageLoad(Rectangle rect, String pos) {
-
-        if (!isLoadable) {
-
-            return;
-        }
-
         try {
             Object oICModel = null;
             if (getNameContainer().hasByName("ImageControl" + pos)) {
@@ -437,7 +431,7 @@ public class OpenClipArtDialog {
                 xGraphic = getGraphic("file://" + this.getClass().
                         getProtectionDomain().getCodeSource().
                         getLocation().getPath().
-                        replaceFirst("ccooo.jar", "images/loading.png"));// 
+                        replaceFirst("ccooo.jar", "images/openclipartloading.png"));
                 loadingImage.setGraphic(xGraphic);
             }
 

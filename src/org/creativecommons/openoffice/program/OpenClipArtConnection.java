@@ -40,29 +40,29 @@ public class OpenClipArtConnection {
             URL url = new URL("http://testvm.openclipart.org/cchost/api/query?limit=100&tags=" + tagLine
                     + "&format=csv&t=links_by_dl_ul&lic=pd");
             in = new BufferedReader(new InputStreamReader(url.openStream()));
-            String inputLine;
+            
+            String inputLine,title,imgUrl,profile,imgUrlMainPage,userID,photoID,userName;
             String[] list;
             int count = 0;
             while ((inputLine = in.readLine()) != null) {
                 list = inputLine.split(",");
-//                System.out.println("_________________________________");
-//                System.out.println("Image " + list[8].replaceFirst("/cchost/content/","/people/").replaceFirst("testvm.", ""));//replaceFirst("/cchost/content/[a-zA-z_]+/","/image/200px/svg_to_png/")
-//                System.out.println("Image Name " + list[2]);
-//                System.out.println("Image URL " + "http://www.openclipart.org/detail/"+list[0]);
-//                System.out.println("User Name " + list[6]);
-//                System.out.println("Real Name " + list[4]);
-//                System.out.println("Real Name " + list[0]);
-                list[3] = list[3].replaceFirst("testvm.", "").replaceFirst("/cchost/people/", "/user-detail/");
-                list[8] = list[8].replaceFirst("/cchost/content/", "/people/").replaceFirst("testvm.", "");
-                //list[1]="http://www.openclipart.org/detail/"+list[0];
+                title=list[2];
+                profile = list[3].replaceFirst("testvm.", "").
+                        replaceFirst("/cchost/people/", "/user-detail/");
+                imgUrl = list[8].replaceFirst("/cchost/content/", "/people/").
+                        replaceFirst("testvm.", "");
+                imgUrlMainPage=list[1];//the image is not shown in the current main page the url has to be cnaged
+                userID=list[4];
+                photoID=list[0];
+                userName=list[6];
                 count++;
                 if (count > 100) {
                     break;
                 }
-                if (/*list[8].endsWith(".png")*/count > (currentPage - 1) * 16) {
-                    Image img = new Image(list[2], null, null, list[8], list[3], null, list[1], list[4], list[0], "");
-                    img.setUserName(list[6]);
-                    img.setSelectedImageURL(list[8]);
+                if (count > (currentPage - 1) * 16) {//list[8].endsWith(".png")
+                    Image img = new Image(title, null, null, imgUrl, profile, null, imgUrlMainPage, userID, photoID, "");
+                    img.setUserName(userName);
+                    img.setSelectedImageURL(imgUrl);
                     img.setLicenseCode("PD");
                     img.setLicenseNumber("");
                     img.setLicenseURL("http://creativecommons.org/licenses/publicdomain/");
