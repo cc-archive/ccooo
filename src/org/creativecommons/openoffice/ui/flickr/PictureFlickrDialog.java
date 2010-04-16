@@ -7,6 +7,7 @@
  */
 package org.creativecommons.openoffice.ui.flickr;
 
+import com.aetrion.flickr.photos.licenses.License;
 import java.net.URL;
 import com.sun.star.awt.XCheckBox;
 import com.sun.star.awt.SystemPointer;
@@ -170,11 +171,10 @@ public class PictureFlickrDialog {
             xFinishButton.addActionListener(new SearchClickListener(this, this.addin));
             xFinishButton.setActionCommand(BTN_SEARCH);
 
-            /*********************************/
-            long time2 = new Date().getTime();
-            this.flickrLicenses = FlickrConnection.instance.getLicenses(); //bottleneck 1
-            System.out.println("Flicker Dialog Showing getLicenses()" + (new Date().getTime() - time2));
-            /*******************************/
+   
+            //this.flickrLicenses = FlickrConnection.instance.getLicenses(); //this method takes about 2-3 seconds
+            setLicenses(); //adding licenses locally
+            
             Object oGBResults = msfLicenseSelector.createInstance("com.sun.star.awt.UnoControlGroupBoxModel");
             createAWTControl(oGBResults, GB_RESULTS, "Results", new Rectangle(10, LOCATIONIMAGESY, 220, 280));//315
 
@@ -612,6 +612,51 @@ public class PictureFlickrDialog {
             throw new java.lang.RuntimeException("cannot happen...");
         }
     }
+    @SuppressWarnings("unchecked")
+    private void setLicenses(){
+        flickrLicenses=new ArrayList<License>();
+        License license=new License();
+        license.setId("4");
+        license.setName("Attribution License");
+        license.setUrl("http://creativecommons.org/licenses/by/2.0/");
+        flickrLicenses.add(license);
+
+        license=new License();
+        license.setId("6");
+        license.setName("Attribution-NoDerivs License");
+        license.setUrl("http://creativecommons.org/licenses/by-nd/2.0/");
+        flickrLicenses.add(license);
+
+        license=new License();
+        license.setId("3");
+        license.setName("Attribution-NonCommercial-NoDerivs License");
+        license.setUrl("http://creativecommons.org/licenses/by-nc-nd/2.0/");
+        flickrLicenses.add(license);
+
+        license=new License();
+        license.setId("2");
+        license.setName("Attribution-NonCommercial License");
+        license.setUrl("http://creativecommons.org/licenses/by-nc/2.0/");
+        flickrLicenses.add(license);
+
+        license=new License();
+        license.setId("1");
+        license.setName("Attribution-NonCommercial-ShareAlike License");
+        license.setUrl("http://creativecommons.org/licenses/by-nc-sa/2.0/");
+        flickrLicenses.add(license);
+
+        license=new License();
+        license.setId("5");
+        license.setName("Attribution-ShareAlike License");
+        license.setUrl("http://creativecommons.org/licenses/by-sa/2.0/");
+        flickrLicenses.add(license);
+
+        license=new License();
+        license.setId("7");
+        license.setName("No known copyright restrictions");
+        license.setUrl("http://flickr.com/commons/usage/");
+        flickrLicenses.add(license);
+    }
 
     public String getLicenseURL(String licenseID) {
 
@@ -684,6 +729,7 @@ public class PictureFlickrDialog {
             ex.printStackTrace();
         }
     }
+
 
     public String getLicense() {
 
