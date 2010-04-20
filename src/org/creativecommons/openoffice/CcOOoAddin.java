@@ -52,6 +52,7 @@ import org.creativecommons.openoffice.program.Writer;
 import org.creativecommons.openoffice.ui.license.ChooserDialog;
 import org.creativecommons.openoffice.ui.flickr.PictureFlickrDialog;
 import org.creativecommons.openoffice.ui.openclipart.OpenClipArtDialog;
+import org.creativecommons.openoffice.ui.wikimedia.WikimediaDialog;
 
 /**
  *  The Creative Commons OpenOffice.org AddIn core class.
@@ -82,6 +83,7 @@ public final class CcOOoAddin extends WeakBase
     protected XMultiComponentFactory mxRemoteServiceManager = null;
     private PictureFlickrDialog pictureFlickrDialog = null;
     private OpenClipArtDialog openClipArtDialog = null;
+    private WikimediaDialog wikimediaDialog=null;
 
     /**
      * Constructs a new instance
@@ -241,6 +243,9 @@ public final class CcOOoAddin extends WeakBase
             else if (aURL.Path.compareTo("InsertOpenClipArt") == 0) {
                 insertOpenClipArt();
             }
+            else if (aURL.Path.compareTo("InsertWikimediaCommons") == 0) {
+                insertWikimediaImage();
+            }
         } // if CcOOoAddin protocol
     } // dispatch
 
@@ -339,6 +344,36 @@ public final class CcOOoAddin extends WeakBase
         } finally {
 
             openClipArtDialog.setLoadable(false);
+        }
+
+
+    } // insertPictureFlickr
+
+    public void insertWikimediaImage() {
+
+        try {
+
+            if (mxRemoteServiceManager == null) {
+                System.out.println("not available");
+                return;
+            }
+
+            this.updateCurrentComponent();
+
+            if (wikimediaDialog == null) {
+                wikimediaDialog = new WikimediaDialog(this, this.m_xContext);
+                wikimediaDialog.setLoadable(true);
+                wikimediaDialog.showDialog(false);
+            } else {
+                wikimediaDialog.setLoadable(true);
+                wikimediaDialog.showDialog(true);
+            }
+
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        } finally {
+
+            wikimediaDialog.setLoadable(false);
         }
 
 

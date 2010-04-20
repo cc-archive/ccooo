@@ -19,6 +19,7 @@ import java.util.logging.Logger;
 public class OpenClipArtConnection {
 
     public final static OpenClipArtConnection instance = new OpenClipArtConnection();
+    public final static ArrayList<Image> imgList = new ArrayList<Image>();
 
     protected OpenClipArtConnection() {
     }
@@ -30,7 +31,7 @@ public class OpenClipArtConnection {
     public ArrayList<Image> searchPhotos(String[] tags, int currentPage) {
 
         BufferedReader in = null;
-        ArrayList<Image> imgList = new ArrayList<Image>();
+        imgList.removeAll(imgList);
         String tagLine = "";
         for (int i = 0; i < tags.length; i++) {
             tagLine += "+" + tags[i];
@@ -40,34 +41,33 @@ public class OpenClipArtConnection {
             URL url = new URL("http://testvm.openclipart.org/cchost/api/query?limit=100&tags=" + tagLine
                     + "&format=csv&t=links_by_dl_ul&lic=pd");
             in = new BufferedReader(new InputStreamReader(url.openStream()));
-            
-            String inputLine,title,imgUrl,profile,imgUrlMainPage,userID,photoID,userName;
+
+            String inputLine, title, imgUrl, profile, imgUrlMainPage, userID, photoID, userName;
             String[] list;
             int count = 0;
             while ((inputLine = in.readLine()) != null) {
                 list = inputLine.split(",");
-                title=list[2];
+                title = list[2];
                 profile = list[3].replaceFirst("testvm.", "").
                         replaceFirst("/cchost/people/", "/user-detail/");
                 imgUrl = list[8].replaceFirst("/cchost/content/", "/people/").
                         replaceFirst("testvm.", "");
-                imgUrlMainPage=list[1];//the image is not shown in the current main page the url has to be cnaged
-                userID=list[4];
-                photoID=list[0];
-                userName=list[6];
+                imgUrlMainPage = list[1];//the image is not shown in the current main page the url has to be cnaged
+                userID = list[4];
+                photoID = list[0];
+                userName = list[6];
                 count++;
                 if (count > 100) {
                     break;
                 }
-                if (count > (currentPage - 1) * 16) {//list[8].endsWith(".png")
-                    Image img = new Image(title, null, null, imgUrl, profile, null, imgUrlMainPage, userID, photoID, "");
-                    img.setUserName(userName);
-                    img.setSelectedImageURL(imgUrl);
-                    img.setLicenseCode("PD");
-                    img.setLicenseNumber("");
-                    img.setLicenseURL("http://creativecommons.org/licenses/publicdomain/");
-                    imgList.add(img);
-                }
+                Image img = new Image(title, null, null, imgUrl, profile, null, imgUrlMainPage, userID, photoID, "");
+                img.setUserName(userName);
+                img.setSelectedImageURL(imgUrl);
+                img.setLicenseCode("PD");
+                img.setLicenseNumber("");
+                img.setLicenseURL("http://creativecommons.org/licenses/publicdomain/");
+                imgList.add(img);
+
             }
             imgList.remove(0);
 

@@ -2,7 +2,6 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package org.creativecommons.openoffice.program;
 
 import com.sun.star.graphic.XGraphic;
@@ -26,10 +25,10 @@ public class Image {
     private String imgUrl;
     private String profile;
     private String imgUrlMainPage;
-    private Collection tags;    
+    private Collection tags;
     private String selectedImageURL;
     private Integer selectedImageWidth;
-    private Integer selectedImageHeigth;    
+    private Integer selectedImageHeigth;
     private Collection selectedImageSizes;
     private String licenseId;
     private String licenseURL;
@@ -37,10 +36,10 @@ public class Image {
     private String licenseCode;
     private String secret;
     private XGraphic xGraphic;
-    
-    public Image(String _title,Date _taken,Date _uploaded, String _imgUrl, String _profile, 
+
+    public Image(String _title, Date _taken, Date _uploaded, String _imgUrl, String _profile,
             Collection _tags, String _imgUrlMainPage, String _userID, String _photoID, String _secret) {
-            
+
         this.title = _title;
         this.taken = _taken;
         this.uploaded = _uploaded;
@@ -52,64 +51,60 @@ public class Image {
         this.photoID = _photoID;
         this.secret = _secret;
     }
-    
-    public String getTitle()
-    {
+
+    public String getTitle() {
         return title;
     }
-    
-    public String getUserName()
-    {
+
+    public String getUserName() {
         return username;
     }
-    
-    public void setUserName(String _userName)
-    {
+
+    public void setUserName(String _userName) {
         username = _userName;
     }
 
-    public String getImgUrlMainPage()
-    {
+    public void setImgUrlMainPage(String url) {
+        this.imgUrlMainPage=url;
+    }
+
+    public String getImgUrlMainPage() {
         return imgUrlMainPage;
     }
-    
-    public Date getTaken()
-    {
+
+    public Date getTaken() {
         return taken;
     }
-    
-    public Date getUploaded()
-    {
+
+    public Date getUploaded() {
         return uploaded;
     }
-    
-    public String getImgURL()
-    {
+
+    public void setImgURL(String url) {
+        this.imgUrl = url;
+    }
+
+    public String getImgURL() {
         return imgUrl;
     }
-    
-    public String getProfile()
-    {
+
+    public String getProfile() {
         return profile;
     }
-    
-    public Collection getTags()
-    {        
+
+    public Collection getTags() {
         return tags;
     }
-    
-    public String getUserID()
-    {
+
+    public String getUserID() {
         return userID;
     }
-     
-    public String getPhotoID()
-    {
+
+    public String getPhotoID() {
         return photoID;
     }
-    
-    public String getSecret()
-    {
+
+    public String getSecret() {
         return secret;
     }
 
@@ -117,95 +112,90 @@ public class Image {
 
         this.selectedImageURL = url;
     }
-    
+
     public String getSelectedImageURL() {
-        
+
         return selectedImageURL;
     }
-    
-    
+
     public Integer getSelectedImageWidth() {
-        
+
         return selectedImageWidth;
     }
-        
+
     public Integer getSelectedImageHeigth() {
-        
+
         return selectedImageHeigth;
     }
-    
+
     public void setSelectedImageSizes(Collection sizes) {
-        
+
         this.selectedImageSizes = sizes;
     }
-    
+
     public void setLicenseID(String licID) {
-        
-        this.licenseId  = licID;
+
+        this.licenseId = licID;
     }
-    
+
     public String getLicenseID() {
-        
+
         return licenseId;
     }
-    
+
     public void setLicenseURL(String licURL) {
-        
-        this.licenseURL  = licURL;
+
+        this.licenseURL = licURL;
     }
-    
+
     public String getLicenseURL() {
-        
+
         return licenseURL;
     }
-    
+
     public void setLicenseNumber(String licNumber) {
-        
-        this.licenseNumber  = licNumber;
+
+        this.licenseNumber = licNumber;
     }
-    
+
     public String getLicenseNumber() {
-        
+
         return licenseNumber;
     }
-    
+
     public void setLicenseCode(String licCode) {
-        
+
         this.licenseCode = licCode;
     }
-    
+
     public String getLicenseCode() {
-        
+
         return licenseCode;
     }
-    
+
     public void setGraphic(XGraphic _xGrapic) {
-        
-        this.xGraphic  = _xGrapic;
+
+        this.xGraphic = _xGrapic;
     }
-    
+
     public XGraphic getGraphic() {
-        
+
         return xGraphic;
     }
-   
-    public void RefreshSelectedSizeImageData(short selectedSize){
-        
-        for (Object p : selectedImageSizes.toArray())
-        {              
-             com.aetrion.flickr.photos.Size currentSize = ((com.aetrion.flickr.photos.Size)p);   
-            
-             if (currentSize.getLabel()  == (int)selectedSize) {
-                 
-                 this.selectedImageHeigth = currentSize.getHeight();
-                 this.selectedImageWidth = currentSize.getWidth();
-                 this.selectedImageURL = currentSize.getSource();
-                 break;
-             }
-        }                        
-    }
-    
-    
 
+    public void RefreshSelectedSizeImageData(short selectedSize) {
+
+        for (Object p : selectedImageSizes.toArray()) {
+            com.aetrion.flickr.photos.Size currentSize = ((com.aetrion.flickr.photos.Size) p);
+
+            if (currentSize.getLabel() == (int) selectedSize) {
+
+                this.selectedImageHeigth = currentSize.getHeight();
+                this.selectedImageWidth = currentSize.getWidth();
+                this.selectedImageURL = currentSize.getSource();
+                break;
+            }
+        }
+    }
 }
 
