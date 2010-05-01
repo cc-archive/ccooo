@@ -231,8 +231,8 @@ public class Writer extends OOoProgram {
             XTextFieldsSupplier mxTextFields = (XTextFieldsSupplier)UnoRuntime.queryInterface(
                     XTextFieldsSupplier.class, mxDoc);
             
-            XPropertySet licenseNameMaster = updateMasterField("License Name", license.getName(), mxTextFields, mxDocFactory);
-            XPropertySet licenseURLMaster = updateMasterField("License URL", license.getLicenseUri(), mxTextFields, mxDocFactory);
+            //XPropertySet licenseNameMaster = updateMasterField("License Name", license.getName(), mxTextFields, mxDocFactory);
+            //XPropertySet licenseURLMaster = updateMasterField("License URL", license.getLicenseUri(), mxTextFields, mxDocFactory);
             
             XDependentTextField licenseNameField = createUserTextField(mxDocFactory, mxTextFields, "License Name", license.getName());
             XDependentTextField licenseURLField = createUserTextField(mxDocFactory, mxTextFields, "License URL", license.getLicenseUri());

@@ -172,15 +172,14 @@ public class Draw extends OOoProgram {
             pageBorderBottom = AnyConverter.toInt(xPageProps.getPropertyValue("BorderBottom"));
             pageBorderLeft = AnyConverter.toInt(xPageProps.getPropertyValue("BorderLeft"));
             pageBorderRight = AnyConverter.toInt(xPageProps.getPropertyValue("BorderRight"));
-
-
+            
             XShapes xShapes = (XShapes) UnoRuntime.queryInterface(XShapes.class, xPage);
-
+           
             XShape xRectangle;
             XPropertySet xTextPropSet, xShapePropSet;
             LineSpacing aLineSpacing = new LineSpacing();
             aLineSpacing.Mode = LineSpacingMode.PROP;
-
+            
             // first shape
             xRectangle = ShapeHelper.createShape(this.getComponent(),
                     new Point(pageWidth - license.getName().length() * pageWidth / 65 - pageBorderRight - 200, pageHeight - 2 * pageWidth / 50 - pageBorderBottom - 200),/*15500, 19600*/
