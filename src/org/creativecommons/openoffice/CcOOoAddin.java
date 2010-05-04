@@ -136,16 +136,16 @@ public final class CcOOoAddin extends WeakBase
                 XServiceInfo.class, this.getCurrentComponent());
 
         if (xServiceInfo.supportsService("com.sun.star.sheet.SpreadsheetDocument")) {
-            return new Calc(this.getCurrentComponent());
+            return new Calc(this.getCurrentComponent(),m_xContext);
 
         } else if (xServiceInfo.supportsService("com.sun.star.text.TextDocument")) {
-            return new Writer(this.getCurrentComponent());
+            return new Writer(this.getCurrentComponent(),m_xContext);
 
         } else if (xServiceInfo.supportsService("com.sun.star.presentation.PresentationDocument")) {
-            return new Impress(this.getCurrentComponent());
+            return new Impress(this.getCurrentComponent(),m_xContext);
 
         } else if (xServiceInfo.supportsService("com.sun.star.drawing.DrawingDocument")) {
-            return new Draw(this.getCurrentComponent());
+            return new Draw(this.getCurrentComponent(),m_xContext);
         }
 
         return null;

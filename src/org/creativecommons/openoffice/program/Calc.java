@@ -33,6 +33,7 @@ import com.sun.star.style.LineSpacingMode;
 import com.sun.star.table.XCell;
 import com.sun.star.uno.AnyConverter;
 import com.sun.star.uno.UnoRuntime;
+import com.sun.star.uno.XComponentContext;
 import org.creativecommons.license.License;
 import org.creativecommons.openoffice.util.ShapeHelper;
 
@@ -42,8 +43,8 @@ import org.creativecommons.openoffice.util.ShapeHelper;
  */
 public class Calc extends OOoProgram {
     
-    public Calc(XComponent component) {
-        super(component);
+    public Calc(XComponent component,XComponentContext m_xContext) {
+        super(component,m_xContext);
     }
     
     public void insertPictureFlickr(Image img) {

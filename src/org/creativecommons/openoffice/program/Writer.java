@@ -29,6 +29,7 @@ import com.sun.star.text.XTextFieldsSupplier;
 import com.sun.star.text.XTextViewCursorSupplier;
 import com.sun.star.uno.AnyConverter;
 import com.sun.star.uno.UnoRuntime;
+import com.sun.star.uno.XComponentContext;
 import com.sun.star.util.XRefreshable;
 import com.sun.star.util.XUpdatable;
 import org.creativecommons.license.License;
@@ -40,8 +41,8 @@ import org.creativecommons.openoffice.util.PageHelper;
  */
 public class Writer extends OOoProgram {
     
-    public Writer(XComponent xTextComponent) {
-        super(xTextComponent);
+    public Writer(XComponent component,XComponentContext m_xContext) {
+        super(component,m_xContext);
     }
     
     public void insertPictureFlickr(Image img) {

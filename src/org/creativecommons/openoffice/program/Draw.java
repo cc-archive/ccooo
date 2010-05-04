@@ -23,6 +23,7 @@ import com.sun.star.style.LineSpacing;
 import com.sun.star.style.LineSpacingMode;
 import com.sun.star.uno.AnyConverter;
 import com.sun.star.uno.UnoRuntime;
+import com.sun.star.uno.XComponentContext;
 import java.util.Date;
 import org.creativecommons.license.License;
 import org.creativecommons.openoffice.util.PageHelper;
@@ -41,8 +42,8 @@ public class Draw extends OOoProgram {
     private int pageBorderLeft;
     private int pageBorderRight;
 
-    public Draw(XComponent component) {
-        super(component);
+    public Draw(XComponent component,XComponentContext m_xContext) {
+        super(component,m_xContext);
     }
 
     public void insertPictureFlickr(Image img) {
@@ -163,7 +164,7 @@ public class Draw extends OOoProgram {
         try {
             //XDrawPage xPage = PageHelper.getDrawPageByIndex( xDrawDoc, 0 );
             // xPage = PageHelper.getMasterPageByIndex(xDrawDoc, 0);
-            xPage = PageHelper.getMasterPageByIndex(this.getComponent(), 0);
+            xPage = PageHelper.getDrawPageByIndex(this.getComponent(), 0);
 
             com.sun.star.beans.XPropertySet xPageProps = (com.sun.star.beans.XPropertySet) UnoRuntime.queryInterface(com.sun.star.beans.XPropertySet.class, xPage);
             pageWidth = AnyConverter.toInt(xPageProps.getPropertyValue("Width"));
@@ -174,7 +175,7 @@ public class Draw extends OOoProgram {
             pageBorderRight = AnyConverter.toInt(xPageProps.getPropertyValue("BorderRight"));
             
             XShapes xShapes = (XShapes) UnoRuntime.queryInterface(XShapes.class, xPage);
-           
+
             XShape xRectangle;
             XPropertySet xTextPropSet, xShapePropSet;
             LineSpacing aLineSpacing = new LineSpacing();
@@ -186,8 +187,7 @@ public class Draw extends OOoProgram {
                     new Size(license.getName().length() * pageWidth / 65, 2 * pageWidth / 50),/*15000, 1500*/
                     "com.sun.star.drawing.RectangleShape");
 
-            xPage.add(xRectangle);
-            //xShapes.add( xRectangle );
+            xShapes.add( xRectangle );
             xShapePropSet = (XPropertySet) UnoRuntime.queryInterface(XPropertySet.class, xRectangle);
 
             xShapePropSet.setPropertyValue("TextAutoGrowHeight", true);
@@ -225,7 +225,7 @@ public class Draw extends OOoProgram {
 
             xDrawingFactory = (XMultiServiceFactory) UnoRuntime.queryInterface(XMultiServiceFactory.class, this.getComponent());
 
-            xPage = PageHelper.getMasterPageByIndex(this.getComponent(), 0);
+            xPage = PageHelper.getDrawPageByIndex(this.getComponent(), 0);
 
             xBitmapContainer = (XNameContainer) UnoRuntime.queryInterface(
                     XNameContainer.class, xDrawingFactory.createInstance(

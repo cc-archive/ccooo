@@ -18,7 +18,14 @@ import com.sun.star.document.XDocumentInfo;
 import com.sun.star.document.XDocumentInfoSupplier;
 import com.sun.star.lang.WrappedTargetException;
 import com.sun.star.lang.XComponent;
+import com.sun.star.rdf.Literal;
+import com.sun.star.rdf.URI;
+import com.sun.star.rdf.XDocumentMetadataAccess;
+import com.sun.star.rdf.XLiteral;
+import com.sun.star.rdf.XNamedGraph;
+import com.sun.star.rdf.XURI;
 import com.sun.star.uno.UnoRuntime;
+import com.sun.star.uno.XComponentContext;
 import org.creativecommons.license.License;
 import org.creativecommons.openoffice.Constants;
 
@@ -30,10 +37,12 @@ public abstract class OOoProgram implements IVisibleNotice {
     
     
     protected XComponent component;
+    protected XComponentContext m_xContext;
     
     /** Creates a new instance of OOoProgram */
-    public OOoProgram(XComponent component) {
+    public OOoProgram(XComponent component,XComponentContext m_xContext) {
         this.component = component;
+        this.m_xContext=m_xContext;
     }
     
     
@@ -117,6 +126,43 @@ public abstract class OOoProgram implements IVisibleNotice {
             ex.printStackTrace();
         } catch (WrappedTargetException ex) {
             ex.printStackTrace();
+        }
+
+        try {
+            XDocumentMetadataAccess xDMA = (XDocumentMetadataAccess)
+                    UnoRuntime.queryInterface(XDocumentMetadataAccess.class, this.getComponent());
+            XURI xType1 = URI.create(m_xContext, "http://purl.org/dc/elements/1.1/");
+            XURI xType2 = URI.create(m_xContext, "http://purl.org/dc/terms/");
+            //XURI xType = URI.createKnown(m_xContext, URIs.XSD_DATE);
+
+            try {
+                xDMA.removeMetadataFile(URI.create(m_xContext, xDMA.getNamespace()+"meta.rdf"));
+            } catch (java.lang.Exception eRemove) {
+                eRemove.printStackTrace();
+            }
+
+            XURI xGraphName = xDMA.addMetadataFile("meta.rdf", new XURI[]{xType1,xType2});
+            XNamedGraph xGraph = xDMA.getRDFRepository().getGraph(xGraphName);
+
+            XURI nodeRights = URI.create(m_xContext, "http://purl.org/dc/elements/1.1/rights");
+            XLiteral valRights = Literal.create(m_xContext, license.getName());
+            xGraph.addStatement(xType1, nodeRights, valRights);
+
+            XURI nodeLicense = URI.create(m_xContext, "http://purl.org/dc/terms/license");
+            XLiteral valLicense = Literal.create(m_xContext, license.getLicenseUri());
+            xGraph.addStatement(xType2, nodeLicense, valLicense);
+
+            XURI noderightsHolder = URI.create(m_xContext, "http://purl.org/dc/terms/rightsHolder");
+            XLiteral valrightsHolder = Literal.create(m_xContext, "AUTHOR");
+            xGraph.addStatement(xType2, noderightsHolder, valrightsHolder);
+
+//            XURI nodeTableName = URI.createKnown(m_xContext, URIs.RDF_SUBJECT);
+//            XLiteral valTableName = Literal.create(m_xContext, "A_TABLE");
+//            xGraph.addStatement(xType1, nodeTableName, valTableName);
+
+        } catch (java.lang.Exception e) {
+            e.printStackTrace();
+
         }
 
     }

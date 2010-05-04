@@ -17,14 +17,17 @@ import com.sun.star.container.XNameContainer;
 import com.sun.star.drawing.FillStyle;
 import com.sun.star.drawing.LineStyle;
 import com.sun.star.drawing.XDrawPage;
+import com.sun.star.drawing.XDrawView;
 import com.sun.star.drawing.XShape;
 import com.sun.star.drawing.XShapes;
+import com.sun.star.frame.XModel;
 import com.sun.star.lang.XComponent;
 import com.sun.star.lang.XMultiServiceFactory;
 import com.sun.star.style.LineSpacing;
 import com.sun.star.style.LineSpacingMode;
 import com.sun.star.uno.AnyConverter;
 import com.sun.star.uno.UnoRuntime;
+import com.sun.star.uno.XComponentContext;
 import org.creativecommons.license.License;
 import org.creativecommons.openoffice.util.PageHelper;
 import org.creativecommons.openoffice.util.ShapeHelper;
@@ -37,8 +40,8 @@ public class Impress extends OOoProgram {
     private int height;
     private int width;
 
-    public Impress(XComponent component) {
-        super(component);
+    public Impress(XComponent component,XComponentContext m_xContext) {
+        super(component,m_xContext);
     }
     
     public void insertPictureFlickr(Image img) {
@@ -52,6 +55,12 @@ public class Impress extends OOoProgram {
 
             xPresentationFactory = (XMultiServiceFactory)UnoRuntime.queryInterface(XMultiServiceFactory.class, this.getComponent());
             xPage = PageHelper.getDrawPageByIndex(this.getComponent(), 0);
+
+//            XModel xModel = (XModel) UnoRuntime.queryInterface(XModel.class, this.getComponent());
+//            XDrawView xDrawView = (XDrawView) UnoRuntime.queryInterface(XDrawView.class,
+//            this.getComponent());
+//              xPage = xDrawView.getCurrentPage();
+
             xBitmapContainer = (XNameContainer) UnoRuntime.queryInterface(
                     XNameContainer.class, xPresentationFactory.createInstance(
                     "com.sun.star.drawing.BitmapTable"));
@@ -156,7 +165,7 @@ public class Impress extends OOoProgram {
 
         try {
             //XDrawPage xPage = PageHelper.getDrawPageByIndex( xDrawDoc, 0 );
-            xPage = PageHelper.getMasterPageByIndex(this.getComponent(), 0);
+            xPage = PageHelper.getDrawPageByIndex(this.getComponent(), 0);
             height=PageHelper.getPageSize(xPage).Height;
             width=PageHelper.getPageSize(xPage).Width;
 
@@ -174,8 +183,8 @@ public class Impress extends OOoProgram {
             // first shape
             license.getName().length();
             xRectangle = ShapeHelper.createShape( this.getComponent(),
-                    new Point(width-license.getName().length()*400, height-1500 ),/*15500, 19600*/
-                    new Size( license.getName().length()*400, 1500 ),/*15000, 1500*/
+                    new Point(width-license.getName().length()*350, height-1500 ),/*15500, 19600*/
+                    new Size( license.getName().length()*350, 1500 ),/*15000, 1500*/
                     "com.sun.star.drawing.RectangleShape" );
             xShapes.add( xRectangle );
             xShapePropSet = (XPropertySet)
@@ -211,7 +220,7 @@ public class Impress extends OOoProgram {
         try {
             xPresentationFactory = (XMultiServiceFactory)UnoRuntime.queryInterface(XMultiServiceFactory.class, this.getComponent());
 
-            xPage = PageHelper.getMasterPageByIndex(this.getComponent(), 0);
+            xPage = PageHelper.getDrawPageByIndex(this.getComponent(), 0);
 
             xBitmapContainer = (XNameContainer) UnoRuntime.queryInterface(
                     XNameContainer.class, xPresentationFactory.createInstance(
