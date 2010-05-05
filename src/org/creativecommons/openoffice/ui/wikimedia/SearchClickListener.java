@@ -5,13 +5,10 @@
 
 package org.creativecommons.openoffice.ui.wikimedia;
 
-import org.creativecommons.openoffice.ui.license.*;
 import com.sun.star.awt.ActionEvent;
 import com.sun.star.awt.XActionListener;
 import com.sun.star.lang.EventObject;
 import org.creativecommons.openoffice.CcOOoAddin;
-import org.creativecommons.openoffice.ui.wikimedia.SearchThread;
-import org.creativecommons.openoffice.ui.wikimedia.WikimediaDialog;
 
 /**
  *

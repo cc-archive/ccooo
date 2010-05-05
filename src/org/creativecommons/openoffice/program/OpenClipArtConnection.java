@@ -38,8 +38,8 @@ public class OpenClipArtConnection {
         }
         tagLine.replaceFirst("\\+", "");
         try {
-            URL url = new URL("http://testvm.openclipart.org/cchost/api/query?limit=100&tags=" + tagLine
-                    + "&format=csv&t=links_by_dl_ul&lic=pd");
+            URL url = new URL("http://testvm.openclipart.org/cchost/api/query?limit=100&tags=" 
+                    + tagLine + "&format=csv&t=links_by_dl_ul&lic=pd");
             in = new BufferedReader(new InputStreamReader(url.openStream()));
 
             String inputLine, title, imgUrl, profile, imgUrlMainPage, userID, photoID, userName;
@@ -60,7 +60,8 @@ public class OpenClipArtConnection {
                 if (count > 100) {
                     break;
                 }
-                Image img = new Image(title, null, null, imgUrl, profile, null, imgUrlMainPage, userID, photoID, "");
+                Image img = new Image(title, null, null, imgUrl, profile, null,
+                        imgUrlMainPage, userID, photoID, "");
                 img.setUserName(userName);
                 img.setSelectedImageURL(imgUrl);
                 img.setLicenseCode("PD");

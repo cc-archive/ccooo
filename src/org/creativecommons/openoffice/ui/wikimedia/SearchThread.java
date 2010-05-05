@@ -41,7 +41,8 @@ public class SearchThread extends Thread {
             imgList = new ArrayList<Image>();
             int currentPage = wikimediaDialog.getCurrentPage();
             int noOfImg = WikimediaDialog.SHOWRESULTSPERCOLUMN * WikimediaDialog.SHOWRESULTSPERROW;
-            int limit = currentPage * noOfImg + 1 < WikimediaConnection.imgList.size() ? currentPage * noOfImg + 1 : WikimediaConnection.imgList.size() - 1;
+            int limit = currentPage * noOfImg + 1 < WikimediaConnection.imgList.size() ?
+                currentPage * noOfImg + 1 : WikimediaConnection.imgList.size() - 1;
             for (int i = 0; i <= limit; i++) {
                 imgList.add(WikimediaConnection.imgList.get(i));
                 System.out.println(i);
@@ -54,7 +55,8 @@ public class SearchThread extends Thread {
             int currentPage = wikimediaDialog.getCurrentPage();
             int noOfImg = WikimediaDialog.SHOWRESULTSPERCOLUMN * WikimediaDialog.SHOWRESULTSPERROW;
             int start = currentPage-1<0?0:(currentPage-1);
-            int limit = currentPage * noOfImg + 1 < WikimediaConnection.imgList.size() ? currentPage * noOfImg + 1 : WikimediaConnection.imgList.size() - 1;
+            int limit = currentPage * noOfImg + 1 < WikimediaConnection.imgList.size() ?
+                currentPage * noOfImg + 1 : WikimediaConnection.imgList.size() - 1;
             for (int i = start * noOfImg; i <= limit; i++) {
                 imgList.add(WikimediaConnection.imgList.get(i));
                 System.out.println(i);
@@ -65,7 +67,8 @@ public class SearchThread extends Thread {
             imgList = new ArrayList<Image>();
             int currentPage = wikimediaDialog.getCurrentPage();
             int noOfImg = WikimediaDialog.SHOWRESULTSPERCOLUMN * WikimediaDialog.SHOWRESULTSPERROW;
-            int limit = currentPage * noOfImg + 1 < WikimediaConnection.imgList.size() ? currentPage * noOfImg + 1 : WikimediaConnection.imgList.size() - 1;
+            int limit = currentPage * noOfImg + 1 < WikimediaConnection.imgList.size() ?
+                currentPage * noOfImg + 1 : WikimediaConnection.imgList.size() - 1;
             for (int i = (currentPage - 1) * noOfImg; i <= limit; i++) {
                 imgList.add(WikimediaConnection.imgList.get(i));
                 System.out.println(i);

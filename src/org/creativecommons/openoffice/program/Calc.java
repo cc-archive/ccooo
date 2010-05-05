@@ -47,7 +47,7 @@ public class Calc extends OOoProgram {
         super(component,m_xContext);
     }
     
-    public void insertPictureFlickr(Image img) {
+    public void insertPicture(Image img) {
         
         XDrawPage xPage = null;        
         XNameContainer xBitmapContainer = null;        

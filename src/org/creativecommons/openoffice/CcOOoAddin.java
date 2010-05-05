@@ -317,7 +317,7 @@ public final class CcOOoAddin extends WeakBase
         }
 
 
-    } // insertPictureFlickr
+    } // insertPicture
 
     public void insertOpenClipArt() {
 
@@ -347,7 +347,7 @@ public final class CcOOoAddin extends WeakBase
         }
 
 
-    } // insertPictureFlickr
+    } // insertPicture
 
     public void insertWikimediaImage() {
 
@@ -377,7 +377,7 @@ public final class CcOOoAddin extends WeakBase
         }
 
 
-    } // insertPictureFlickr
+    } // insertPicture
 
     /**
      * Creates an infobox with the title and text given
@@ -389,7 +389,10 @@ public final class CcOOoAddin extends WeakBase
     private void createInfoBox(String title, String msg) {
         XMessageBoxFactory factory;
         try {
-            factory = (XMessageBoxFactory) UnoRuntime.queryInterface(XMessageBoxFactory.class, this.xMultiComponentFactory.createInstanceWithContext("com.sun.star.awt.Toolkit", m_xContext));
+            factory = (XMessageBoxFactory) UnoRuntime.queryInterface(
+                    XMessageBoxFactory.class,
+                    this.xMultiComponentFactory.createInstanceWithContext(
+                    "com.sun.star.awt.Toolkit", m_xContext));
 
             Rectangle ret = new Rectangle();
             WindowDescriptor wd;
@@ -397,7 +400,8 @@ public final class CcOOoAddin extends WeakBase
             XWindowPeer parent = (XWindowPeer) UnoRuntime.queryInterface(
                     XWindowPeer.class, m_xFrame.getContainerWindow());
             //This document is already licensed.\n\nWould you like do proceed anyway?"
-            XMessageBox box = factory.createMessageBox(parent, ret, "infobox", MessageBoxButtons.BUTTONS_OK, title, msg);
+            XMessageBox box = factory.createMessageBox(parent, ret, "infobox",
+                    MessageBoxButtons.BUTTONS_OK, title, msg);
 
             box.execute();
         } catch (com.sun.star.uno.Exception ex) {
@@ -418,7 +422,10 @@ public final class CcOOoAddin extends WeakBase
     private short createQueryBox(String title, String msg) {
         XMessageBoxFactory factory;
         try {
-            factory = (XMessageBoxFactory) UnoRuntime.queryInterface(XMessageBoxFactory.class, this.xMultiComponentFactory.createInstanceWithContext("com.sun.star.awt.Toolkit", m_xContext));
+            factory = (XMessageBoxFactory) UnoRuntime.queryInterface(
+                    XMessageBoxFactory.class,
+                    this.xMultiComponentFactory.createInstanceWithContext(
+                    "com.sun.star.awt.Toolkit", m_xContext));
 
             Rectangle ret = new Rectangle();
             WindowDescriptor wd;
@@ -426,7 +433,8 @@ public final class CcOOoAddin extends WeakBase
             XWindowPeer parent = (XWindowPeer) UnoRuntime.queryInterface(
                     XWindowPeer.class, m_xFrame.getContainerWindow());
             // TODO put listeners to the OK and Cancel buttons!
-            XMessageBox box = factory.createMessageBox(parent, ret, "querybox", MessageBoxButtons.BUTTONS_OK_CANCEL, title, msg);
+            XMessageBox box = factory.createMessageBox(parent, ret, "querybox",
+                    MessageBoxButtons.BUTTONS_OK_CANCEL, title, msg);
 
             return box.execute();
 
@@ -463,12 +471,14 @@ public final class CcOOoAddin extends WeakBase
         XComponent ret = null;
         Object desktop;
         try {
-            desktop = mxRemoteServiceManager.createInstanceWithContext("com.sun.star.frame.Desktop", mxComponentContext);
+            desktop = mxRemoteServiceManager.createInstanceWithContext(
+                    "com.sun.star.frame.Desktop", mxComponentContext);
             XDesktop xDesktop = (XDesktop) UnoRuntime.queryInterface(XDesktop.class, desktop);
             ret = xDesktop.getCurrentComponent();
 
             this.xMultiComponentFactory = this.m_xContext.getServiceManager();
-            this.mxFactory = (XMultiServiceFactory) UnoRuntime.queryInterface(XMultiServiceFactory.class, this.xCurrentComponent);
+            this.mxFactory = (XMultiServiceFactory) UnoRuntime.queryInterface(
+                    XMultiServiceFactory.class, this.xCurrentComponent);
 
         } catch (com.sun.star.uno.Exception ex) {
             ex.printStackTrace();
@@ -485,9 +495,11 @@ public final class CcOOoAddin extends WeakBase
         Object xGlobalBroadCaster;
 
         try {
-            xGlobalBroadCaster = mxRemoteServiceManager.createInstanceWithContext("com.sun.star.frame.GlobalEventBroadcaster", m_xContext);
+            xGlobalBroadCaster = mxRemoteServiceManager.createInstanceWithContext(
+                    "com.sun.star.frame.GlobalEventBroadcaster", m_xContext);
 
-            XEventBroadcaster xEventBroad = (XEventBroadcaster) UnoRuntime.queryInterface(XEventBroadcaster.class, xGlobalBroadCaster);
+            XEventBroadcaster xEventBroad = (XEventBroadcaster) UnoRuntime.queryInterface(
+                    XEventBroadcaster.class, xGlobalBroadCaster);
 
             xEventBroad.addEventListener(new com.sun.star.document.XEventListener() {
 

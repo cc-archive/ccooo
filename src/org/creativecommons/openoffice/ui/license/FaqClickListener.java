@@ -31,13 +31,16 @@ class FaqClickListener implements XActionListener {
 
         try {
                 final XMultiComponentFactory xFact = m_xContext.getServiceManager();
-                final Object xObject = xFact.createInstanceWithContext("com.sun.star.system.SystemShellExecute", m_xContext);
-                final XSystemShellExecute xSystemShellExecute = (XSystemShellExecute) UnoRuntime.queryInterface(XSystemShellExecute.class, xObject);
+                final Object xObject = xFact.createInstanceWithContext(
+                        "com.sun.star.system.SystemShellExecute", m_xContext);
+                final XSystemShellExecute xSystemShellExecute = (XSystemShellExecute)
+                        UnoRuntime.queryInterface(XSystemShellExecute.class, xObject);
                 final String aURLString = "http://wiki.creativecommons.org/Frequently_Asked_Questions";
-                xSystemShellExecute.execute( aURLString, "", com.sun.star.system.SystemShellExecuteFlags.DEFAULTS );
+                xSystemShellExecute.execute( aURLString, "",
+                        com.sun.star.system.SystemShellExecuteFlags.DEFAULTS );
             } catch( com.sun.star.uno.Exception ex) {
                 ex.printStackTrace();
-            };
+            }
 
     } // actionPerformed
 

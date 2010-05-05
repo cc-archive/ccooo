@@ -95,7 +95,8 @@ public class PictureFlickrDialog {
     public PictureFlickrDialog(CcOOoAddin addin, XComponentContext m_xContext) {
         this.addin = addin;
         this.m_xContext = m_xContext;
-        this.loadingImage = new Image("Loading...", null, null, null, null, null, null, null, null, null);
+        this.loadingImage = new Image("Loading...", null, null, null, null, null,
+                null, null, null, null);
     }
 
     /**
@@ -110,9 +111,10 @@ public class PictureFlickrDialog {
             this.xMultiComponentFactory = this.m_xContext.getServiceManager();
 
             // create the dialog model and set the properties
-            Object dlgLicenseSelector = xMultiComponentFactory.createInstanceWithContext("com.sun.star.awt.UnoControlDialogModel", m_xContext);
-            XMultiServiceFactory msfLicenseSelector = (XMultiServiceFactory) UnoRuntime.queryInterface(
-                    XMultiServiceFactory.class, dlgLicenseSelector);
+            Object dlgLicenseSelector = xMultiComponentFactory.createInstanceWithContext(
+                    "com.sun.star.awt.UnoControlDialogModel", m_xContext);
+            XMultiServiceFactory msfLicenseSelector = (XMultiServiceFactory)
+                    UnoRuntime.queryInterface(XMultiServiceFactory.class, dlgLicenseSelector);
 
             XPropertySet xPSetDialog = createAWTControl(dlgLicenseSelector, "dlgMainForm",
                     "", new Rectangle(100, 100, 240, 400));//360
@@ -127,40 +129,48 @@ public class PictureFlickrDialog {
             this.xMultiServiceFactory = (XMultiServiceFactory) UnoRuntime.queryInterface(
                     XMultiServiceFactory.class, dlgLicenseSelector);
 
-            Object lblTags = msfLicenseSelector.createInstance("com.sun.star.awt.UnoControlFixedTextModel");
+            Object lblTags = msfLicenseSelector.createInstance(
+                    "com.sun.star.awt.UnoControlFixedTextModel");
             createAWTControl(lblTags, LBL_TAGS, "Tags", new Rectangle(10, 10, 50, 12));
 
-            Object txtTags = msfLicenseSelector.createInstance("com.sun.star.awt.UnoControlEditModel");
+            Object txtTags = msfLicenseSelector.createInstance(
+                    "com.sun.star.awt.UnoControlEditModel");
             createAWTControl(txtTags, TXT_TAGS, "", new Rectangle(30, 10, 150, 12));
 
-            Object chkCommercial = msfLicenseSelector.createInstance("com.sun.star.awt.UnoControlCheckBoxModel");
+            Object chkCommercial = msfLicenseSelector.createInstance(
+                    "com.sun.star.awt.UnoControlCheckBoxModel");
             XPropertySet xpsCHKProperties = createAWTControl(chkCommercial, CHK_COMMERCIALNAME, CHK_COMMERCIALLABEL,
                     new Rectangle(10, 32, 150, 12));
 
             xpsCHKProperties.setPropertyValue("TriState", Boolean.FALSE);
             xpsCHKProperties.setPropertyValue("State", new Short((short) 1));
 
-            Object chkUpdate = msfLicenseSelector.createInstance("com.sun.star.awt.UnoControlCheckBoxModel");
+            Object chkUpdate = msfLicenseSelector.createInstance(
+                    "com.sun.star.awt.UnoControlCheckBoxModel");
             xpsCHKProperties = createAWTControl(chkUpdate, CHK_UPDATENAME, CHK_UPDATELABEL,
                     new Rectangle(10, 49, 150, 12));
             xpsCHKProperties.setPropertyValue("TriState", Boolean.FALSE);
             xpsCHKProperties.setPropertyValue("State", new Short((short) 1));
 
-            Object chkShareAlike = msfLicenseSelector.createInstance("com.sun.star.awt.UnoControlCheckBoxModel");
+            Object chkShareAlike = msfLicenseSelector.createInstance(
+                    "com.sun.star.awt.UnoControlCheckBoxModel");
             xpsCHKProperties = createAWTControl(chkShareAlike, CHK_SHAREALKENAME, CHK_SHAREALKELABEL,
                     new Rectangle(10, 66, 150, 12)); //(50, 66, 150, 12));
             xpsCHKProperties.setPropertyValue("TriState", Boolean.FALSE);
             xpsCHKProperties.setPropertyValue("State", new Short((short) 0));
 
-            Object searchButton = msfLicenseSelector.createInstance("com.sun.star.awt.UnoControlButtonModel");
-            XPropertySet xPSetFinishButton = createAWTControl(searchButton, BTN_SEARCH, searchButtonLabel,
-                    new Rectangle(170, 45, 40, 15)); //(140, 85, 40, 15));
+            Object searchButton = msfLicenseSelector.createInstance(
+                    "com.sun.star.awt.UnoControlButtonModel");
+            XPropertySet xPSetFinishButton = createAWTControl(searchButton, BTN_SEARCH,
+                    searchButtonLabel,new Rectangle(170, 45, 40, 15)); //(140, 85, 40, 15));
             xPSetFinishButton.setPropertyValue("DefaultButton", new Boolean("true"));
 
             // create the dialog control and set the model
-            Object dialog = xMultiComponentFactory.createInstanceWithContext("com.sun.star.awt.UnoControlDialog", m_xContext); //esse
+            Object dialog = xMultiComponentFactory.createInstanceWithContext(
+                    "com.sun.star.awt.UnoControlDialog", m_xContext); //esse
             xControl = (XControl) UnoRuntime.queryInterface(XControl.class, dialog);
-            XControlModel xControlModel = (XControlModel) UnoRuntime.queryInterface(XControlModel.class, dlgLicenseSelector);
+            XControlModel xControlModel = (XControlModel) UnoRuntime.queryInterface(
+                    XControlModel.class, dlgLicenseSelector);
             xControl.setModel(xControlModel);
 
             xControlCont = (XControlContainer) UnoRuntime.queryInterface(
@@ -176,11 +186,15 @@ public class PictureFlickrDialog {
             setLicenses(); //adding licenses locally
             
             Object oGBResults = msfLicenseSelector.createInstance("com.sun.star.awt.UnoControlGroupBoxModel");
-            createAWTControl(oGBResults, GB_RESULTS, "Results", new Rectangle(10, LOCATIONIMAGESY, 220, 280));//315
+            createAWTControl(oGBResults, GB_RESULTS, "Results", new Rectangle(
+                    10, LOCATIONIMAGESY, 220, 280));//315
 
-            Object oPBar = msfLicenseSelector.createInstance("com.sun.star.awt.UnoControlProgressBarModel");
-            XMultiPropertySet xPBModelMPSet = (XMultiPropertySet) UnoRuntime.queryInterface(XMultiPropertySet.class, oPBar);
-            // Set the properties at the model - keep in mind to pass the property names in alphabetical order!
+            Object oPBar = msfLicenseSelector.createInstance(
+                    "com.sun.star.awt.UnoControlProgressBarModel");
+            XMultiPropertySet xPBModelMPSet = (XMultiPropertySet)
+                    UnoRuntime.queryInterface(XMultiPropertySet.class, oPBar);
+            // Set the properties at the model - keep in mind to pass the property
+            //names in alphabetical order!
             xPBModelMPSet.setPropertyValues(
                     new String[]{"Height", "Name", "PositionX", "PositionY", "Width"},
                     new Object[]{new Integer(8), PB_NAME, new Integer(10), new Integer(390)/*418*/, new Integer(220)});
@@ -222,7 +236,8 @@ public class PictureFlickrDialog {
     private XPropertySet createAWTControl(Object objControl, String ctrlName,
             String ctrlCaption, Rectangle posSize) throws Exception {
 
-        XPropertySet xpsProperties = (XPropertySet) UnoRuntime.queryInterface(XPropertySet.class, objControl);
+        XPropertySet xpsProperties = (XPropertySet) UnoRuntime.queryInterface(
+                XPropertySet.class, objControl);
 
         xpsProperties.setPropertyValue("PositionX", new Integer(posSize.x));
         xpsProperties.setPropertyValue("PositionY", new Integer(posSize.y));
@@ -291,8 +306,9 @@ public class PictureFlickrDialog {
                 currentX += POSITIONWIDTHHEIGHT + 10;
 
                 if (currentList.size() > currentPositionInList) {
-                    createImageControl(currentList.get(currentPositionInList), new Rectangle(currentX,
-                            currentY, POSITIONWIDTHHEIGHT, POSITIONWIDTHHEIGHT), String.valueOf(currentPositionInList));
+                    createImageControl(currentList.get(currentPositionInList), 
+                            new Rectangle(currentX,currentY, POSITIONWIDTHHEIGHT, POSITIONWIDTHHEIGHT),
+                            String.valueOf(currentPositionInList));
                 } else {
                     createImageControl(null, new Rectangle(currentX, currentY, POSITIONWIDTHHEIGHT,
                             POSITIONWIDTHHEIGHT), String.valueOf(currentPositionInList));
@@ -310,7 +326,8 @@ public class PictureFlickrDialog {
             if (getNameContainer().hasByName(BTN_NEXT)) {
                 button = getNameContainer().getByName(BTN_NEXT);
             } else {
-                button = xMultiServiceFactory.createInstance("com.sun.star.awt.UnoControlButtonModel");
+                button = xMultiServiceFactory.createInstance(
+                        "com.sun.star.awt.UnoControlButtonModel");
                 isNewCreated = true;
             }
 
@@ -329,7 +346,8 @@ public class PictureFlickrDialog {
             if (getNameContainer().hasByName(BTN_PREVIOUS)) {
                 button = getNameContainer().getByName(BTN_PREVIOUS);
             } else {
-                button = xMultiServiceFactory.createInstance("com.sun.star.awt.UnoControlButtonModel");
+                button = xMultiServiceFactory.createInstance(
+                        "com.sun.star.awt.UnoControlButtonModel");
                 isNewCreated = true;
             }
 
@@ -402,8 +420,10 @@ public class PictureFlickrDialog {
                 getNameContainer().removeByName("ImageControl" + pos);
             }
 
-            oICModel = xMultiServiceFactory.createInstance("com.sun.star.awt.UnoControlImageControlModel");
-            XPropertySet xpsImageControl = (XPropertySet) UnoRuntime.queryInterface(XPropertySet.class, oICModel);
+            oICModel = xMultiServiceFactory.createInstance(
+                    "com.sun.star.awt.UnoControlImageControlModel");
+            XPropertySet xpsImageControl = (XPropertySet)
+                    UnoRuntime.queryInterface(XPropertySet.class, oICModel);
 
             xpsImageControl.setPropertyValue("Border", (short) 0);
             xpsImageControl.setPropertyValue("Height", new Integer(rect.height));
@@ -435,10 +455,12 @@ public class PictureFlickrDialog {
             if (getNameContainer().hasByName("ImageLabelUser" + pos)) {
                 lblUser = getNameContainer().getByName("ImageLabelUser" + pos);
             } else {
-                lblUser = xMultiServiceFactory.createInstance("com.sun.star.awt.UnoControlFixedHyperlinkModel");
+                lblUser = xMultiServiceFactory.createInstance(
+                        "com.sun.star.awt.UnoControlFixedHyperlinkModel");
             }
 
-            XPropertySet xpsProperties = createAWTControl(lblUser, "ImageLabelUser" + pos, userName,
+            XPropertySet xpsProperties = createAWTControl(lblUser,
+                    "ImageLabelUser" + pos, userName,
                     new Rectangle(rect.x, rect.y + rect.height + 3, POSITIONWIDTHHEIGHT, 15)); //50
             if (img != null) {
                 xpsProperties.setPropertyValue("URL", img.getProfile());
@@ -471,7 +493,8 @@ public class PictureFlickrDialog {
                 getNameContainer().removeByName("ImageControl" + pos);
             }
 
-            oICModel = xMultiServiceFactory.createInstance("com.sun.star.awt.UnoControlImageControlModel");
+            oICModel = xMultiServiceFactory.createInstance(
+                    "com.sun.star.awt.UnoControlImageControlModel");
 
             XGraphic xGraphic = null;
 
@@ -485,7 +508,8 @@ public class PictureFlickrDialog {
                 loadingImage.setGraphic(xGraphic);
             }
 
-            XPropertySet xpsImageControl = (XPropertySet) UnoRuntime.queryInterface(XPropertySet.class, oICModel);
+            XPropertySet xpsImageControl = (XPropertySet)
+                    UnoRuntime.queryInterface(XPropertySet.class, oICModel);
 
             xpsImageControl.setPropertyValue("Border", (short) 0);
             xpsImageControl.setPropertyValue("Height", new Integer(rect.height));
@@ -506,7 +530,8 @@ public class PictureFlickrDialog {
             if (getNameContainer().hasByName("ImageLabelUser" + pos)) {
                 lblUser = getNameContainer().getByName("ImageLabelUser" + pos);
             } else {
-                lblUser = xMultiServiceFactory.createInstance("com.sun.star.awt.UnoControlFixedHyperlinkModel");
+                lblUser = xMultiServiceFactory.createInstance(
+                        "com.sun.star.awt.UnoControlFixedHyperlinkModel");
             }
 
             String userName = "";
@@ -525,7 +550,8 @@ public class PictureFlickrDialog {
         try {
             if (getNameContainer().hasByName(controlName)) {
                 Object oControl = getNameContainer().getByName(controlName);
-                XPropertySet xModelPSet = (XPropertySet) UnoRuntime.queryInterface(XPropertySet.class, oControl);
+                XPropertySet xModelPSet = (XPropertySet)
+                        UnoRuntime.queryInterface(XPropertySet.class, oControl);
 
                 xModelPSet.setPropertyValue("Enabled", enable);
             }
@@ -543,7 +569,8 @@ public class PictureFlickrDialog {
 
         try {
             Object oPBar = getNameContainer().getByName(PB_NAME);
-            XPropertySet xPBModelPSet = (XPropertySet) UnoRuntime.queryInterface(XPropertySet.class, oPBar);
+            XPropertySet xPBModelPSet = (XPropertySet)
+                    UnoRuntime.queryInterface(XPropertySet.class, oPBar);
 
             xPBModelPSet.setPropertyValue("ProgressValue", new Integer(step));
         } catch (Exception ex) {
@@ -561,7 +588,8 @@ public class PictureFlickrDialog {
         XPopupMenu xPopupMenu = null;
         try {
             // create a popup menu
-            Object oPopupMenu = xMultiComponentFactory.createInstanceWithContext("com.sun.star.awt.PopupMenu", m_xContext);
+            Object oPopupMenu = xMultiComponentFactory.createInstanceWithContext(
+                    "com.sun.star.awt.PopupMenu", m_xContext);
             xPopupMenu = (XPopupMenu) UnoRuntime.queryInterface(XPopupMenu.class, oPopupMenu);
 
             for (Object p : sizes.toArray()) {
@@ -594,8 +622,10 @@ public class PictureFlickrDialog {
         try {
 
             // create a GraphicProvider at the global service manager...
-            Object oGraphicProvider = xMultiComponentFactory.createInstanceWithContext("com.sun.star.graphic.GraphicProvider", m_xContext);
-            XGraphicProvider xGraphicProvider = (XGraphicProvider) UnoRuntime.queryInterface(XGraphicProvider.class, oGraphicProvider);
+            Object oGraphicProvider = xMultiComponentFactory.createInstanceWithContext(
+                    "com.sun.star.graphic.GraphicProvider", m_xContext);
+            XGraphicProvider xGraphicProvider = (XGraphicProvider)
+                    UnoRuntime.queryInterface(XGraphicProvider.class, oGraphicProvider);
             // create the graphic object
             PropertyValue[] aPropertyValues = new PropertyValue[1];
             PropertyValue aPropertyValue = new PropertyValue();
@@ -661,7 +691,8 @@ public class PictureFlickrDialog {
     public String getLicenseURL(String licenseID) {
 
         for (Object p : this.flickrLicenses.toArray()) {
-            com.aetrion.flickr.photos.licenses.License currentLicense = ((com.aetrion.flickr.photos.licenses.License) p);
+            com.aetrion.flickr.photos.licenses.License currentLicense = (
+                    (com.aetrion.flickr.photos.licenses.License) p);
             if ((currentLicense != null)
                     && (currentLicense.getId().equalsIgnoreCase(licenseID))) {
                 return currentLicense.getUrl();
@@ -826,7 +857,8 @@ public class PictureFlickrDialog {
             Object oTags = xControlCont.getControl(TXT_TAGS);
             XControl txtTags = (XControl) UnoRuntime.queryInterface(XControl.class, oTags);
             XControlModel xControlModel = txtTags.getModel();
-            XPropertySet xPSet = (XPropertySet) UnoRuntime.queryInterface(XPropertySet.class, xControlModel);
+            XPropertySet xPSet = (XPropertySet) UnoRuntime.queryInterface(
+                    XPropertySet.class, xControlModel);
             String selTags = (String) xPSet.getPropertyValue("Text");
             this.savedTags = selTags.trim();
 
@@ -864,11 +896,13 @@ public class PictureFlickrDialog {
             Object oTags = xControlCont.getControl(TXT_TAGS);
             XControl txtTags = (XControl) UnoRuntime.queryInterface(XControl.class, oTags);
             XControlModel xControlModel = txtTags.getModel();
-            XPropertySet xPSet = (XPropertySet) UnoRuntime.queryInterface(XPropertySet.class, xControlModel);
+            XPropertySet xPSet = (XPropertySet) UnoRuntime.queryInterface(
+                    XPropertySet.class, xControlModel);
             xPSet.setPropertyValue("Text", this.savedTags);
 
             Object oLicense = xControlCont.getControl(CHK_COMMERCIALNAME);
-            XCheckBox checkBox = (XCheckBox) UnoRuntime.queryInterface(XCheckBox.class, oLicense);
+            XCheckBox checkBox = (XCheckBox) UnoRuntime.queryInterface(
+                    XCheckBox.class, oLicense);
             checkBox.setState(savedCommercialStatus);
 
             oLicense = xControlCont.getControl(CHK_UPDATENAME);

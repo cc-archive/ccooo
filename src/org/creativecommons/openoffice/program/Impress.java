@@ -20,6 +20,7 @@ import com.sun.star.drawing.XDrawPage;
 import com.sun.star.drawing.XDrawView;
 import com.sun.star.drawing.XShape;
 import com.sun.star.drawing.XShapes;
+import com.sun.star.frame.XController;
 import com.sun.star.frame.XModel;
 import com.sun.star.lang.XComponent;
 import com.sun.star.lang.XMultiServiceFactory;
@@ -44,7 +45,7 @@ public class Impress extends OOoProgram {
         super(component,m_xContext);
     }
     
-    public void insertPictureFlickr(Image img) {
+    public void insertPicture(Image img) {
                     
         XDrawPage xPage = null;        
         XNameContainer xBitmapContainer = null;        
@@ -54,12 +55,13 @@ public class Impress extends OOoProgram {
         try {
 
             xPresentationFactory = (XMultiServiceFactory)UnoRuntime.queryInterface(XMultiServiceFactory.class, this.getComponent());
-            xPage = PageHelper.getDrawPageByIndex(this.getComponent(), 0);
-
-//            XModel xModel = (XModel) UnoRuntime.queryInterface(XModel.class, this.getComponent());
-//            XDrawView xDrawView = (XDrawView) UnoRuntime.queryInterface(XDrawView.class,
-//            this.getComponent());
-//              xPage = xDrawView.getCurrentPage();
+//            xPage = PageHelper.getDrawPageByIndex(this.getComponent(), 0);
+            
+            XModel xModel = (XModel) UnoRuntime.queryInterface(XModel.class, this.getComponent());
+            XController xController = xModel.getCurrentController();
+            XDrawView xDrawView = (XDrawView)
+                    UnoRuntime.queryInterface(XDrawView.class, xController);
+            xPage = xDrawView.getCurrentPage();
 
             xBitmapContainer = (XNameContainer) UnoRuntime.queryInterface(
                     XNameContainer.class, xPresentationFactory.createInstance(
@@ -73,8 +75,8 @@ public class Impress extends OOoProgram {
             XPropertySet xProps = (XPropertySet) UnoRuntime.queryInterface(
                     XPropertySet.class, xGraphicShape);
             
-//            // helper-stuff to let OOo create an internal name of the graphic
-//            // that can be used later (internal name consists of various checksums)
+            // helper-stuff to let OOo create an internal name of the graphic
+            // that can be used later (internal name consists of various checksums)
             String sName = PageHelper.createUniqueName(xBitmapContainer, img.getPhotoID());
             xBitmapContainer.insertByName(sName, img.getSelectedImageURL());
             
@@ -164,8 +166,12 @@ public class Impress extends OOoProgram {
         XDrawPage xPage;
 
         try {
-            //XDrawPage xPage = PageHelper.getDrawPageByIndex( xDrawDoc, 0 );
-            xPage = PageHelper.getDrawPageByIndex(this.getComponent(), 0);
+            //xPage = PageHelper.getDrawPageByIndex(this.getComponent(), 0);
+            XModel xModel = (XModel) UnoRuntime.queryInterface(XModel.class, this.getComponent());
+            XController xController = xModel.getCurrentController();
+            XDrawView xDrawView = (XDrawView)
+                    UnoRuntime.queryInterface(XDrawView.class, xController);
+            xPage = xDrawView.getCurrentPage();
             height=PageHelper.getPageSize(xPage).Height;
             width=PageHelper.getPageSize(xPage).Width;
 
@@ -220,8 +226,13 @@ public class Impress extends OOoProgram {
         try {
             xPresentationFactory = (XMultiServiceFactory)UnoRuntime.queryInterface(XMultiServiceFactory.class, this.getComponent());
 
-            xPage = PageHelper.getDrawPageByIndex(this.getComponent(), 0);
-
+            //xPage = PageHelper.getDrawPageByIndex(this.getComponent(), 0);
+            XModel xModel = (XModel) UnoRuntime.queryInterface(XModel.class, this.getComponent());
+            XController xController = xModel.getCurrentController();
+            XDrawView xDrawView = (XDrawView)
+                    UnoRuntime.queryInterface(XDrawView.class, xController);
+            xPage = xDrawView.getCurrentPage();
+            
             xBitmapContainer = (XNameContainer) UnoRuntime.queryInterface(
                     XNameContainer.class, xPresentationFactory.createInstance(
                     "com.sun.star.drawing.BitmapTable"));

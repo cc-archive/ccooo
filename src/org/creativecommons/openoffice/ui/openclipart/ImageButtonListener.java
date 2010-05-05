@@ -64,7 +64,7 @@ public class ImageButtonListener implements XMouseListener{
                   openClipArtDialog.setSelectedImage(currentImage);
                   //currentImage.setLicenseNumber(openClipArtDialog.getLicenseNumber(currentImage.getLicenseURL()));
                   //currentImage.setLicenseCode(openClipArtDialog.getLicenseCode(currentImage.getLicenseURL()));
-                  addin.getProgramWrapper().insertPictureFlickr(openClipArtDialog.getSelectedImage());
+                  addin.getProgramWrapper().insertPicture(openClipArtDialog.getSelectedImage());
               }
         }
     }

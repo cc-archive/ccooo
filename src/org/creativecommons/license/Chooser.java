@@ -33,7 +33,8 @@ public class Chooser {
             IJurisdiction jurisdiction) {
         
         // execute a simple query
-        String queryString = makeLicenseQuery(allowRemixing, prohibitCommercialUse, requireShareAlike, jurisdiction);
+        String queryString = makeLicenseQuery(allowRemixing, prohibitCommercialUse,
+                requireShareAlike, jurisdiction);
 
         // Execute the query and obtain results
         QueryExecution query = this.licenseStore.query(queryString);
@@ -55,7 +56,8 @@ public class Chooser {
 
     } // selectLicense
 
-    private String makeLicenseQuery(boolean allowRemixing, boolean prohibitCommercialUse, boolean requireShareAlike,
+    private String makeLicenseQuery(boolean allowRemixing,
+            boolean prohibitCommercialUse, boolean requireShareAlike,
                 IJurisdiction jurisdiction) {
         
         // Create the basic query

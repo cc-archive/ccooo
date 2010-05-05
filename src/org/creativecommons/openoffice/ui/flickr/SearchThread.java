@@ -50,8 +50,8 @@ public class SearchThread extends Thread {
                     flickrDialog.setCurrentPage(flickrDialog.getCurrentPage() + 1);
                 }
         
-        ArrayList<Image> imgList = FlickrConnection.instance.searchPhotos(flickrDialog.GetTags(),licenseID, 
-                flickrDialog.getCurrentPage());        
+        ArrayList<Image> imgList = FlickrConnection.instance.searchPhotos(
+                flickrDialog.GetTags(),licenseID, flickrDialog.getCurrentPage());
         flickrDialog.setProgressValue(15);
         flickrDialog.showResults(imgList, 15);
         flickrDialog.setProgressValue(100);

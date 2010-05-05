@@ -45,7 +45,7 @@ public class Writer extends OOoProgram {
         super(component,m_xContext);
     }
     
-    public void insertPictureFlickr(Image img) {
+    public void insertPicture(Image img) {
                
         XTextDocument mxDoc = (XTextDocument)UnoRuntime.queryInterface(
                 XTextDocument.class, this.getComponent());                  
