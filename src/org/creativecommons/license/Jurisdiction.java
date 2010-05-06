@@ -49,8 +49,7 @@ public class Jurisdiction
         
         if (title != null) {
             return title.getString();
-        }
-        
+        }     
         return "";
     }
 

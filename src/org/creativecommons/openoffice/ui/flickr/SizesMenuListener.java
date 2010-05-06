@@ -43,26 +43,29 @@ public class SizesMenuListener implements XMenuListener {
             case (short) Size.LARGE:
                 flickrDialog.close();
                 flickrDialog.getSelectedImage().RefreshSelectedSizeImageData(me.MenuId);
-                com.aetrion.flickr.photos.Photo  ph = FlickrConnection.instance.getPhotoInfo(flickrDialog.getSelectedImage().getPhotoID(),
-                          flickrDialog.getSelectedImage().getSecret());
-                  flickrDialog.getSelectedImage().setLicenseID(ph.getLicense());
-                  flickrDialog.getSelectedImage().setLicenseURL(flickrDialog.getLicenseURL(ph.getLicense()));
-                  flickrDialog.getSelectedImage().setLicenseNumber(flickrDialog.getLicenseNumber(flickrDialog.getSelectedImage().getLicenseURL()));
-                  flickrDialog.getSelectedImage().setLicenseCode(flickrDialog.getLicenseCode(flickrDialog.getSelectedImage().getLicenseURL()));                  
+                com.aetrion.flickr.photos.Photo ph = FlickrConnection.instance.getPhotoInfo(
+                        flickrDialog.getSelectedImage().getPhotoID(),
+                        flickrDialog.getSelectedImage().getSecret());
+                flickrDialog.getSelectedImage().setLicenseID(ph.getLicense());
+                flickrDialog.getSelectedImage().setLicenseURL(
+                        flickrDialog.getLicenseURL(ph.getLicense()));
+                flickrDialog.getSelectedImage().setLicenseNumber(
+                        flickrDialog.getLicenseNumber(
+                        flickrDialog.getSelectedImage().getLicenseURL()));
+                flickrDialog.getSelectedImage().setLicenseCode(
+                        flickrDialog.getLicenseCode(
+                        flickrDialog.getSelectedImage().getLicenseURL()));
                   addin.getProgramWrapper().insertPicture(flickrDialog.getSelectedImage());
                 break;
         }
     }
     
-    public void activate(MenuEvent me) {
-        
+    public void activate(MenuEvent me) {       
     }
     
-    public void deactivate(MenuEvent me) {
-        
+    public void deactivate(MenuEvent me) {       
     }  
     
-    public void disposing(EventObject e) {
-        
+    public void disposing(EventObject e) {        
     }  
 }

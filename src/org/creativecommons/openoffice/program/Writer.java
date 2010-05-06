@@ -110,8 +110,10 @@ public class Writer extends OOoProgram {
               byCaption = img.getLicenseCode().toUpperCase()+ " ";
           }               
               
-          docCursor.getText().insertControlCharacter(docCursor, ControlCharacter.PARAGRAPH_BREAK, false );
-          String caption = img.getTitle()+" ( "+img.getImgUrlMainPage()+" ) / "+byCaption + img.getLicenseNumber() +
+          docCursor.getText().insertControlCharacter(docCursor,
+                  ControlCharacter.PARAGRAPH_BREAK, false );
+            String caption = img.getTitle() + " ( " + img.getImgUrlMainPage()
+                    + " ) / " + byCaption + img.getLicenseNumber() +
                   " ( " + img.getLicenseURL() + " )";
           docCursor.getText().insertString(docCursor, caption, false);
          
@@ -129,7 +131,8 @@ public class Writer extends OOoProgram {
      * @param imgURL  URL of the license button
      *
      */
-    private void embedGraphic(XMultiServiceFactory mxDocFactory, XTextCursor xCursor, String imgURL) {
+    private void embedGraphic(XMultiServiceFactory mxDocFactory,
+            XTextCursor xCursor, String imgURL) {
         
         XNameContainer xBitmapContainer = null;
         XTextContent xImage = null;
@@ -182,8 +185,10 @@ public class Writer extends OOoProgram {
         
         try {
                         
-            XPropertySet licenseNameMaster = getMasterField("License Name", mxTextFields, mxDocFactory);
-            return (((Object[])licenseNameMaster.getPropertyValue("DependentTextFields")).length != 0);
+            XPropertySet licenseNameMaster = getMasterField("License Name",
+                    mxTextFields, mxDocFactory);
+            return (((Object[])licenseNameMaster.getPropertyValue(
+                    "DependentTextFields")).length != 0);
             
         } catch (WrappedTargetException ex) {
             ex.printStackTrace();
@@ -235,8 +240,10 @@ public class Writer extends OOoProgram {
             //XPropertySet licenseNameMaster = updateMasterField("License Name", license.getName(), mxTextFields, mxDocFactory);
             //XPropertySet licenseURLMaster = updateMasterField("License URL", license.getLicenseUri(), mxTextFields, mxDocFactory);
             
-            XDependentTextField licenseNameField = createUserTextField(mxDocFactory, mxTextFields, "License Name", license.getName());
-            XDependentTextField licenseURLField = createUserTextField(mxDocFactory, mxTextFields, "License URL", license.getLicenseUri());
+            XDependentTextField licenseNameField = createUserTextField(mxDocFactory,
+                    mxTextFields, "License Name", license.getName());
+            XDependentTextField licenseURLField = createUserTextField(mxDocFactory,
+                    mxTextFields, "License URL", license.getLicenseUri());
             
             // insert the license graphic if available
             if (license.getImageUrl() != null)
@@ -279,7 +286,8 @@ public class Writer extends OOoProgram {
             PropertyVetoException,
             com.sun.star.lang.IllegalArgumentException {
         
-        XPropertySet xMasterPropSet = updateMasterField(field_name, field_value, mxTextFields, mxDocFactory);
+        XPropertySet xMasterPropSet = updateMasterField(field_name, field_value,
+                mxTextFields, mxDocFactory);
         
         // Use the text document's factory to create a user text field,
         // and access it's XDependentTextField interface
@@ -293,7 +301,12 @@ public class Writer extends OOoProgram {
         return xUserField;
     }
     
-    protected XPropertySet updateMasterField(final String field_name, final String field_value, final XTextFieldsSupplier mxTextFields, final XMultiServiceFactory mxDocFactory) throws WrappedTargetException, com.sun.star.uno.Exception, NoSuchElementException, com.sun.star.lang.IllegalArgumentException, UnknownPropertyException, PropertyVetoException {
+    protected XPropertySet updateMasterField(final String field_name,
+            final String field_value, final XTextFieldsSupplier mxTextFields,
+            final XMultiServiceFactory mxDocFactory)
+            throws WrappedTargetException, com.sun.star.uno.Exception,
+            NoSuchElementException, com.sun.star.lang.IllegalArgumentException,
+            UnknownPropertyException, PropertyVetoException {
         
         // get or create the master field
         XPropertySet xMasterPropSet = getMasterField(field_name, mxTextFields, mxDocFactory);
@@ -314,7 +327,12 @@ public class Writer extends OOoProgram {
         return xMasterPropSet;
     }
     
-    protected XPropertySet getMasterField(final String field_name, final XTextFieldsSupplier mxTextFields, final XMultiServiceFactory mxDocFactory) throws com.sun.star.lang.IllegalArgumentException, PropertyVetoException, UnknownPropertyException, NoSuchElementException, WrappedTargetException, com.sun.star.uno.Exception {
+    protected XPropertySet getMasterField(final String field_name,
+            final XTextFieldsSupplier mxTextFields,
+            final XMultiServiceFactory mxDocFactory)
+            throws com.sun.star.lang.IllegalArgumentException,
+            PropertyVetoException, UnknownPropertyException,
+            NoSuchElementException, WrappedTargetException, com.sun.star.uno.Exception {
         
         // property set for the user text field
         XPropertySet xMasterPropSet = null;

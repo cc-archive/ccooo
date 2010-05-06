@@ -108,20 +108,13 @@ public class Store {
             current = iter.nextStatement().getObject();
 
             if (current.isLiteral()) {
-
                 if (((Literal) current).getLanguage().equals(lang)) {
-
                     // this is a literal, in the language we care about
                     return (Literal) current;
-
                 } // if current.getLanguage == lang
-
             }
-
         } // while hasNext...
-
         return null;
-
     } // literal
 
     public Literal literal(String subject, Property predicate, String lang) {
@@ -140,13 +133,9 @@ public class Store {
             current = iter.nextStatement().getObject();
 
             if (current.isResource()) {
-
                 return (Resource) current;
-
             }
-
         } // while hasNext...
-
         return null;
     }
 

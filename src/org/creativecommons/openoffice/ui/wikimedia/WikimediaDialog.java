@@ -162,7 +162,8 @@ public class WikimediaDialog {
 
             // The controlmodel is not really available until inserted to the Dialog container
             getNameContainer().insertByName(PB_NAME, oPBar);
-            XPropertySet xPBModelPSet = (XPropertySet) UnoRuntime.queryInterface(XPropertySet.class, oPBar);
+            XPropertySet xPBModelPSet = (XPropertySet)
+                    UnoRuntime.queryInterface(XPropertySet.class, oPBar);
 
             xPBModelPSet.setPropertyValue("ProgressValueMin", new Integer(0));
             xPBModelPSet.setPropertyValue("ProgressValueMax", new Integer(100));
@@ -186,7 +187,8 @@ public class WikimediaDialog {
             this.xDialog.execute();
 
             // dispose the dialog
-            XComponent xComponent = (XComponent) UnoRuntime.queryInterface(XComponent.class, dialog);
+            XComponent xComponent = (XComponent)
+                    UnoRuntime.queryInterface(XComponent.class, dialog);
             xComponent.dispose();
 
 
@@ -198,7 +200,8 @@ public class WikimediaDialog {
     private XPropertySet createAWTControl(Object objControl, String ctrlName,
             String ctrlCaption, Rectangle posSize) throws Exception {
 
-        XPropertySet xpsProperties = (XPropertySet) UnoRuntime.queryInterface(XPropertySet.class, objControl);
+        XPropertySet xpsProperties = (XPropertySet)
+                UnoRuntime.queryInterface(XPropertySet.class, objControl);
 
         xpsProperties.setPropertyValue("PositionX", new Integer(posSize.x));
         xpsProperties.setPropertyValue("PositionY", new Integer(posSize.y));
@@ -557,7 +560,8 @@ public class WikimediaDialog {
             /**********************************************/
             long time = new Date().getTime();
             xGraphic = xGraphicProvider.queryGraphic(aPropertyValues); /////////// bottleneck 2
-            System.out.println("Flicker adding thumbnails to dialog " + (new Date().getTime() - time) + _sImageUrl);
+            System.out.println("Flicker adding thumbnails to dialog "
+                    + (new Date().getTime() - time) + _sImageUrl);
             /**********************************************/
             return xGraphic;
         } catch (com.sun.star.uno.Exception ex) {
@@ -624,7 +628,8 @@ public class WikimediaDialog {
             Object oTags = xControlCont.getControl(TXT_TAGS);
             XControl txtTags = (XControl) UnoRuntime.queryInterface(XControl.class, oTags);
             XControlModel xControlModel = txtTags.getModel();
-            XPropertySet xPSet = (XPropertySet) UnoRuntime.queryInterface(XPropertySet.class, xControlModel);
+            XPropertySet xPSet = (XPropertySet)
+                    UnoRuntime.queryInterface(XPropertySet.class, xControlModel);
             String selTags = (String) xPSet.getPropertyValue("Text");
             this.savedTags = selTags.trim();
 
@@ -644,7 +649,8 @@ public class WikimediaDialog {
             Object oTags = xControlCont.getControl(TXT_TAGS);
             XControl txtTags = (XControl) UnoRuntime.queryInterface(XControl.class, oTags);
             XControlModel xControlModel = txtTags.getModel();
-            XPropertySet xPSet = (XPropertySet) UnoRuntime.queryInterface(XPropertySet.class, xControlModel);
+            XPropertySet xPSet = (XPropertySet)
+                    UnoRuntime.queryInterface(XPropertySet.class, xControlModel);
             xPSet.setPropertyValue("Text", this.savedTags);
 
 

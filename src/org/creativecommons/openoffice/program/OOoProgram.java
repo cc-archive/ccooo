@@ -18,8 +18,12 @@ import com.sun.star.document.XDocumentInfo;
 import com.sun.star.document.XDocumentInfoSupplier;
 import com.sun.star.lang.WrappedTargetException;
 import com.sun.star.lang.XComponent;
+import com.sun.star.rdf.BlankNode;
 import com.sun.star.rdf.Literal;
+import com.sun.star.rdf.Repository;
 import com.sun.star.rdf.URI;
+import com.sun.star.rdf.URIs;
+import com.sun.star.rdf.XBlankNode;
 import com.sun.star.rdf.XDocumentMetadataAccess;
 import com.sun.star.rdf.XLiteral;
 import com.sun.star.rdf.XNamedGraph;
@@ -101,11 +105,9 @@ public abstract class OOoProgram implements IVisibleNotice {
                         docInfo);
             try {
                 docPropertyContainer.addProperty(Constants.LICENSE_URI, 
-                            com.sun.star.beans.PropertyAttribute.MAYBEVOID, 
-                            "");
+                        com.sun.star.beans.PropertyAttribute.MAYBEVOID,"");
                 docPropertyContainer.addProperty(Constants.LICENSE_NAME, 
-                            com.sun.star.beans.PropertyAttribute.MAYBEVOID, 
-                            "");
+                        com.sun.star.beans.PropertyAttribute.MAYBEVOID,"");
             } catch (com.sun.star.lang.IllegalArgumentException ex) {
                 ex.printStackTrace();
             } catch (PropertyExistException ex) {
@@ -113,11 +115,9 @@ public abstract class OOoProgram implements IVisibleNotice {
             } catch (IllegalTypeException ex) {
                 ex.printStackTrace();
             }
-
         }
         
-        try {
-            
+        try {            
             docProperties.setPropertyValue(Constants.LICENSE_URI, license.getLicenseUri());
             docProperties.setPropertyValue(Constants.LICENSE_NAME, license.getName());
             
@@ -132,50 +132,64 @@ public abstract class OOoProgram implements IVisibleNotice {
         }
 
         try {
+            String author = null,title = null;
+            try {
+                author = (String)docProperties.getPropertyValue("Author");
+                title = (String)docProperties.getPropertyValue("Title");
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
+
             XDocumentMetadataAccess xDMA = (XDocumentMetadataAccess)
                     UnoRuntime.queryInterface(XDocumentMetadataAccess.class, this.getComponent());
-            XURI xType1 = URI.create(m_xContext, "http://purl.org/dc/elements/1.1/");
-            XURI xType2 = URI.create(m_xContext, "http://purl.org/dc/terms/");
-            //XURI xType = URI.createKnown(m_xContext, URIs.XSD_DATE);
+
+            XURI xType = URI.create(m_xContext, xDMA.getStringValue());//xDMA.getStringValue()+title
 
             try {
-                xDMA.removeMetadataFile(URI.create(m_xContext, xDMA.getNamespace()+"meta.rdf"));
+                xDMA.removeMetadataFile(URI.create(m_xContext, xDMA.getNamespace() + "meta.rdf"));
             } catch (java.lang.Exception eRemove) {
                 eRemove.printStackTrace();
             }
 
-            XURI xGraphName = xDMA.addMetadataFile("meta.rdf", new XURI[]{xType1,xType2});
+            XURI xGraphName = xDMA.addMetadataFile("meta.rdf", new XURI[]{xType});
             XNamedGraph xGraph = xDMA.getRDFRepository().getGraph(xGraphName);
 
-            XURI nodeRights = URI.create(m_xContext, "http://purl.org/dc/elements/1.1/rights");
-            XLiteral valRights = Literal.create(m_xContext, license.getName());
-            xGraph.addStatement(xType1, nodeRights, valRights);
+//            XURI dcElementsURI = URI.create(m_xContext, "http://purl.org/dc/elements/1.1/");
+//            XBlankNode dcElementsNode = BlankNode.create(m_xContext, "dc");
+//            xGraph.addStatement(dcElementsNode, dcElementsURI, dcElementsNode);
+//
+//            XURI dcTermsURI = URI.create(m_xContext, "http://purl.org/dc/terms/");
+//            XBlankNode dcTermsNode = BlankNode.create(m_xContext, "terms");
+//            xGraph.addStatement(dcTermsURI, dcTermsURI, dcTermsNode);
 
-            XURI nodeLicense = URI.create(m_xContext, "http://purl.org/dc/terms/license");
+            XURI nodeRights = URI.create(m_xContext, "http://purl.org/dc/elements/1.1#rights");
+            XLiteral valRights = Literal.create(m_xContext, "© " + author
+                    + " licensed to the public under the " + license.getName() + " license");
+            xGraph.addStatement(xType, nodeRights, valRights);
+
+            XURI nodeLicense = URI.create(m_xContext, "http://purl.org/dc/terms#license");
             XLiteral valLicense = Literal.create(m_xContext, license.getLicenseUri());
-            xGraph.addStatement(xType2, nodeLicense, valLicense);
+            xGraph.addStatement(xType, nodeLicense, valLicense);
 
-            XURI noderightsHolder = URI.create(m_xContext, "http://purl.org/dc/terms/rightsHolder");
-            XLiteral valrightsHolder = Literal.create(m_xContext, "AUTHOR");
-            xGraph.addStatement(xType2, noderightsHolder, valrightsHolder);
+            XURI noderightsHolder = URI.create(m_xContext, "http://purl.org/dc/terms#rightsHolder");
+            XLiteral valrightsHolder = Literal.create(m_xContext, author);
+            xGraph.addStatement(xType, noderightsHolder, valrightsHolder);
 
-//            XURI nodeTableName = URI.createKnown(m_xContext, URIs.RDF_SUBJECT);
+//            XURI nodeTableName = URI.createKnown(m_xContext, URIs.OWL_IMPORTS);
+//            System.out.println(nodeTableName.getNamespace()+nodeTableName.getLocalName());
+//            nodeTableName = URI.create(m_xContext, "http://www.w3.org/2002/07/owl#imports");
 //            XLiteral valTableName = Literal.create(m_xContext, "A_TABLE");
-//            xGraph.addStatement(xType1, nodeTableName, valTableName);
+//            xGraph.addStatement(xType, nodeTableName, valTableName);
 
         } catch (java.lang.Exception e) {
             e.printStackTrace();
-
         }
-
     }
-    
-    
+        
     public XComponent getComponent() {
         return component;
     }
-    
-    
+
     public void setComponent(XComponent component) {
         this.component = component;
     }

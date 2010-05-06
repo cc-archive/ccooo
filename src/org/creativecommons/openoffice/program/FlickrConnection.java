@@ -82,7 +82,8 @@ public class FlickrConnection {
             String profile = ph.getUrl();
             profile = profile.substring(0, profile.lastIndexOf("/"));
             Image img = new Image(ph.getTitle(), ph.getDateTaken(), ph.getDateAdded(),
-                    ph.getSmallSquareUrl(), profile, ph.getTags(), ph.getUrl(), user.getId(), ph.getId(), ph.getSecret());
+                    ph.getSmallSquareUrl(), profile, ph.getTags(), ph.getUrl(),
+                    user.getId(), ph.getId(), ph.getSecret());
 
             imgList.add(img);
 

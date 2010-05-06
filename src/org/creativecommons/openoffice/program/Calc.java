@@ -66,16 +66,19 @@ public class Calc extends OOoProgram {
                     .getByName(xSheetDoc.getSheets()
                     .getElementNames()[0]));
             
-            xSpreadsheetFactory = (XMultiServiceFactory) UnoRuntime.queryInterface(XMultiServiceFactory.class, xSheetDoc);
+            xSpreadsheetFactory = (XMultiServiceFactory) UnoRuntime.queryInterface(
+                    XMultiServiceFactory.class, xSheetDoc);
             
-            XDrawPageSupplier xDrawPageSupplier = (XDrawPageSupplier)UnoRuntime.queryInterface(XDrawPageSupplier.class, xSpreadsheet);
+            XDrawPageSupplier xDrawPageSupplier = (XDrawPageSupplier)
+                    UnoRuntime.queryInterface(XDrawPageSupplier.class, xSpreadsheet);
             xPage = xDrawPageSupplier.getDrawPage();
 
             xBitmapContainer = (XNameContainer) UnoRuntime.queryInterface(
                     XNameContainer.class, xSpreadsheetFactory.createInstance(
                     "com.sun.star.drawing.BitmapTable"));
             
-            Object graphicObject = xSpreadsheetFactory.createInstance("com.sun.star.drawing.GraphicObjectShape");
+            Object graphicObject = xSpreadsheetFactory.createInstance(
+                    "com.sun.star.drawing.GraphicObjectShape");
             XShape xGraphicShape = (XShape)UnoRuntime.queryInterface( XShape.class, graphicObject );
             
             xGraphicShape.setPosition(getAbsoluteCellPosition(xSpreadsheet, new Integer(0), new Integer(0)));
@@ -186,7 +189,8 @@ public class Calc extends OOoProgram {
                     .getByName(xSheetDoc.getSheets()
                     .getElementNames()[0]));
             
-            XDrawPageSupplier xDrawPageSupplier = (XDrawPageSupplier)UnoRuntime.queryInterface(XDrawPageSupplier.class, xSpreadsheet);
+            XDrawPageSupplier xDrawPageSupplier = (XDrawPageSupplier)
+                    UnoRuntime.queryInterface(XDrawPageSupplier.class, xSpreadsheet);
             xPage = xDrawPageSupplier.getDrawPage();
             
             XShapes xShapes = (XShapes)
@@ -247,10 +251,12 @@ public class Calc extends OOoProgram {
                     .getByName(xSheetDoc.getSheets()
                     .getElementNames()[0]));
             
-            xSpreadsheetFactory = (XMultiServiceFactory) UnoRuntime.queryInterface(XMultiServiceFactory.class, xSheetDoc);
+            xSpreadsheetFactory = (XMultiServiceFactory)
+                    UnoRuntime.queryInterface(XMultiServiceFactory.class, xSheetDoc);
             
             
-            XDrawPageSupplier xDrawPageSupplier = (XDrawPageSupplier)UnoRuntime.queryInterface(XDrawPageSupplier.class, xSpreadsheet);
+            XDrawPageSupplier xDrawPageSupplier = (XDrawPageSupplier)
+                    UnoRuntime.queryInterface(XDrawPageSupplier.class, xSpreadsheet);
             xPage = xDrawPageSupplier.getDrawPage();
             
             
@@ -258,12 +264,14 @@ public class Calc extends OOoProgram {
                     XNameContainer.class, xSpreadsheetFactory.createInstance(
                     "com.sun.star.drawing.BitmapTable"));
             
-            Object graphicObject = xSpreadsheetFactory.createInstance("com.sun.star.drawing.GraphicObjectShape");
+            Object graphicObject = xSpreadsheetFactory.createInstance(
+                    "com.sun.star.drawing.GraphicObjectShape");
             XShape xGraphicShape = (XShape)UnoRuntime.queryInterface( XShape.class, graphicObject );
 
             xGraphicShape.setSize(new Size(3104, 1093));
             
-            xGraphicShape.setPosition(getAbsoluteCellPosition(xSpreadsheet, new Integer(0), new Integer(0)));
+            xGraphicShape.setPosition(getAbsoluteCellPosition(
+                    xSpreadsheet, new Integer(0), new Integer(0)));
             
             XPropertySet xProps = (XPropertySet) UnoRuntime.queryInterface(
                     XPropertySet.class, xGraphicShape);
@@ -318,7 +326,8 @@ public class Calc extends OOoProgram {
     }
     
     
-    public static Point getAbsoluteCellPosition(XSpreadsheet spreadsheet, int x, int y) throws RuntimeException {
+    public static Point getAbsoluteCellPosition(XSpreadsheet spreadsheet, int x, int y)
+            throws RuntimeException {
         Point p = null;
         try {
             XCell xCell = spreadsheet.getCellByPosition(x, y);

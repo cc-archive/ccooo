@@ -54,7 +54,8 @@ public class Impress extends OOoProgram {
         
         try {
 
-            xPresentationFactory = (XMultiServiceFactory)UnoRuntime.queryInterface(XMultiServiceFactory.class, this.getComponent());
+            xPresentationFactory = (XMultiServiceFactory)UnoRuntime.queryInterface(
+                    XMultiServiceFactory.class, this.getComponent());
 //            xPage = PageHelper.getDrawPageByIndex(this.getComponent(), 0);
             
             XModel xModel = (XModel) UnoRuntime.queryInterface(XModel.class, this.getComponent());
@@ -67,8 +68,10 @@ public class Impress extends OOoProgram {
                     XNameContainer.class, xPresentationFactory.createInstance(
                     "com.sun.star.drawing.BitmapTable"));
             
-            Object graphicObject = xPresentationFactory.createInstance("com.sun.star.drawing.GraphicObjectShape");
-            XShape xGraphicShape = (XShape)UnoRuntime.queryInterface( XShape.class, graphicObject );
+            Object graphicObject = xPresentationFactory.createInstance(
+                    "com.sun.star.drawing.GraphicObjectShape");
+            XShape xGraphicShape = (XShape)UnoRuntime.queryInterface(
+                    XShape.class, graphicObject );
             
             xGraphicShape.setPosition(new Point(150,150));
             
@@ -90,8 +93,8 @@ public class Impress extends OOoProgram {
             xPage.add(xGraphicShape);
             
             Object xGraphicObject = xProps.getPropertyValue( "Graphic" );
-            XPropertySet xGraphicPropsGOSX = ( XPropertySet ) UnoRuntime.queryInterface( XPropertySet.class,
-                xGraphicObject );
+            XPropertySet xGraphicPropsGOSX = ( XPropertySet )
+                    UnoRuntime.queryInterface( XPropertySet.class,xGraphicObject );
             Object sizePixelObject = xGraphicPropsGOSX.getPropertyValue( "Size100thMM" );
             Size actualSize = ( Size ) AnyConverter.toObject(Size.class, sizePixelObject );
 
@@ -138,7 +141,8 @@ public class Impress extends OOoProgram {
                     new Size( caption.length()*310, 1000 ),
                     "com.sun.star.drawing.RectangleShape" );
             xPage.add( xRectangle );
-            xShapePropSet = (XPropertySet) UnoRuntime.queryInterface( XPropertySet.class, xRectangle );
+            xShapePropSet = (XPropertySet)
+                    UnoRuntime.queryInterface( XPropertySet.class, xRectangle );
             
             xShapePropSet.setPropertyValue("TextLeftDistance", new Long(0));
             xShapePropSet.setPropertyValue("LineStyle", LineStyle.NONE);
@@ -224,7 +228,8 @@ public class Impress extends OOoProgram {
         XMultiServiceFactory xPresentationFactory = null;
 
         try {
-            xPresentationFactory = (XMultiServiceFactory)UnoRuntime.queryInterface(XMultiServiceFactory.class, this.getComponent());
+            xPresentationFactory = (XMultiServiceFactory)
+                    UnoRuntime.queryInterface(XMultiServiceFactory.class, this.getComponent());
 
             //xPage = PageHelper.getDrawPageByIndex(this.getComponent(), 0);
             XModel xModel = (XModel) UnoRuntime.queryInterface(XModel.class, this.getComponent());
@@ -240,7 +245,8 @@ public class Impress extends OOoProgram {
            /* short hOrientation = HoriOrientation.RIGHT; // Choose among HoriOrientation elements
             short vOrientation = VertOrientation.BOTTOM; // Choose among VertOrientation elements */
 
-            Object graphicObject = xPresentationFactory.createInstance("com.sun.star.drawing.GraphicObjectShape");
+            Object graphicObject = xPresentationFactory.createInstance(
+                    "com.sun.star.drawing.GraphicObjectShape");
             XShape xGraphicShape = (XShape)UnoRuntime.queryInterface( XShape.class, graphicObject );
             xGraphicShape.setSize(new Size(4000,1550));
             xGraphicShape.setPosition(new Point(width-4600,height-3200));/*21000,18200*/
