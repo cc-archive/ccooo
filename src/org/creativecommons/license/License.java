@@ -42,7 +42,12 @@ public class License {
                 this.licenseStore.literal(this.license_uri, DCTerms.hasVersion, "").getString() + " " +
                 this.getJurisdiction().getTitle();
     }
-    
+    public String getName(String locale) {
+
+        return this.licenseStore.literal(this.license_uri, DC.title, locale).getString() + " " +
+                this.licenseStore.literal(this.license_uri, DCTerms.hasVersion, "").getString() + " " +
+                this.getJurisdiction().getTitle();
+    }
     public IJurisdiction getJurisdiction() {
 
         Resource jurisdiction = this.licenseStore.object(this.license_uri, CC.jurisdiction);

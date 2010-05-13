@@ -18,12 +18,8 @@ import com.sun.star.document.XDocumentInfo;
 import com.sun.star.document.XDocumentInfoSupplier;
 import com.sun.star.lang.WrappedTargetException;
 import com.sun.star.lang.XComponent;
-import com.sun.star.rdf.BlankNode;
 import com.sun.star.rdf.Literal;
-import com.sun.star.rdf.Repository;
 import com.sun.star.rdf.URI;
-import com.sun.star.rdf.URIs;
-import com.sun.star.rdf.XBlankNode;
 import com.sun.star.rdf.XDocumentMetadataAccess;
 import com.sun.star.rdf.XLiteral;
 import com.sun.star.rdf.XNamedGraph;
@@ -94,8 +90,8 @@ public abstract class OOoProgram implements IVisibleNotice {
                 UnoRuntime.queryInterface(XDocumentInfoSupplier.class, this.component);
         
         XDocumentInfo docInfo = xDocumentInfoSupplier.getDocumentInfo();        
-        XPropertySet docProperties = (XPropertySet)
-                UnoRuntime.queryInterface(XPropertySet.class, docInfo);
+        XPropertySet docProperties = (XPropertySet) UnoRuntime.queryInterface(
+                XPropertySet.class, docInfo);
         
         if (!docProperties.getPropertySetInfo().hasPropertyByName(Constants.LICENSE_URI)) {
             

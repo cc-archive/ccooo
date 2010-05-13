@@ -42,8 +42,17 @@ import com.sun.star.text.XTextCursor;
 import com.sun.star.text.XTextDocument;
 import com.sun.star.awt.XMessageBoxFactory;
 import com.sun.star.awt.XWindowPeer;
+import com.sun.star.beans.NamedValue;
+import com.sun.star.beans.XPropertySet;
+import com.sun.star.document.XDocumentInfo;
+import com.sun.star.document.XDocumentInfoSupplier;
+import com.sun.star.frame.XController;
+import com.sun.star.frame.XFrame;
+import com.sun.star.frame.XModel;
 import com.sun.star.lang.XServiceInfo;
+import com.sun.star.uno.AnyConverter;
 import org.creativecommons.license.License;
+import org.creativecommons.license.StoreThread;
 import org.creativecommons.openoffice.program.Calc;
 import org.creativecommons.openoffice.program.Draw;
 import org.creativecommons.openoffice.program.IVisibleNotice;
@@ -65,7 +74,8 @@ public final class CcOOoAddin extends WeakBase
         implements com.sun.star.lang.XServiceInfo,
         com.sun.star.frame.XDispatchProvider,
         com.sun.star.lang.XInitialization,
-        com.sun.star.frame.XDispatch {
+        com.sun.star.frame.XDispatch,
+        com.sun.star.task.XJob {
 
     private final XComponentContext m_xContext;
     private com.sun.star.frame.XFrame m_xFrame;
@@ -539,5 +549,77 @@ public final class CcOOoAddin extends WeakBase
             ex.printStackTrace();
         }
 
+    }
+    public Object execute(NamedValue[] args) throws IllegalArgumentException,
+            com.sun.star.uno.Exception {
+        NamedValue[] lEnvironment = null;
+        for (int i = 0; i < args.length; i++) {
+
+            if (args[i].Name.equals("Environment")) {
+                lEnvironment = (NamedValue[]) AnyConverter.toArray(args[i].Value);
+                break;
+            }
+        }
+
+        if (lEnvironment == null) {
+            throw new com.sun.star.lang.IllegalArgumentException("no environment");
+        }
+
+        String sEnvType = null;
+        String sEventName = null;
+        XController m_xController = null;
+        XModel m_xModel = null;
+        for (int i = 0; i < lEnvironment.length; i++) {
+            if (lEnvironment[i].Name.equals("EnvType")) {
+                sEnvType = AnyConverter.toString(lEnvironment[i].Value);
+            } else if (lEnvironment[i].Name.equals("EventName")) {
+                sEventName = AnyConverter.toString(lEnvironment[i].Value);
+            } else if (lEnvironment[i].Name.equals("Frame")) {
+                m_xFrame = (XFrame) AnyConverter.toObject(
+                        new com.sun.star.uno.Type(XFrame.class),
+                        lEnvironment[i].Value);
+                if (m_xFrame != null) {
+                    m_xController = m_xFrame.getController();
+                    m_xModel = m_xController.getModel();
+                }
+            } else if (lEnvironment[i].Name.equals("Model")) {
+                m_xModel = (XModel) AnyConverter.toObject(
+                        new com.sun.star.uno.Type(XModel.class),
+                        lEnvironment[i].Value);
+                if (m_xModel != null) {
+                    m_xController = m_xModel.getCurrentController();
+                    if (m_xController != null) {
+                        m_xFrame = m_xController.getFrame();
+                    }
+                }
+            }
+        }
+        if ((sEnvType == null) || !sEnvType.equals("DOCUMENTEVENT")) {
+            throw new com.sun.star.lang.IllegalArgumentException("\"" + sEnvType + "\" isn't a valid value for EnvType");
+        }
+        //where to start the thread??
+        StoreThread th = new StoreThread();   //running as a therad will stop the
+        th.start();                         //unresponsive 2 second period when loading document
+        try {
+            if (sEventName != null && sEventName.equalsIgnoreCase("onload")) {
+                this.updateCurrentComponent();
+                XDocumentInfoSupplier xDocumentInfoSupplier = (XDocumentInfoSupplier) UnoRuntime.queryInterface(
+                        XDocumentInfoSupplier.class, this.getCurrentComponent());
+
+                XDocumentInfo docInfo = xDocumentInfoSupplier.getDocumentInfo();
+                XPropertySet docProperties = (XPropertySet) UnoRuntime.queryInterface(XPropertySet.class, docInfo);
+
+                if (docProperties.getPropertySetInfo().hasPropertyByName(Constants.LICENSE_URI)) {
+                    String message = "This work is licensed under a "
+                            + docProperties.getPropertyValue(Constants.LICENSE_NAME).toString()
+                            + " License \navailable at "
+                            + docProperties.getPropertyValue(Constants.LICENSE_URI).toString();
+                    createInfoBox("Creative Commons Licensed Document", message);
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return com.sun.star.uno.Any.complete(new NamedValue[0]);
     }
 }
