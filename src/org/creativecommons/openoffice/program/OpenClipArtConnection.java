@@ -24,10 +24,6 @@ public class OpenClipArtConnection {
     protected OpenClipArtConnection() {
     }
 
-    public OpenClipArtConnection getInstance() {
-        return instance;
-    }
-
     public ArrayList<Image> searchPhotos(String[] tags, int currentPage) {
 
         BufferedReader in = null;
@@ -36,7 +32,7 @@ public class OpenClipArtConnection {
         for (int i = 0; i < tags.length; i++) {
             tagLine += "+" + tags[i];
         }
-        tagLine.replaceFirst("\\+", "");
+        tagLine = tagLine.replaceFirst("\\+", "");
         try {
             URL url = new URL("http://testvm.openclipart.org/cchost/api/query?limit=100&tags=" 
                     + tagLine + "&format=csv&t=links_by_dl_ul&lic=pd");
@@ -51,7 +47,7 @@ public class OpenClipArtConnection {
                 profile = list[3].replaceFirst("testvm.", "").
                         replaceFirst("/cchost/people/", "/user-detail/");
                 imgUrl = list[8].replaceFirst("/cchost/content/", "/people/").
-                        replaceFirst("testvm.", "");
+                        replaceFirst("testvm.", "").replace(".svg", ".png");
                 imgUrlMainPage = list[1];//the image is not shown in the current main page the url has to be cnaged
                 userID = list[4];
                 photoID = list[0];

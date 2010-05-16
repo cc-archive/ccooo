@@ -38,10 +38,6 @@ public class FlickrConnection {
     protected FlickrConnection() {
     }
 
-    public FlickrConnection getInstance() {
-        return instance;
-    }
-
     public ArrayList<Image> searchPhotos(String[] tags, String licenseId, int currentPage) {
         currentSearch = new SearchParameters();
         currentSearch.setSort(SearchParameters.INTERESTINGNESS_DESC);

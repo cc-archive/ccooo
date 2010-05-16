@@ -17,6 +17,7 @@ import org.creativecommons.openoffice.CcOOoAddin;
 import org.creativecommons.openoffice.program.Image;
 import com.sun.star.awt.XMouseListener;
 import com.sun.star.awt.MouseButton;
+import org.creativecommons.openoffice.program.WikimediaConnection;
 
 /**
  *
@@ -62,8 +63,7 @@ public class ImageButtonListener implements XMouseListener{
               {
                   wikimediaDialog.close();
                   wikimediaDialog.setSelectedImage(currentImage);
-                  //currentImage.setLicenseNumber(wikimediaDialog.getLicenseNumber(currentImage.getLicenseURL()));
-                  //currentImage.setLicenseCode(wikimediaDialog.getLicenseCode(currentImage.getLicenseURL()));
+                  WikimediaConnection.instance.setImageLisence(currentImage);
                   addin.getProgramWrapper().insertPicture(wikimediaDialog.getSelectedImage());
               }
         }

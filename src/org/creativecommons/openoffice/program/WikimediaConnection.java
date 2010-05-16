@@ -4,15 +4,18 @@
  */
 package org.creativecommons.openoffice.program;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.parsers.DocumentBuilder;
+import org.xml.sax.SAXException;
+import org.xml.sax.SAXParseException;
+import org.w3c.dom.*;
 
 /**
  *
@@ -26,86 +29,149 @@ public class WikimediaConnection {
     protected WikimediaConnection() {
     }
 
-    public WikimediaConnection getInstance() {
-        return instance;
-    }
-
     public ArrayList<Image> searchPhotos(String[] tags, int currentPage) {
 
-        BufferedReader in = null;
         imgList.removeAll(imgList);
         String tagLine = "";
         for (int i = 0; i < tags.length; i++) {
             tagLine += "+" + tags[i];
         }
-        tagLine.replaceFirst("\\+", "");
+        tagLine = tagLine.replaceFirst("\\+", "");
+        String title, imgUrl, imgUrlMainPage, imgUrlThumb;
         try {
-            URL url = new URL("http://commons.wikimedia.org/w/api.php?action=query&generator=search&gsrsearch=" + tagLine
-                    + "&gsrnamespace=6&gsrlimit=50&gsrprop=timestamp&prop=imageinfo|categories&iiprop=url|size&clcategories=Category:CC-BY&format=xml");
-            in = new BufferedReader(new InputStreamReader(url.openStream()));
 
-            String inputLine = in.readLine();
-            System.out.println(inputLine);
-            Pattern pattern = Pattern.compile("title=\"File:[\\w\\s\\-\\.\\#\\@\\&]+\\.[a-zA-Z]+\""), widthPattern,heightPattern;
-            Matcher matcher = pattern.matcher(inputLine), widthMatcher,heightMatcher;
-            int index = 0;
-            String title, imgUrl, imgUrlMainPage;
-            while (matcher.find()) {
-                title = matcher.group().replace("title=\"File:", "").replaceAll("\"", "");
-                Image img = new Image(title, null, null, null, null, null, null, null, title, null);
-                imgList.add(img);
+            DocumentBuilderFactory docBuilderFactory = DocumentBuilderFactory.newInstance();
+            DocumentBuilder docBuilder = docBuilderFactory.newDocumentBuilder();
+            Document doc = docBuilder.parse("http://commons.wikimedia.org/w/api.php?action=query&generator=search&gsrsearch=" + tagLine
+                    + "&gsrnamespace=6&gsrlimit=50&gsrprop=timestamp&prop=imageinfo|categories&iiprop=url|size&clcategories=Category:CC&format=xml");//CC-BY
+
+            // normalize text representation
+            doc.getDocumentElement().normalize();
+
+            NodeList listOfPages = doc.getElementsByTagName("page");
+
+            for (int s = 0; s < listOfPages.getLength(); s++) {
+
+                Node page = listOfPages.item(s);
+                title = page.getAttributes().getNamedItem("title")
+                        .getNodeValue().replace("File:", "");
+                if (page.getNodeType() == Node.ELEMENT_NODE) {
+
+                    Node imageInfo = page.getChildNodes().item(0).getChildNodes().item(0);
+                    imgUrl = imageInfo.getAttributes().getNamedItem("url").getNodeValue();
+                    imgUrlMainPage = imageInfo.getAttributes()
+                            .getNamedItem("descriptionurl").getNodeValue();
+                    imgUrlThumb = imgUrl.replace("/commons/", "/commons/thumb/")
+                            .concat("/120px-" + title.replaceAll("\\s", "_"));
+                    if (title.contains(".svg")) {
+                        imgUrlThumb = imgUrlThumb.concat(".png");
+                        imgUrl = imgUrlThumb.replace("/120px-", "/400px-");
+                    }
+
+                    Image img = new Image(title, null, null, imgUrlThumb, null,
+                            null, imgUrlMainPage, null, title, null);
+
+                    img.setSelectedImageURL(imgUrl);
+
+                    img.setLicenseCode("License info not available");
+                    img.setLicenseNumber("-");
+                    img.setLicenseURL("-");
+                    //setImageLisence(img);
+                    imgList.add(img);
+
+                    System.out.println(imageInfo.getAttributes().getNamedItem("width").getNodeValue());
+                    System.out.println(imageInfo.getAttributes().getNamedItem("height").getNodeValue());
+                }//end of if clause
+            }//end of for loop with s var
+
+        } catch (ParserConfigurationException ex) {
+            Logger.getLogger(WikimediaConnection.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (SAXParseException e) {
+            e.printStackTrace();
+        } catch (SAXException e) {
+            e.printStackTrace();
+
+        } catch (IOException ex) {
+            Logger.getLogger(WikimediaConnection.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return imgList;
+    }
+
+    public void setImageLisence(Image image) {
+        try {
+            String licenseNumber = " ", licenseURL = " ",
+                    licenseCode = "license info not available";
+            DocumentBuilderFactory docBuilderFactory = DocumentBuilderFactory.newInstance();
+            DocumentBuilder docBuilder = docBuilderFactory.newDocumentBuilder();
+            Document doc = docBuilder.parse(
+                    "http://commonstest.hostzi.com/CommonsAPI/commonsapi.php?image="
+                    + image.getTitle());
+            //Document doc = docBuilder.parse("http://toolserver.org/~magnus/commonsapi.php?image=Book-cover1.jpg");
+            // normalize text representation
+            doc.getDocumentElement().normalize();
+
+            NodeList listOfLicenses = doc.getElementsByTagName("license");
+            if (listOfLicenses != null && listOfLicenses.item(0) != null
+                    && listOfLicenses.item(0).hasChildNodes()) {
+                String license = goToDepth(listOfLicenses.item(0).getFirstChild());
+                if (license.startsWith("PD")) {
+                    licenseCode = "PD";
+                    licenseURL = "http://creativecommons.org/licenses/publicdomain/";
+                }
+                if (license.startsWith("CC")) {
+                    Pattern pattern = Pattern.compile("CC[\\-\\w\\.\\d\\s]+\\d");
+                    Matcher matcher = pattern.matcher(license);
+                    if (matcher.find()) {
+                        licenseCode = matcher.group();
+
+                        pattern = Pattern.compile("\\d\\.\\d");
+                        matcher = pattern.matcher(licenseCode);
+                        if (matcher.find()) {
+                            licenseNumber = matcher.group();
+                            licenseURL = "http://creativecommons.org/licenses/" 
+                                    + licenseCode.toLowerCase().replace("cc-", "")
+                                    .replaceAll("\\-\\d\\.\\d", "/" + licenseNumber);
+                        }
+                        image.setLicenseURL(licenseURL);
+                        licenseCode = licenseCode.replace("-", " ").replaceAll("\\d\\.\\d", "");
+                        image.setLicenseCode(licenseCode);
+                        System.out.println(licenseCode);
+                    }
+                }
+                if (license.startsWith("GFDL")) {
+                    licenseCode = "GFDL";
+                    licenseURL = "http://www.gnu.org/licenses/fdl.html";
+                }
+                image.setLicenseURL(licenseURL);
+                image.setLicenseCode(licenseCode);
+                image.setLicenseNumber(licenseNumber);
+                System.out.println(licenseCode);
+                System.out.println(licenseNumber);
+                System.out.println(licenseURL);
             }
-            index = 0;
-            pattern = Pattern.compile(" url=\"[\\w\\s\\-\\.\\#\\@\\&/\\:]+\"");
-            matcher = pattern.matcher(inputLine);
 
-            widthPattern = Pattern.compile("width=\"\\d+\"");
-            widthMatcher = widthPattern.matcher(inputLine);
-
-            heightPattern = Pattern.compile("height=\"\\d+\"");
-            heightMatcher = heightPattern.matcher(inputLine);
-            int width, height;
-            while (matcher.find()) {
-                imgUrl = matcher.group().replace(" url=\"", "").replaceAll("\"", "");
-                imgList.get(index).setSelectedImageURL(imgUrl);
-                imgUrl = imgUrl.replace("/commons/", "/commons/thumb/");
-                widthMatcher.find();
-                System.out.println(widthMatcher.group());
-                width = Integer.parseInt(widthMatcher.group().replaceAll("width=\"", "").replaceAll("\"","" ));
-
-                heightMatcher.find();
-                height = Integer.parseInt(heightMatcher.group().replaceAll("height=\"", "").replaceAll("\"","" ));
-                
-//                if (width < height) {
-//                    imgUrl = imgUrl.concat("/" + String.valueOf(120 * width / height) + "px-" + imgList.get(index).getTitle().replaceAll("\\s", "_"));
-//                } else {
-                    imgUrl = imgUrl.concat("/120px-" + imgList.get(index).getTitle().replaceAll("\\s", "_"));
-//                }
-                imgList.get(index).setImgURL(imgUrl);
-                index++;
-
-            }
-            index = 0;
-            pattern = Pattern.compile("descriptionurl=\"[\\w\\s\\-\\.\\#\\@\\&/\\:]+\"");
-            matcher = pattern.matcher(inputLine);
-            while (matcher.find()) {
-                imgUrlMainPage = matcher.group().replace("descriptionurl=\"", "").replaceAll("\"", "");
-                imgList.get(index).setImgUrlMainPage(imgUrlMainPage);
-                imgList.get(index).setLicenseCode("License info not supported yet");
-                imgList.get(index).setLicenseNumber("License info not supported yet");
-                imgList.get(index).setLicenseURL("License info not supported yet");
-                index++;
+            NodeList listOfAuthors = doc.getElementsByTagName("author");
+            if (listOfAuthors != null && listOfAuthors.item(0) != null
+                    && listOfAuthors.item(0).hasChildNodes()) {
+                image.setUserName(goToDepth(listOfAuthors.item(0).getLastChild()));
             }
 
         } catch (IOException ex) {
             Logger.getLogger(WikimediaConnection.class.getName()).log(Level.SEVERE, null, ex);
-        } finally {
-            try {
-                in.close();
-            } catch (IOException ex) {
-                Logger.getLogger(WikimediaConnection.class.getName()).log(Level.SEVERE, null, ex);
-            }
+        } catch (ParserConfigurationException ex) {
+            Logger.getLogger(WikimediaConnection.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (SAXParseException ex) {
+            Logger.getLogger(WikimediaConnection.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (SAXException ex) {
+            Logger.getLogger(WikimediaConnection.class.getName()).log(Level.SEVERE, null, ex);
         }
-        return imgList;
+    }
+
+    static String goToDepth(Node node) {
+        if (node.hasChildNodes()) {
+            return goToDepth(node.getFirstChild());
+        } else {
+            return node.getNodeValue();
+        }
     }
 }

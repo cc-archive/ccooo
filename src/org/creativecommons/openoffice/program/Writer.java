@@ -73,6 +73,7 @@ public class Writer extends OOoProgram {
             
 //            // helper-stuff to let OOo create an internal name of the graphic
 //            // that can be used later (internal name consists of various checksums)
+            System.out.println(img.getSelectedImageURL());
             String sName = PageHelper.createUniqueName(xBitmapContainer, img.getPhotoID());
             xBitmapContainer.insertByName(sName, img.getSelectedImageURL());
             
