@@ -38,6 +38,7 @@ public class WikimediaConnection {
         }
         tagLine = tagLine.replaceFirst("\\+", "");
         String title, imgUrl, imgUrlMainPage, imgUrlThumb;
+        int width,height;
         try {
 
             DocumentBuilderFactory docBuilderFactory = DocumentBuilderFactory.newInstance();
@@ -53,19 +54,22 @@ public class WikimediaConnection {
             for (int s = 0; s < listOfPages.getLength(); s++) {
 
                 Node page = listOfPages.item(s);
-                title = page.getAttributes().getNamedItem("title")
-                        .getNodeValue().replace("File:", "");
-                if (page.getNodeType() == Node.ELEMENT_NODE) {
+                title = page.getAttributes().getNamedItem("title").getNodeValue().replace("File:", "");
+                if (page.getNodeType() == Node.ELEMENT_NODE&&
+                        (!title.endsWith(".ogg"))) {
 
                     Node imageInfo = page.getChildNodes().item(0).getChildNodes().item(0);
                     imgUrl = imageInfo.getAttributes().getNamedItem("url").getNodeValue();
-                    imgUrlMainPage = imageInfo.getAttributes()
-                            .getNamedItem("descriptionurl").getNodeValue();
-                    imgUrlThumb = imgUrl.replace("/commons/", "/commons/thumb/")
-                            .concat("/120px-" + title.replaceAll("\\s", "_"));
+                    imgUrlMainPage = imageInfo.getAttributes().getNamedItem("descriptionurl").getNodeValue();
+                    width = Integer.parseInt(imageInfo.getAttributes().getNamedItem("width").getNodeValue());
+                    height = Integer.parseInt(imageInfo.getAttributes().getNamedItem("height").getNodeValue());
+                    imgUrlThumb = imgUrl.replace("/commons/", "/commons/thumb/").concat("/120px-"
+                            + title.replaceAll("\\s", "_"));
                     if (title.contains(".svg")) {
                         imgUrlThumb = imgUrlThumb.concat(".png");
                         imgUrl = imgUrlThumb.replace("/120px-", "/400px-");
+                    }else if(width<120||height<120){
+                        imgUrlThumb=imgUrl;
                     }
 
                     Image img = new Image(title, null, null, imgUrlThumb, null,
@@ -76,6 +80,7 @@ public class WikimediaConnection {
                     img.setLicenseCode("License info not available");
                     img.setLicenseNumber("-");
                     img.setLicenseURL("-");
+                    System.out.println(imgUrlMainPage);
                     //setImageLisence(img);
                     imgList.add(img);
 
@@ -105,7 +110,7 @@ public class WikimediaConnection {
             DocumentBuilder docBuilder = docBuilderFactory.newDocumentBuilder();
             Document doc = docBuilder.parse(
                     "http://commonstest.hostzi.com/CommonsAPI/commonsapi.php?image="
-                    + image.getTitle());
+                    + image.getTitle()+"&thumbwidth=500");
             //Document doc = docBuilder.parse("http://toolserver.org/~magnus/commonsapi.php?image=Book-cover1.jpg");
             // normalize text representation
             doc.getDocumentElement().normalize();
@@ -114,11 +119,10 @@ public class WikimediaConnection {
             if (listOfLicenses != null && listOfLicenses.item(0) != null
                     && listOfLicenses.item(0).hasChildNodes()) {
                 String license = goToDepth(listOfLicenses.item(0).getFirstChild());
-                if (license.startsWith("PD")) {
+                if (license.startsWith("PD") || license.startsWith("Public domain")) {
                     licenseCode = "PD";
                     licenseURL = "http://creativecommons.org/licenses/publicdomain/";
-                }
-                if (license.startsWith("CC")) {
+                } else if (license.startsWith("CC")) {
                     Pattern pattern = Pattern.compile("CC[\\-\\w\\.\\d\\s]+\\d");
                     Matcher matcher = pattern.matcher(license);
                     if (matcher.find()) {
@@ -128,20 +132,33 @@ public class WikimediaConnection {
                         matcher = pattern.matcher(licenseCode);
                         if (matcher.find()) {
                             licenseNumber = matcher.group();
-                            licenseURL = "http://creativecommons.org/licenses/" 
-                                    + licenseCode.toLowerCase().replace("cc-", "")
-                                    .replaceAll("\\-\\d\\.\\d", "/" + licenseNumber);
+                            licenseURL = "http://creativecommons.org/licenses/"
+                                    + licenseCode.toLowerCase().replace("cc-", "").replaceAll("\\-\\d\\.\\d", "/" + licenseNumber);
                         }
                         image.setLicenseURL(licenseURL);
                         licenseCode = licenseCode.replace("-", " ").replaceAll("\\d\\.\\d", "");
                         image.setLicenseCode(licenseCode);
-                        System.out.println(licenseCode);
+                    } else if (license.equalsIgnoreCase("CC-Zero")) {
+                        licenseCode = "CC0";
+                        licenseURL = "http://creativecommons.org/publicdomain/zero/1.0/";
                     }
-                }
-                if (license.startsWith("GFDL")) {
+                } else if (license.startsWith("GFDL")) {
                     licenseCode = "GFDL";
                     licenseURL = "http://www.gnu.org/licenses/fdl.html";
+                } else if (license.startsWith("LGPL")) {
+                    licenseCode = "LGPL";
+                    licenseURL = "http://www.gnu.org/licenses/lgpl.html";
+                } else if (license.startsWith("GPL")) {
+                    licenseCode = "GPL";
+                    licenseURL = "http://www.gnu.org/licenses/gpl.html";
+                } else if (license.startsWith("Copyrighted free use")) {
+                    licenseCode = "Copyrighted free use";
+                    licenseURL = "-";
+                } else if (license.startsWith("FAL")) {
+                    licenseCode = "Free Art License";
+                    licenseURL = "http://artlibre.org/licence/lal/en";
                 }
+
                 image.setLicenseURL(licenseURL);
                 image.setLicenseCode(licenseCode);
                 image.setLicenseNumber(licenseNumber);
@@ -154,6 +171,7 @@ public class WikimediaConnection {
             if (listOfAuthors != null && listOfAuthors.item(0) != null
                     && listOfAuthors.item(0).hasChildNodes()) {
                 image.setUserName(goToDepth(listOfAuthors.item(0).getLastChild()));
+                System.out.println(goToDepth(listOfAuthors.item(0).getLastChild()));
             }
 
         } catch (IOException ex) {
@@ -167,7 +185,7 @@ public class WikimediaConnection {
         }
     }
 
-    static String goToDepth(Node node) {
+    private String goToDepth(Node node) {
         if (node.hasChildNodes()) {
             return goToDepth(node.getFirstChild());
         } else {
