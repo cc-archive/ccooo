@@ -26,6 +26,7 @@ public interface IVisibleNotice {
      * @param licenseImgURL The license "button" URL.
      */
     public void insertVisibleNotice();
+    public void updateVisibleNotice();
     
     public void setDocumentLicense(License license);
     public License getDocumentLicense();

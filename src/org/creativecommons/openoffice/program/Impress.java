@@ -8,10 +8,12 @@
 
 package org.creativecommons.openoffice.program;
 
+import com.sun.star.lang.IndexOutOfBoundsException;
 import com.sun.star.text.ControlCharacter;
 import com.sun.star.text.XText;
 import com.sun.star.awt.Point;
 import com.sun.star.awt.Size;
+import com.sun.star.beans.UnknownPropertyException;
 import com.sun.star.beans.XPropertySet;
 import com.sun.star.container.XNameContainer;
 import com.sun.star.drawing.FillStyle;
@@ -22,6 +24,7 @@ import com.sun.star.drawing.XShape;
 import com.sun.star.drawing.XShapes;
 import com.sun.star.frame.XController;
 import com.sun.star.frame.XModel;
+import com.sun.star.lang.WrappedTargetException;
 import com.sun.star.lang.XComponent;
 import com.sun.star.lang.XMultiServiceFactory;
 import com.sun.star.style.LineSpacing;
@@ -29,6 +32,9 @@ import com.sun.star.style.LineSpacingMode;
 import com.sun.star.uno.AnyConverter;
 import com.sun.star.uno.UnoRuntime;
 import com.sun.star.uno.XComponentContext;
+import java.util.ArrayList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.creativecommons.license.License;
 import org.creativecommons.openoffice.util.PageHelper;
 import org.creativecommons.openoffice.util.ShapeHelper;
@@ -89,6 +95,7 @@ public class Impress extends OOoProgram {
             xProps.setPropertyValue("AnchorType",
                     com.sun.star.text.TextContentAnchorType.AS_CHARACTER);
             xProps.setPropertyValue("GraphicURL", internalURL);
+            xProps.setPropertyValue("Name", "ccoo:picture");
             
             xPage.add(xGraphicShape);
             
@@ -98,7 +105,14 @@ public class Impress extends OOoProgram {
             Object sizePixelObject = xGraphicPropsGOSX.getPropertyValue( "Size100thMM" );
             Size actualSize = ( Size ) AnyConverter.toObject(Size.class, sizePixelObject );
 
-            xGraphicShape.setSize(actualSize);
+            if (actualSize.Width != 0||actualSize.Height != 0) {
+                xGraphicShape.setSize(actualSize);
+            }else{
+                sizePixelObject = xGraphicPropsGOSX.getPropertyValue("SizePixel");
+                actualSize = (Size) AnyConverter.toObject(Size.class, sizePixelObject);
+                xGraphicShape.setSize(new Size((int) (actualSize.Width * 26.4),
+                        (int)(actualSize.Height*26.4)));
+            }
             
             // remove the helper-entry
             xBitmapContainer.removeByName(sName);
@@ -129,6 +143,7 @@ public class Impress extends OOoProgram {
             xShapePropSet.setPropertyValue("TextLeftDistance", new Long(0));
             xShapePropSet.setPropertyValue("LineStyle", LineStyle.NONE);
             xShapePropSet.setPropertyValue("FillStyle", FillStyle.NONE);
+            xShapePropSet.setPropertyValue("Name", "ccoo:picture");
                         
             // first paragraph            
             xTextPropSet = ShapeHelper.addPortion( xRectangle, caption, false );
@@ -165,23 +180,26 @@ public class Impress extends OOoProgram {
     }
 
     public void insertVisibleNotice() {
+        XDrawPage xPage;
+        XModel xModel = (XModel) UnoRuntime.queryInterface(XModel.class,
+                this.getComponent());
+        XController xController = xModel.getCurrentController();
+        XDrawView xDrawView = (XDrawView) UnoRuntime.queryInterface(XDrawView.class, xController);
+        xPage = xDrawView.getCurrentPage();
+        insertVisibleNotice(xPage);
+    }
+    public void insertVisibleNotice(XDrawPage xPage) {
 
         License license = this.getDocumentLicense();
-        XDrawPage xPage;
 
         try {
             //xPage = PageHelper.getDrawPageByIndex(this.getComponent(), 0);
-            XModel xModel = (XModel) UnoRuntime.queryInterface(XModel.class, this.getComponent());
-            XController xController = xModel.getCurrentController();
-            XDrawView xDrawView = (XDrawView)
-                    UnoRuntime.queryInterface(XDrawView.class, xController);
-            xPage = xDrawView.getCurrentPage();
             height=PageHelper.getPageSize(xPage).Height;
             width=PageHelper.getPageSize(xPage).Width;
 
             XShapes xShapes = (XShapes)
             UnoRuntime.queryInterface( XShapes.class, xPage );
-
+            
 
             XShape xRectangle;
             XPropertySet xTextPropSet, xShapePropSet;
@@ -205,6 +223,8 @@ public class Impress extends OOoProgram {
             xShapePropSet.setPropertyValue("TextAutoGrowWidth", true);
             xShapePropSet.setPropertyValue("LineStyle", LineStyle.NONE);
             xShapePropSet.setPropertyValue("FillStyle", FillStyle.NONE);
+            xShapePropSet.setPropertyValue("Name", "ccoo:licenseText");
+
 
             // first paragraph
             xTextPropSet =
@@ -212,14 +232,13 @@ public class Impress extends OOoProgram {
             xTextPropSet.setPropertyValue( "CharColor", new Integer( 0x000000 ) );
 
             // add the graphic
-            this.embedGraphic(license.getImageUrl());
+            this.embedGraphic(license.getImageUrl(),xPage);
         } catch (Exception ex) {
             ex.printStackTrace();
         }
     }
 
-    public void embedGraphic(String imgURL) {
-        XDrawPage xPage = null;
+    public void embedGraphic(String imgURL, XDrawPage xPage) {
 
         XNameContainer xBitmapContainer = null;
 
@@ -232,12 +251,7 @@ public class Impress extends OOoProgram {
                     UnoRuntime.queryInterface(XMultiServiceFactory.class, this.getComponent());
 
             //xPage = PageHelper.getDrawPageByIndex(this.getComponent(), 0);
-            XModel xModel = (XModel) UnoRuntime.queryInterface(XModel.class, this.getComponent());
-            XController xController = xModel.getCurrentController();
-            XDrawView xDrawView = (XDrawView)
-                    UnoRuntime.queryInterface(XDrawView.class, xController);
-            xPage = xDrawView.getCurrentPage();
-            
+           
             xBitmapContainer = (XNameContainer) UnoRuntime.queryInterface(
                     XNameContainer.class, xPresentationFactory.createInstance(
                     "com.sun.star.drawing.BitmapTable"));
@@ -269,6 +283,7 @@ public class Impress extends OOoProgram {
             xProps.setPropertyValue("Height", 1093); // original: 31 px
             /*xProps.setPropertyValue("HoriOrient", 5000);
             xProps.setPropertyValue("VertOrient", 6000); */
+            xProps.setPropertyValue("Name", "ccoo:licenseImage");
 
             // inser the graphic at the cursor position
 
@@ -277,6 +292,45 @@ public class Impress extends OOoProgram {
             xBitmapContainer.removeByName("imgID");
         } catch (Exception e) {
             e.printStackTrace();
+        }
+    }
+
+    public void updateVisibleNotice() {
+        ArrayList<XDrawPage> drawPages = new ArrayList<XDrawPage>();
+        ArrayList<XShape> shapes = new ArrayList<XShape>();
+        try {
+            for (int i = 0; i < PageHelper.getDrawPageCount(this.getComponent()); i++) {
+
+                XDrawPage xPage = PageHelper.getDrawPageByIndex(this.getComponent(), i);
+                XShapes xShapes = (XShapes) UnoRuntime.queryInterface(XShapes.class, xPage);
+                for (int j = 0; j < xShapes.getCount(); j++) {
+                    XShape xShape = (XShape) UnoRuntime.queryInterface(
+                            XShape.class, xShapes.getByIndex(j));
+                    XPropertySet xShapePropSet = (XPropertySet) UnoRuntime.queryInterface(
+                            XPropertySet.class, xShape);
+                    String name = xShapePropSet.getPropertyValue("Name").toString();
+                    if (name.equalsIgnoreCase("ccoo:licenseImage")) {
+                        shapes.add(xShape);
+                        drawPages.add(xPage);
+                    } else if (name.equalsIgnoreCase("ccoo:licenseText")) {
+                        shapes.add(xShape);
+                    }
+                }
+                for(int j=0;j<shapes.size();j++){
+                    xShapes.remove(shapes.get(j));
+                }
+                shapes.clear();
+            }
+        } catch (IndexOutOfBoundsException ex) {
+            Logger.getLogger(Impress.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (UnknownPropertyException ex) {
+            Logger.getLogger(Draw.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (WrappedTargetException ex) {
+            Logger.getLogger(Draw.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+        for (int i = 0; i < drawPages.size(); i++) {
+            insertVisibleNotice(drawPages.get(i));
         }
     }
 

@@ -281,7 +281,9 @@ public final class CcOOoAddin extends WeakBase
 
                 // store the license information in the document
                 document.setDocumentLicense(selected);
+                this.getProgramWrapper(this.getCurrentComponent()).updateVisibleNotice();
             }
+            
 
         } catch (Exception ex) {
             ex.printStackTrace();

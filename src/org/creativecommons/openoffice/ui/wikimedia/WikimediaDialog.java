@@ -102,7 +102,7 @@ public class WikimediaDialog {
 
             XPropertySet xPSetDialog = createAWTControl(dlgLicenseSelector, "dlgMainForm",
                     "", new Rectangle(100, 100, 240, 360));//360
-            xPSetDialog.setPropertyValue("Title", new String("Insert Clip Art from Open Clip Art"));
+            xPSetDialog.setPropertyValue("Title", new String("Insert Picture from Wikimedia Commons"));
             xPSetDialog.setPropertyValue("Step", (short) 1);
 
             // get the name container for the dialog for inserting other elements

@@ -38,7 +38,7 @@ public class WikimediaConnection {
         }
         tagLine = tagLine.replaceFirst("\\+", "");
         String title, imgUrl, imgUrlMainPage, imgUrlThumb;
-        int width,height;
+        int width, height;
         try {
 
             DocumentBuilderFactory docBuilderFactory = DocumentBuilderFactory.newInstance();
@@ -55,10 +55,10 @@ public class WikimediaConnection {
 
                 Node page = listOfPages.item(s);
                 title = page.getAttributes().getNamedItem("title").getNodeValue().replace("File:", "");
-                if (page.getNodeType() == Node.ELEMENT_NODE&&
-                        (!title.endsWith(".ogg"))) {
+                if (page.getNodeType() == Node.ELEMENT_NODE
+                        && (!title.endsWith(".ogg"))) {
 
-                    Node imageInfo = page.getChildNodes().item(0).getChildNodes().item(0);
+                    Node imageInfo = goToDepth(page);//page.getChildNodes().item(0).getChildNodes().item(0)
                     imgUrl = imageInfo.getAttributes().getNamedItem("url").getNodeValue();
                     imgUrlMainPage = imageInfo.getAttributes().getNamedItem("descriptionurl").getNodeValue();
                     width = Integer.parseInt(imageInfo.getAttributes().getNamedItem("width").getNodeValue());
@@ -68,8 +68,10 @@ public class WikimediaConnection {
                     if (title.contains(".svg")) {
                         imgUrlThumb = imgUrlThumb.concat(".png");
                         imgUrl = imgUrlThumb.replace("/120px-", "/400px-");
-                    }else if(width<120||height<120){
-                        imgUrlThumb=imgUrl;
+                        height=400*height/width;
+                        width=400;
+                    } else if (width < 120 || height < 120) {
+                        imgUrlThumb = imgUrl;
                     }
 
                     Image img = new Image(title, null, null, imgUrlThumb, null,
@@ -80,6 +82,8 @@ public class WikimediaConnection {
                     img.setLicenseCode("License info not available");
                     img.setLicenseNumber("-");
                     img.setLicenseURL("-");
+                    img.setSelectedImageWidth(width);
+                    img.setSelectedImageHeight(height);
                     System.out.println(imgUrlMainPage);
                     //setImageLisence(img);
                     imgList.add(img);
@@ -91,11 +95,10 @@ public class WikimediaConnection {
 
         } catch (ParserConfigurationException ex) {
             Logger.getLogger(WikimediaConnection.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (SAXParseException e) {
-            e.printStackTrace();
-        } catch (SAXException e) {
-            e.printStackTrace();
-
+        } catch (SAXParseException ex) {
+            Logger.getLogger(WikimediaConnection.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (SAXException ex) {
+            Logger.getLogger(WikimediaConnection.class.getName()).log(Level.SEVERE, null, ex);
         } catch (IOException ex) {
             Logger.getLogger(WikimediaConnection.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -110,7 +113,7 @@ public class WikimediaConnection {
             DocumentBuilder docBuilder = docBuilderFactory.newDocumentBuilder();
             Document doc = docBuilder.parse(
                     "http://commonstest.hostzi.com/CommonsAPI/commonsapi.php?image="
-                    + image.getTitle()+"&thumbwidth=500");
+                    + image.getTitle() );
             //Document doc = docBuilder.parse("http://toolserver.org/~magnus/commonsapi.php?image=Book-cover1.jpg");
             // normalize text representation
             doc.getDocumentElement().normalize();
@@ -118,7 +121,7 @@ public class WikimediaConnection {
             NodeList listOfLicenses = doc.getElementsByTagName("license");
             if (listOfLicenses != null && listOfLicenses.item(0) != null
                     && listOfLicenses.item(0).hasChildNodes()) {
-                String license = goToDepth(listOfLicenses.item(0).getFirstChild());
+                String license = goToDepth(listOfLicenses.item(0)).getNodeValue();
                 if (license.startsWith("PD") || license.startsWith("Public domain")) {
                     licenseCode = "PD";
                     licenseURL = "http://creativecommons.org/licenses/publicdomain/";
@@ -147,10 +150,10 @@ public class WikimediaConnection {
                     licenseURL = "http://www.gnu.org/licenses/fdl.html";
                 } else if (license.startsWith("LGPL")) {
                     licenseCode = "LGPL";
-                    licenseURL = "http://www.gnu.org/licenses/lgpl.html";
+                    licenseURL = "http://creativecommons.org/licenses/LGPL/2.1/";//http://www.gnu.org/licenses/lgpl.html
                 } else if (license.startsWith("GPL")) {
                     licenseCode = "GPL";
-                    licenseURL = "http://www.gnu.org/licenses/gpl.html";
+                    licenseURL = "http://creativecommons.org/licenses/GPL/2.0/";//http://www.gnu.org/licenses/gpl.html
                 } else if (license.startsWith("Copyrighted free use")) {
                     licenseCode = "Copyrighted free use";
                     licenseURL = "-";
@@ -170,7 +173,7 @@ public class WikimediaConnection {
             NodeList listOfAuthors = doc.getElementsByTagName("author");
             if (listOfAuthors != null && listOfAuthors.item(0) != null
                     && listOfAuthors.item(0).hasChildNodes()) {
-                image.setUserName(goToDepth(listOfAuthors.item(0).getLastChild()));
+                image.setUserName(goToDepth(listOfAuthors.item(0).getLastChild()).getNodeValue());
                 System.out.println(goToDepth(listOfAuthors.item(0).getLastChild()));
             }
 
@@ -185,11 +188,11 @@ public class WikimediaConnection {
         }
     }
 
-    private String goToDepth(Node node) {
+    private Node goToDepth(Node node) {
         if (node.hasChildNodes()) {
             return goToDepth(node.getFirstChild());
         } else {
-            return node.getNodeValue();
+            return node;
         }
     }
 }

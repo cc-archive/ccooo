@@ -118,9 +118,19 @@ public class Image {
         return selectedImageURL;
     }
 
+    public void setSelectedImageWidth(int width){
+        
+        selectedImageWidth=width;
+    }
+
     public Integer getSelectedImageWidth() {
 
         return selectedImageWidth;
+    }
+
+    public void setSelectedImageHeight(int height){
+
+        selectedImageHeigth=height;
     }
 
     public Integer getSelectedImageHeigth() {

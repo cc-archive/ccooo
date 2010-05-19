@@ -9,6 +9,7 @@ package org.creativecommons.openoffice.program;
 
 import com.sun.star.awt.Point;
 import com.sun.star.awt.Size;
+import com.sun.star.beans.UnknownPropertyException;
 import com.sun.star.beans.XPropertySet;
 import com.sun.star.container.XNameContainer;
 import com.sun.star.drawing.FillStyle;
@@ -20,6 +21,8 @@ import com.sun.star.drawing.XShape;
 import com.sun.star.drawing.XShapes;
 import com.sun.star.frame.XController;
 import com.sun.star.frame.XModel;
+import com.sun.star.lang.IndexOutOfBoundsException;
+import com.sun.star.lang.WrappedTargetException;
 import com.sun.star.lang.XComponent;
 import com.sun.star.lang.XMultiServiceFactory;
 import com.sun.star.style.LineSpacing;
@@ -27,7 +30,10 @@ import com.sun.star.style.LineSpacingMode;
 import com.sun.star.uno.AnyConverter;
 import com.sun.star.uno.UnoRuntime;
 import com.sun.star.uno.XComponentContext;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.creativecommons.license.License;
 import org.creativecommons.openoffice.util.PageHelper;
 import org.creativecommons.openoffice.util.ShapeHelper;
@@ -45,8 +51,8 @@ public class Draw extends OOoProgram {
     private int pageBorderLeft;
     private int pageBorderRight;
 
-    public Draw(XComponent component,XComponentContext m_xContext) {
-        super(component,m_xContext);
+    public Draw(XComponent component, XComponentContext m_xContext) {
+        super(component, m_xContext);
     }
 
     public void insertPicture(Image img) {
@@ -58,17 +64,15 @@ public class Draw extends OOoProgram {
 
         try {
 
-            xPresentationFactory = (XMultiServiceFactory) 
-                    UnoRuntime.queryInterface(XMultiServiceFactory.class,
+            xPresentationFactory = (XMultiServiceFactory) UnoRuntime.queryInterface(XMultiServiceFactory.class,
                     this.getComponent());
-            //xPage = PageHelper.getDrawPageByIndex(this.getComponent(), 0);
+            xPage = PageHelper.getDrawPageByIndex(this.getComponent(), 0);
             XModel xModel = (XModel) UnoRuntime.queryInterface(XModel.class,
                     this.getComponent());
             XController xController = xModel.getCurrentController();
-            XDrawView xDrawView = (XDrawView)
-                    UnoRuntime.queryInterface(XDrawView.class, xController);
+            XDrawView xDrawView = (XDrawView) UnoRuntime.queryInterface(XDrawView.class, xController);
             xPage = xDrawView.getCurrentPage();
-            
+
             xBitmapContainer = (XNameContainer) UnoRuntime.queryInterface(
                     XNameContainer.class, xPresentationFactory.createInstance(
                     "com.sun.star.drawing.BitmapTable"));
@@ -94,8 +98,9 @@ public class Draw extends OOoProgram {
             xProps.setPropertyValue("AnchorType",
                     com.sun.star.text.TextContentAnchorType.AS_CHARACTER);
             xProps.setPropertyValue("GraphicURL", internalURL);
-            xProps.setPropertyValue("MoveProtect", false);
-            xProps.setPropertyValue("SizeProtect", false);
+            xProps.setPropertyValue("Name", "ccoo:picture");
+            //xProps.setPropertyValue("MoveProtect", false);
+            //xProps.setPropertyValue("SizeProtect", false);
 
             xPage.add(xGraphicShape);
 
@@ -106,7 +111,14 @@ public class Draw extends OOoProgram {
             Object sizePixelObject = xGraphicPropsGOSX.getPropertyValue("Size100thMM");
             Size actualSize = (Size) AnyConverter.toObject(Size.class, sizePixelObject);
 
-            xGraphicShape.setSize(actualSize);
+            if (actualSize.Width != 0 || actualSize.Height != 0) {
+                xGraphicShape.setSize(actualSize);
+            } else {
+                sizePixelObject = xGraphicPropsGOSX.getPropertyValue("SizePixel");
+                actualSize = (Size) AnyConverter.toObject(Size.class, sizePixelObject);
+                xGraphicShape.setSize(new Size((int) (actualSize.Width * 26.4),
+                        (int) (actualSize.Height * 26.4)));
+            }
 
             // remove the helper-entry
             xBitmapContainer.removeByName(sName);
@@ -125,11 +137,11 @@ public class Draw extends OOoProgram {
             }
 
             // first shape
-            String caption = byCaption + img.getLicenseNumber() + " ( " +
-                    img.getLicenseURL() + " )";
+            String caption = byCaption + img.getLicenseNumber() + " ( "
+                    + img.getLicenseURL() + " )";
             xRectangle = ShapeHelper.createShape(this.getComponent(),
-                    new Point(0, xGraphicShape.getPosition().Y +
-                    xGraphicShape.getSize().Height),
+                    new Point(0, xGraphicShape.getPosition().Y
+                    + xGraphicShape.getSize().Height),
                     new Size(caption.length() * 300, 1000),
                     "com.sun.star.drawing.RectangleShape");
             xPage.add(xRectangle);
@@ -138,6 +150,7 @@ public class Draw extends OOoProgram {
             xShapePropSet.setPropertyValue("TextLeftDistance", new Long(0));
             xShapePropSet.setPropertyValue("LineStyle", LineStyle.NONE);
             xShapePropSet.setPropertyValue("FillStyle", FillStyle.NONE);
+            xShapePropSet.setPropertyValue("Name", "ccoo:picture");
 
             // first paragraph
             xTextPropSet = ShapeHelper.addPortion(xRectangle, caption, false);
@@ -146,8 +159,8 @@ public class Draw extends OOoProgram {
             // first shape
             caption = img.getTitle() + " ( " + img.getImgUrlMainPage() + " )";
             xRectangle = ShapeHelper.createShape(this.getComponent(),
-                    new Point(0, xGraphicShape.getPosition().Y +
-                    xGraphicShape.getSize().Height + 800),
+                    new Point(0, xGraphicShape.getPosition().Y
+                    + xGraphicShape.getSize().Height + 800),
                     new Size(caption.length() * 310, 1000),
                     "com.sun.star.drawing.RectangleShape");
             xPage.add(xRectangle);
@@ -157,8 +170,8 @@ public class Draw extends OOoProgram {
             xShapePropSet.setPropertyValue("TextLeftDistance", new Long(0));
             xShapePropSet.setPropertyValue("LineStyle", LineStyle.NONE);
             xShapePropSet.setPropertyValue("FillStyle", FillStyle.NONE);
-            xShapePropSet.setPropertyValue("MoveProtect", false);
-            xShapePropSet.setPropertyValue("SizeProtect", false);
+//            xShapePropSet.setPropertyValue("MoveProtect", false);
+//            xShapePropSet.setPropertyValue("SizeProtect", false);
 
             //second one
             xTextPropSet = ShapeHelper.addPortion(xRectangle, caption, false);
@@ -175,53 +188,56 @@ public class Draw extends OOoProgram {
     }
 
     public void insertVisibleNotice() {
-
         XDrawPage xPage;
+        XModel xModel = (XModel) UnoRuntime.queryInterface(XModel.class,
+                this.getComponent());
+        XController xController = xModel.getCurrentController();
+        XDrawView xDrawView = (XDrawView) UnoRuntime.queryInterface(XDrawView.class, xController);
+        xPage = xDrawView.getCurrentPage();
+        insertVisibleNotice(xPage);
+    }
+
+    private void insertVisibleNotice(XDrawPage xPage) {
+
         License license = this.getDocumentLicense();
 
         try {
             //XDrawPage xPage = PageHelper.getDrawPageByIndex( xDrawDoc, 0 );
             // xPage = PageHelper.getMasterPageByIndex(xDrawDoc, 0);
             //xPage = PageHelper.getDrawPageByIndex(this.getComponent(), 0);
-            XModel xModel = (XModel) UnoRuntime.queryInterface(XModel.class,
-                    this.getComponent());
-            XController xController = xModel.getCurrentController();
-            XDrawView xDrawView = (XDrawView)
-                    UnoRuntime.queryInterface(XDrawView.class, xController);
-            xPage = xDrawView.getCurrentPage();
 
-            com.sun.star.beans.XPropertySet xPageProps = (com.sun.star.beans.XPropertySet)
-                    UnoRuntime.queryInterface(com.sun.star.beans.XPropertySet.class, xPage);
+            com.sun.star.beans.XPropertySet xPageProps = (com.sun.star.beans.XPropertySet) UnoRuntime.queryInterface(com.sun.star.beans.XPropertySet.class, xPage);
             pageWidth = AnyConverter.toInt(xPageProps.getPropertyValue("Width"));
             pageHeight = AnyConverter.toInt(xPageProps.getPropertyValue("Height"));
             pageBorderTop = AnyConverter.toInt(xPageProps.getPropertyValue("BorderTop"));
             pageBorderBottom = AnyConverter.toInt(xPageProps.getPropertyValue("BorderBottom"));
             pageBorderLeft = AnyConverter.toInt(xPageProps.getPropertyValue("BorderLeft"));
             pageBorderRight = AnyConverter.toInt(xPageProps.getPropertyValue("BorderRight"));
-            
+
             XShapes xShapes = (XShapes) UnoRuntime.queryInterface(XShapes.class, xPage);
 
             XShape xRectangle;
             XPropertySet xTextPropSet, xShapePropSet;
             LineSpacing aLineSpacing = new LineSpacing();
             aLineSpacing.Mode = LineSpacingMode.PROP;
-            
+
             // first shape
             xRectangle = ShapeHelper.createShape(this.getComponent(),
-                    new Point(pageWidth - license.getName().length() * pageWidth / 65 
+                    new Point(pageWidth - license.getName().length() * pageWidth / 65
                     - pageBorderRight - 200, pageHeight - 2 * pageWidth / 50
                     - pageBorderBottom - 200),/*15500, 19600*/
                     new Size(license.getName().length() * pageWidth / 65, 2 * pageWidth / 50),/*15000, 1500*/
                     "com.sun.star.drawing.RectangleShape");
 
-            xShapes.add( xRectangle );
+            xShapes.add(xRectangle);
             xShapePropSet = (XPropertySet) UnoRuntime.queryInterface(XPropertySet.class, xRectangle);
 
             xShapePropSet.setPropertyValue("TextAutoGrowHeight", true);
             xShapePropSet.setPropertyValue("TextAutoGrowWidth", true);
             xShapePropSet.setPropertyValue("LineStyle", LineStyle.NONE);
             xShapePropSet.setPropertyValue("FillStyle", FillStyle.NONE);
-            xShapePropSet.setPropertyValue("TextFitToSize", TextFitToSizeType.PROPORTIONAL);
+            //xShapePropSet.setPropertyValue("TextFitToSize", TextFitToSizeType.PROPORTIONAL);
+            xShapePropSet.setPropertyValue("Name", "ccoo:licenseText");
 
             // first paragraph
             xTextPropSet =
@@ -231,34 +247,25 @@ public class Draw extends OOoProgram {
             //xTextPropSet.setPropertyValue( "CharWeight", new Float(com.sun.star.awt.FontWeight.BOLD) );
 
             // insert the graphic
-            this.embedGraphic(license.getImageUrl());
+            this.embedGraphic(license.getImageUrl(), xPage);
 
         } catch (Exception ex) {
             ex.printStackTrace();
         }
     }
 
-    public void embedGraphic(String imgURL) {
-        XDrawPage xPage = null;
+    public void embedGraphic(String imgURL, XDrawPage xPage) {
 
         XNameContainer xBitmapContainer = null;
 
         String internalURL = null;
 
         XMultiServiceFactory xDrawingFactory = null;
-        System.out.print(imgURL);
-        
+
         try {
 
             xDrawingFactory = (XMultiServiceFactory) UnoRuntime.queryInterface(
                     XMultiServiceFactory.class, this.getComponent());
-
-            //xPage = PageHelper.getDrawPageByIndex(this.getComponent(), 0);
-            XModel xModel = (XModel) UnoRuntime.queryInterface(XModel.class, this.getComponent());
-            XController xController = xModel.getCurrentController();
-            XDrawView xDrawView = (XDrawView)
-                    UnoRuntime.queryInterface(XDrawView.class, xController);
-            xPage = xDrawView.getCurrentPage();
 
             xBitmapContainer = (XNameContainer) UnoRuntime.queryInterface(
                     XNameContainer.class, xDrawingFactory.createInstance(
@@ -271,7 +278,7 @@ public class Draw extends OOoProgram {
 
             xGraphicShape.setSize(new Size(310 * pageWidth / 2000, 109 * pageWidth / 2000));//new Size(3104, 1093));
 
-            xGraphicShape.setPosition(new Point(pageWidth - 310 * pageWidth / 2000 
+            xGraphicShape.setPosition(new Point(pageWidth - 310 * pageWidth / 2000
                     - pageBorderRight - 200, pageHeight - 2 * pageWidth / 50
                     - 109 * pageWidth / 1800 - pageBorderBottom - 200));//new Point(21000,18200));
 
@@ -293,8 +300,7 @@ public class Draw extends OOoProgram {
             xProps.setPropertyValue("Height", 1550); // original: 31 px
             /*xProps.setPropertyValue("HoriOrient", 5000);
             xProps.setPropertyValue("VertOrient", 6000); */
-            xProps.setPropertyValue("MoveProtect", false);
-            xProps.setPropertyValue("SizeProtect", false);
+            xProps.setPropertyValue("Name", "ccoo:licenseImage");
 
             // inser the graphic at the cursor position
             xPage.add(xGraphicShape);
@@ -304,6 +310,45 @@ public class Draw extends OOoProgram {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        
+
+    }
+
+    public void updateVisibleNotice() {
+        ArrayList<XDrawPage> drawPages = new ArrayList<XDrawPage>();
+        ArrayList<XShape> shapes = new ArrayList<XShape>();
+        try {
+            for (int i = 0; i < PageHelper.getDrawPageCount(this.getComponent()); i++) {
+
+                XDrawPage xPage = PageHelper.getDrawPageByIndex(this.getComponent(), i);
+                XShapes xShapes = (XShapes) UnoRuntime.queryInterface(XShapes.class, xPage);
+                for (int j = 0; j < xShapes.getCount(); j++) {
+                    XShape xShape = (XShape) UnoRuntime.queryInterface(
+                            XShape.class, xShapes.getByIndex(j));
+                    XPropertySet xShapePropSet = (XPropertySet) UnoRuntime.queryInterface(
+                            XPropertySet.class, xShape);
+                    String name = xShapePropSet.getPropertyValue("Name").toString();
+                    if (name.equalsIgnoreCase("ccoo:licenseImage")) {
+                        shapes.add(xShape);
+                        drawPages.add(xPage);
+                    } else if (name.equalsIgnoreCase("ccoo:licenseText")) {
+                        shapes.add(xShape);
+                    }
+                }
+                for(int j=0;j<shapes.size();j++){
+                    xShapes.remove(shapes.get(j));
+                }
+                shapes.clear();
+            }
+        } catch (UnknownPropertyException ex) {
+            Logger.getLogger(Draw.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (WrappedTargetException ex) {
+            Logger.getLogger(Draw.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (IndexOutOfBoundsException ex) {
+            Logger.getLogger(Draw.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+        for (int i = 0; i < drawPages.size(); i++) {
+            insertVisibleNotice(drawPages.get(i));
+        }
     }
 }

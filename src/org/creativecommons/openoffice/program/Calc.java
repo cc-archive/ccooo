@@ -8,11 +8,17 @@
 
 package org.creativecommons.openoffice.program;
 
+import com.sun.star.beans.UnknownPropertyException;
+import com.sun.star.container.NoSuchElementException;
+import com.sun.star.lang.IndexOutOfBoundsException;
+import com.sun.star.lang.WrappedTargetException;
 import com.sun.star.text.ControlCharacter;
 import com.sun.star.text.HoriOrientation;
 import com.sun.star.text.VertOrientation;
 import com.sun.star.text.TextContentAnchorType;
 import com.sun.star.text.XText;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.creativecommons.openoffice.util.PageHelper;
 import com.sun.star.awt.Point;
 import com.sun.star.awt.Size;
@@ -24,16 +30,22 @@ import com.sun.star.drawing.XDrawPage;
 import com.sun.star.drawing.XDrawPageSupplier;
 import com.sun.star.drawing.XShape;
 import com.sun.star.drawing.XShapes;
+import com.sun.star.frame.XController;
+import com.sun.star.frame.XModel;
 import com.sun.star.lang.XComponent;
 import com.sun.star.lang.XMultiServiceFactory;
+import com.sun.star.sheet.XCellRangeAddressable;
 import com.sun.star.sheet.XSpreadsheet;
 import com.sun.star.sheet.XSpreadsheetDocument;
+import com.sun.star.sheet.XSpreadsheetView;
 import com.sun.star.style.LineSpacing;
 import com.sun.star.style.LineSpacingMode;
+import com.sun.star.table.CellRangeAddress;
 import com.sun.star.table.XCell;
 import com.sun.star.uno.AnyConverter;
 import com.sun.star.uno.UnoRuntime;
 import com.sun.star.uno.XComponentContext;
+import java.util.ArrayList;
 import org.creativecommons.license.License;
 import org.creativecommons.openoffice.util.ShapeHelper;
 
@@ -59,12 +71,12 @@ public class Calc extends OOoProgram {
             XSpreadsheetDocument xSheetDoc = (XSpreadsheetDocument) UnoRuntime.queryInterface(
                     XSpreadsheetDocument.class,
                     this.getComponent());
-
-            xSpreadsheet = (XSpreadsheet) UnoRuntime.queryInterface(
-                    XSpreadsheet.class,
-                    xSheetDoc.getSheets()
-                    .getByName(xSheetDoc.getSheets()
-                    .getElementNames()[0]));
+            
+            XModel xDocModel = (XModel) UnoRuntime.queryInterface(XModel.class, this.getComponent());
+            XController xController = xDocModel.getCurrentController();
+            XSpreadsheetView view = (XSpreadsheetView) UnoRuntime.queryInterface(
+                    XSpreadsheetView.class, xController);
+            xSpreadsheet = view.getActiveSheet();
 
             xSpreadsheetFactory = (XMultiServiceFactory) UnoRuntime.queryInterface(
                     XMultiServiceFactory.class, xSheetDoc);
@@ -81,7 +93,9 @@ public class Calc extends OOoProgram {
                     "com.sun.star.drawing.GraphicObjectShape");
             XShape xGraphicShape = (XShape)UnoRuntime.queryInterface( XShape.class, graphicObject );
 
-            xGraphicShape.setPosition(getAbsoluteCellPosition(xSpreadsheet, new Integer(0), new Integer(0)));
+            xGraphicShape.setPosition(getAbsoluteCellPosition(
+                    xSpreadsheet, getActiveCellsRange(component).StartColumn,
+                    getActiveCellsRange(component).StartRow ));         //add to current cell
 
             XPropertySet xProps = (XPropertySet) UnoRuntime.queryInterface(
                     XPropertySet.class, xGraphicShape);
@@ -97,17 +111,26 @@ public class Calc extends OOoProgram {
             xProps.setPropertyValue("AnchorType",
                     com.sun.star.text.TextContentAnchorType.AS_CHARACTER);
             xProps.setPropertyValue("GraphicURL", internalURL);
+            xProps.setPropertyValue("Name", "ccoo:picture");
 
             // insert the graphic at the cursor position
             xPage.add(xGraphicShape);
 
             Object xGraphicObject = xProps.getPropertyValue( "Graphic" );
-            XPropertySet xGraphicPropsGOSX = ( XPropertySet ) UnoRuntime.queryInterface( XPropertySet.class,
+            XPropertySet xGraphicPropsGOSX = ( XPropertySet )
+                    UnoRuntime.queryInterface( XPropertySet.class,
                 xGraphicObject );
             Object sizePixelObject = xGraphicPropsGOSX.getPropertyValue( "Size100thMM" );
             Size actualSize = ( Size ) AnyConverter.toObject(Size.class, sizePixelObject );
 
-            xGraphicShape.setSize(actualSize);
+            if (actualSize.Width != 0||actualSize.Height != 0) {
+                xGraphicShape.setSize(actualSize);
+            }else{
+                sizePixelObject = xGraphicPropsGOSX.getPropertyValue("SizePixel");
+                actualSize = (Size) AnyConverter.toObject(Size.class, sizePixelObject);
+                xGraphicShape.setSize(new Size((int) (actualSize.Width * 26.4),
+                        (int)(actualSize.Height*26.4))); //convert pixels to 100th of mm
+            }
 
             // remove the helper-entry
             xBitmapContainer.removeByName(sName);
@@ -129,7 +152,8 @@ public class Calc extends OOoProgram {
             // first shape
             String caption = byCaption + img.getLicenseNumber() + " ( " + img.getLicenseURL() + " )";
             xRectangle = ShapeHelper.createShape( this.getComponent(),
-                    new Point(0, xGraphicShape.getPosition().Y + xGraphicShape.getSize().Height  ),
+                    new Point(xGraphicShape.getPosition().X ,
+                    xGraphicShape.getPosition().Y + xGraphicShape.getSize().Height ),
                     new Size( caption.length()*176, 1500 ),
                     "com.sun.star.drawing.RectangleShape" );
             xPage.add( xRectangle );
@@ -138,19 +162,21 @@ public class Calc extends OOoProgram {
             xShapePropSet.setPropertyValue("TextLeftDistance", new Long(0));
             xShapePropSet.setPropertyValue("LineStyle", LineStyle.NONE);
             xShapePropSet.setPropertyValue("FillStyle", FillStyle.NONE);
+            xProps.setPropertyValue("Name", "ccoo:picture");
 
             // first paragraph
             xTextPropSet = ShapeHelper.addPortion( xRectangle, caption, false );
             xTextPropSet.setPropertyValue( "CharColor", new Integer( 0x000000 ) );
 
             // first shape
-            caption = img.getTitle()+" ( "+img.getImgUrlMainPage()+" )";
-            xRectangle = ShapeHelper.createShape( this.getComponent(),
-                    new Point(0, xGraphicShape.getPosition().Y + xGraphicShape.getSize().Height + 600 ),
-                    new Size( caption.length()*190, 1500 ),
-                    "com.sun.star.drawing.RectangleShape" );
-            xPage.add( xRectangle );
-            xShapePropSet = (XPropertySet) UnoRuntime.queryInterface( XPropertySet.class, xRectangle );
+            caption = img.getTitle() + " ( " + img.getImgUrlMainPage() + " )";
+            xRectangle = ShapeHelper.createShape(this.getComponent(),
+                    new Point(xGraphicShape.getPosition().X,
+                    xGraphicShape.getPosition().Y + xGraphicShape.getSize().Height + 600),
+                    new Size(caption.length() * 190, 1500),
+                    "com.sun.star.drawing.RectangleShape");
+            xPage.add(xRectangle);
+            xShapePropSet = (XPropertySet) UnoRuntime.queryInterface(XPropertySet.class, xRectangle);
 
             xShapePropSet.setPropertyValue("TextLeftDistance", new Long(0));
             xShapePropSet.setPropertyValue("LineStyle", LineStyle.NONE);
@@ -170,25 +196,21 @@ public class Calc extends OOoProgram {
         return false;
     }
 
-    public void insertVisibleNotice() {
+    public void insertVisibleNotice(){
+        XSpreadsheet xSpreadsheet=null;
+        XModel xDocModel = (XModel) UnoRuntime.queryInterface(XModel.class, this.getComponent());
+        XController xController = xDocModel.getCurrentController();
+        XSpreadsheetView view = (XSpreadsheetView) UnoRuntime.queryInterface(
+                XSpreadsheetView.class, xController);
+        xSpreadsheet = view.getActiveSheet();
+        insertVisibleNotice(xSpreadsheet);
+    }
+    public void insertVisibleNotice(XSpreadsheet xSpreadsheet) {
 
         XDrawPage xPage;
-        XSpreadsheet xSpreadsheet = null;
         License license = this.getDocumentLicense();
 
         try {
-            //XDrawPage xPage = PageHelper.getDrawPageByIndex( xDrawDoc, 0 );
-            // xPage = PageHelper.getMasterPageByIndex(xDrawDoc, 0);
-            XSpreadsheetDocument xSheetDoc = (XSpreadsheetDocument) UnoRuntime.queryInterface(
-                    XSpreadsheetDocument.class,
-                    this.getComponent()); // <== tem que ver se o xcomponent o documento ou componente
-
-            xSpreadsheet = (XSpreadsheet) UnoRuntime.queryInterface(
-                    XSpreadsheet.class,
-                    xSheetDoc.getSheets()
-                    .getByName(xSheetDoc.getSheets()
-                    .getElementNames()[0]));
-
             XDrawPageSupplier xDrawPageSupplier = (XDrawPageSupplier)
                     UnoRuntime.queryInterface(XDrawPageSupplier.class, xSpreadsheet);
             xPage = xDrawPageSupplier.getDrawPage();
@@ -203,7 +225,9 @@ public class Calc extends OOoProgram {
 
             // first shape
             xRectangle = ShapeHelper.createShape( this.getComponent(),
-                    new Point(0, 1600 ),
+                    getAbsoluteCellPosition(
+                    xSpreadsheet, getActiveCellsRange(component).StartColumn,
+                    getActiveCellsRange(component).StartRow +3 ),
                     new Size( 15000, 1500 ),
                     "com.sun.star.drawing.RectangleShape" );
             xShapes.add( xRectangle );
@@ -215,6 +239,7 @@ public class Calc extends OOoProgram {
             xShapePropSet.setPropertyValue("TextAutoGrowWidth", true);
             xShapePropSet.setPropertyValue("LineStyle", LineStyle.NONE);
             xShapePropSet.setPropertyValue("FillStyle", FillStyle.NONE);
+            xShapePropSet.setPropertyValue("Name", "ccoo:licenseText");
 
             // first paragraph
             xTextPropSet =
@@ -222,14 +247,14 @@ public class Calc extends OOoProgram {
             xTextPropSet.setPropertyValue( "CharColor", new Integer( 0x000000 ) );
 
             // insert the graphic
-            this.embedGraphic(license.getImageUrl());
+            this.embedGraphic(license.getImageUrl(),xSpreadsheet);
 
         } catch (Exception ex) {
             ex.printStackTrace();
         }
     }
 
-    public void embedGraphic(String imgURL) {
+    public void embedGraphic(String imgURL, XSpreadsheet xSpreadsheet) {
         XDrawPage xPage = null;
 
         XNameContainer xBitmapContainer = null;
@@ -238,18 +263,10 @@ public class Calc extends OOoProgram {
 
         XMultiServiceFactory xSpreadsheetFactory = null;
 
-        XSpreadsheet xSpreadsheet = null;
-
         try {
             XSpreadsheetDocument xSheetDoc = (XSpreadsheetDocument) UnoRuntime.queryInterface(
                     XSpreadsheetDocument.class,
-                    this.getComponent()); // <== tem que ver se o xcomponent o documento ou componente
-
-            xSpreadsheet = (XSpreadsheet) UnoRuntime.queryInterface(
-                    XSpreadsheet.class,
-                    xSheetDoc.getSheets()
-                    .getByName(xSheetDoc.getSheets()
-                    .getElementNames()[0]));
+                    this.getComponent()); // <== tem que ver se o xcomponent o documento ou componente            
 
             xSpreadsheetFactory = (XMultiServiceFactory)
                     UnoRuntime.queryInterface(XMultiServiceFactory.class, xSheetDoc);
@@ -266,12 +283,14 @@ public class Calc extends OOoProgram {
 
             Object graphicObject = xSpreadsheetFactory.createInstance(
                     "com.sun.star.drawing.GraphicObjectShape");
-            XShape xGraphicShape = (XShape)UnoRuntime.queryInterface( XShape.class, graphicObject );
+            XShape xGraphicShape = (XShape)
+                    UnoRuntime.queryInterface( XShape.class, graphicObject );
 
             xGraphicShape.setSize(new Size(3104, 1093));
 
             xGraphicShape.setPosition(getAbsoluteCellPosition(
-                    xSpreadsheet, new Integer(0), new Integer(0)));
+                    xSpreadsheet, getActiveCellsRange(component).StartColumn,
+                    getActiveCellsRange(component).StartRow ));         //add to current cell
 
             XPropertySet xProps = (XPropertySet) UnoRuntime.queryInterface(
                     XPropertySet.class, xGraphicShape);
@@ -291,15 +310,13 @@ public class Calc extends OOoProgram {
             xProps.setPropertyValue("Height", 1550); // original: 31 px
             /*xProps.setPropertyValue("HoriOrient", 5000);
             xProps.setPropertyValue("VertOrient", 6000); */
+            xProps.setPropertyValue("Name", "ccoo:licenseImage");
 
             // inser the graphic at the cursor position
 
             xPage.add(xGraphicShape);
             // remove the helper-entry
             xBitmapContainer.removeByName("imgID");
-
-
-
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -343,5 +360,64 @@ public class Calc extends OOoProgram {
         return p;
     }
 
+    private CellRangeAddress getActiveCellsRange(XComponent xComponent) {
 
+        XModel xDocModel = (XModel) UnoRuntime.queryInterface(XModel.class, xComponent);
+        XCellRangeAddressable xSheetCellAddressable =
+                (XCellRangeAddressable) UnoRuntime.queryInterface(
+                XCellRangeAddressable.class, xDocModel.getCurrentSelection());
+
+        return xSheetCellAddressable.getRangeAddress();
+    }
+
+    public void updateVisibleNotice() {
+        ArrayList<XSpreadsheet> drawPages = new ArrayList<XSpreadsheet>();
+        ArrayList<XShape> shapes = new ArrayList<XShape>();
+
+        XSpreadsheetDocument xSheetDoc = (XSpreadsheetDocument) UnoRuntime.queryInterface(
+                XSpreadsheetDocument.class,
+                this.getComponent());
+        String[] sheetNames = xSheetDoc.getSheets().getElementNames();
+        try {
+            for (int i = 0; i < sheetNames.length; i++) {
+
+                XSpreadsheet xSpreadsheet = (XSpreadsheet) UnoRuntime.queryInterface(
+                        XSpreadsheet.class,
+                        xSheetDoc.getSheets().getByName(sheetNames[i]));
+                XDrawPageSupplier xDrawPageSupplier = (XDrawPageSupplier)
+                        UnoRuntime.queryInterface(XDrawPageSupplier.class, xSpreadsheet);
+                XDrawPage xPage = xDrawPageSupplier.getDrawPage();
+                XShapes xShapes = (XShapes) UnoRuntime.queryInterface(XShapes.class, xPage);
+                for (int j = 0; j < xShapes.getCount(); j++) {
+                    XShape xShape = (XShape) UnoRuntime.queryInterface(
+                            XShape.class, xShapes.getByIndex(j));
+                    XPropertySet xShapePropSet = (XPropertySet) UnoRuntime.queryInterface(
+                            XPropertySet.class, xShape);
+                    String name = xShapePropSet.getPropertyValue("Name").toString();
+                    if (name.equalsIgnoreCase("ccoo:licenseImage")) {
+                        shapes.add(xShape);
+                        drawPages.add(xSpreadsheet);
+                    } else if (name.equalsIgnoreCase("ccoo:licenseText")) {
+                        shapes.add(xShape);
+                    }
+                }
+                for (int j = 0; j < shapes.size(); j++) {
+                    xShapes.remove(shapes.get(j));
+                }
+                shapes.clear();
+
+            }
+        } catch (UnknownPropertyException ex) {
+            Logger.getLogger(Calc.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (WrappedTargetException ex) {
+            Logger.getLogger(Calc.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (IndexOutOfBoundsException ex) {
+            Logger.getLogger(Calc.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (NoSuchElementException ex) {
+            Logger.getLogger(Calc.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        for (int i = 0; i < drawPages.size(); i++) {
+            insertVisibleNotice(drawPages.get(i));
+        }
+    }
 }

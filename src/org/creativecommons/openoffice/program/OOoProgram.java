@@ -144,7 +144,7 @@ public abstract class OOoProgram implements IVisibleNotice {
             try {
                 xDMA.removeMetadataFile(URI.create(m_xContext, xDMA.getNamespace() + "meta.rdf"));
             } catch (java.lang.Exception eRemove) {
-                eRemove.printStackTrace();
+                //eRemove.printStackTrace();
             }
 
             XURI xGraphName = xDMA.addMetadataFile("meta.rdf", new XURI[]{xType});

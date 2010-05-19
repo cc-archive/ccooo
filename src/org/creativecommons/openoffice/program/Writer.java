@@ -384,7 +384,9 @@ public class Writer extends OOoProgram {
         }
         
     }
-    
-    
-    
+
+    public void updateVisibleNotice() {
+        //throw new UnsupportedOperationException("Not supported yet.");
+    }
+  
 } // Writer

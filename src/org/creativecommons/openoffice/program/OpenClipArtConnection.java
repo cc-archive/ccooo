@@ -4,13 +4,16 @@
  */
 package org.creativecommons.openoffice.program;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.parsers.DocumentBuilder;
+import org.xml.sax.SAXException;
+import org.xml.sax.SAXParseException;
+import org.w3c.dom.*;
 
 /**
  *
@@ -26,57 +29,74 @@ public class OpenClipArtConnection {
 
     public ArrayList<Image> searchPhotos(String[] tags, int currentPage) {
 
-        BufferedReader in = null;
         imgList.removeAll(imgList);
         String tagLine = "";
         for (int i = 0; i < tags.length; i++) {
-            tagLine += "+" + tags[i];
+            tagLine += "," + tags[i];
         }
-        tagLine = tagLine.replaceFirst("\\+", "");
+        tagLine = tagLine.replaceFirst(",", "");
+        String title, imgUrl, imgUrlMainPage, imgUrlThumb, licenseURL, userID, profile;
         try {
-            URL url = new URL("http://testvm.openclipart.org/cchost/api/query?limit=100&tags=" 
-                    + tagLine + "&format=csv&t=links_by_dl_ul&lic=pd");
-            in = new BufferedReader(new InputStreamReader(url.openStream()));
 
-            String inputLine, title, imgUrl, profile, imgUrlMainPage, userID, photoID, userName;
-            String[] list;
-            int count = 0;
-            while ((inputLine = in.readLine()) != null) {
-                list = inputLine.split(",");
-                title = list[2];
-                profile = list[3].replaceFirst("testvm.", "").
-                        replaceFirst("/cchost/people/", "/user-detail/");
-                imgUrl = list[8].replaceFirst("/cchost/content/", "/people/").
-                        replaceFirst("testvm.", "").replace(".svg", ".png");
-                imgUrlMainPage = list[1];//the image is not shown in the current main page the url has to be cnaged
-                userID = list[4];
-                photoID = list[0];
-                userName = list[6];
-                count++;
-                if (count > 100) {
-                    break;
+            DocumentBuilderFactory docBuilderFactory = DocumentBuilderFactory.newInstance();
+            DocumentBuilder docBuilder = docBuilderFactory.newDocumentBuilder();
+            Document doc = docBuilder.parse("http://www.openclipart.org/media/feed/rss/" + tagLine);//CC-BY
+
+            // normalize text representation
+            doc.getDocumentElement().normalize();
+
+            NodeList listOfTitles = doc.getElementsByTagName("title");
+            NodeList listOfDiscriptions = doc.getElementsByTagName("link");
+            NodeList listOfURLs = doc.getElementsByTagName("enclosure");
+            NodeList listOfThumbs = doc.getElementsByTagName("media:thumbnail");
+            NodeList listOfLicenses = doc.getElementsByTagName("cc:license");
+            NodeList listOfCreators = doc.getElementsByTagName("dc:creator");
+
+            for (int s = 0; s < listOfURLs.getLength(); s++) {
+                
+                System.out.println(listOfThumbs.item(s).getAttributes());
+                title = goToDepth(listOfTitles.item(s + 2)).getNodeValue();
+                imgUrlMainPage = goToDepth(listOfDiscriptions.item(s + 2)).getNodeValue();
+                imgUrl = listOfURLs.item(s).getAttributes().getNamedItem("url").getNodeValue();
+                licenseURL = goToDepth(listOfLicenses.item(s)).getNodeValue();
+                imgUrlThumb = listOfThumbs.item(s).getAttributes().getNamedItem("url").getNodeValue();
+                if (imgUrl.contains(".svg")) {
+                    imgUrl=imgUrlThumb.replace("/90px/", "/400px/");
+                    imgUrlThumb = imgUrlThumb.replace("/90px/", "/120px/"); 
                 }
-                Image img = new Image(title, null, null, imgUrl, profile, null,
-                        imgUrlMainPage, userID, photoID, "");
-                img.setUserName(userName);
+                userID = goToDepth(listOfCreators.item(s)).getNodeValue();
+                profile = "http://www.openclipart.org/user-detail/" + userID;
+                Image img = new Image(title, null, null, imgUrlThumb, profile,
+                        null, imgUrlMainPage, userID, title, null);
+
                 img.setSelectedImageURL(imgUrl);
+                img.setUserName(userID);
                 img.setLicenseCode("PD");
-                img.setLicenseNumber("");
-                img.setLicenseURL("http://creativecommons.org/licenses/publicdomain/");
+                img.setLicenseNumber("-");
+                img.setLicenseURL(licenseURL);
                 imgList.add(img);
 
-            }
-            imgList.remove(0);
+            }//end of for loop with s var
 
+        } catch (ParserConfigurationException ex) {
+            Logger.getLogger(OpenClipArtConnection.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (SAXParseException ex) {
+            Logger.getLogger(OpenClipArtConnection.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (SAXException ex) {
+            Logger.getLogger(OpenClipArtConnection.class.getName()).log(Level.SEVERE, null, ex);
         } catch (IOException ex) {
             Logger.getLogger(OpenClipArtConnection.class.getName()).log(Level.SEVERE, null, ex);
-        } finally {
-            try {
-                in.close();
-            } catch (IOException ex) {
-                Logger.getLogger(OpenClipArtConnection.class.getName()).log(Level.SEVERE, null, ex);
-            }
+        } catch (Exception ex) {
+            Logger.getLogger(OpenClipArtConnection.class.getName()).log(Level.SEVERE, null, ex);
         }
         return imgList;
+    }
+
+    private Node goToDepth(Node node) {
+        if (node.hasChildNodes()) {
+            return goToDepth(node.getFirstChild());
+        } else {
+            return node;
+        }
     }
 }
