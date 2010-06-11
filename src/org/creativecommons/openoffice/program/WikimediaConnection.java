@@ -144,6 +144,7 @@ public class WikimediaConnection {
                     } else if (license.equalsIgnoreCase("CC-Zero")) {
                         licenseCode = "CC0";
                         licenseURL = "http://creativecommons.org/publicdomain/zero/1.0/";
+                        licenseNumber = "1.0";
                     }
                 } else if (license.startsWith("GFDL")) {
                     licenseCode = "GFDL";
