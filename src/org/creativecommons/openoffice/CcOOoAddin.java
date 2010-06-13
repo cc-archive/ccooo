@@ -61,6 +61,7 @@ import org.creativecommons.openoffice.program.Writer;
 import org.creativecommons.openoffice.ui.license.ChooserDialog;
 import org.creativecommons.openoffice.ui.flickr.PictureFlickrDialog;
 import org.creativecommons.openoffice.ui.openclipart.OpenClipArtDialog;
+import org.creativecommons.openoffice.ui.picasa.PicasaDialog;
 import org.creativecommons.openoffice.ui.wikimedia.WikimediaDialog;
 
 /**
@@ -94,6 +95,7 @@ public final class CcOOoAddin extends WeakBase
     private PictureFlickrDialog pictureFlickrDialog = null;
     private OpenClipArtDialog openClipArtDialog = null;
     private WikimediaDialog wikimediaDialog=null;
+    private PicasaDialog picasaDialog=null;
 
     /**
      * Constructs a new instance
@@ -251,10 +253,13 @@ public final class CcOOoAddin extends WeakBase
                 insertPictureFlickr();
             }
             else if (aURL.Path.compareTo("InsertOpenClipArt") == 0) {
-                insertOpenClipArt();
+                insertOpenClipArt();                
             }
             else if (aURL.Path.compareTo("InsertWikimediaCommons") == 0) {
                 insertWikimediaImage();
+            }
+            else if (aURL.Path.compareTo("InsertPicasa") == 0) {
+                insertPicasaImage();
             }
         } // if CcOOoAddin protocol
     } // dispatch
@@ -283,7 +288,7 @@ public final class CcOOoAddin extends WeakBase
                 document.setDocumentLicense(selected);
                 this.getProgramWrapper(this.getCurrentComponent()).updateVisibleNotice();
             }
-            
+
 
         } catch (Exception ex) {
             ex.printStackTrace();
@@ -386,6 +391,35 @@ public final class CcOOoAddin extends WeakBase
         } finally {
 
             wikimediaDialog.setLoadable(false);
+        }
+
+
+    } // insertPicture
+    public void insertPicasaImage() {
+
+        try {
+
+            if (mxRemoteServiceManager == null) {
+                System.out.println("not available");
+                return;
+            }
+
+            this.updateCurrentComponent();
+
+            if (picasaDialog == null) {
+                picasaDialog = new PicasaDialog(this, this.m_xContext);
+                picasaDialog.setLoadable(true);
+                picasaDialog.showDialog(false);
+            } else {
+                picasaDialog.setLoadable(true);
+                picasaDialog.showDialog(true);
+            }
+
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        } finally {
+
+            picasaDialog.setLoadable(false);
         }
 
 
