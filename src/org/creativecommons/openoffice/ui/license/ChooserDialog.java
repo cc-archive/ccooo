@@ -375,7 +375,7 @@ public class ChooserDialog {
             XGraphic xGraphic = null;
             String file = "file://" + this.getClass().getProtectionDomain().
                     getCodeSource().getLocation().getPath().
-                    replaceFirst("ccooo.jar", "images/information1.png");
+                    replaceFirst("ccooo.jar", "images/information.png");
             xGraphic = getGraphic(file);
 
             XPropertySet xpsImageControl = (XPropertySet) UnoRuntime.queryInterface(
