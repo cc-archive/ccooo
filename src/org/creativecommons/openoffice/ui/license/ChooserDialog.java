@@ -96,6 +96,7 @@ public class ChooserDialog {
     public static final String LBL_JURISDICTION_LIST = "lblJurisdictionList";
     public static final String LBL_INSTRUCTIONS_CC0 = "lblInstructions";
     public static final String CMB_JURISDICTION = "cmbJurisdiction";
+    public static final String CMB_TERRITORY = "cmbTerritory";
     public static final String TXT_LEGAL_CODE_CC0 = "txtLegalCodeCC0";
     public static final String TXT_LEGAL_CODE_PD = "txtLegalCodePD";
 
@@ -122,7 +123,7 @@ public class ChooserDialog {
 
         xPSetDialog = createAWTControl(dlgLicenseSelector, "cc",
                 null, new Rectangle(100, 80, 210, 275), 1);
-        xPSetDialog.setPropertyValue("Title", new String("Select a License"));
+        xPSetDialog.setPropertyValue("Title", new String("Sharing & Reuse Permissions"));
 
         // get the name container for the dialog for inserting other elements
         this.xNameCont = (XNameContainer) UnoRuntime.queryInterface(
@@ -137,7 +138,7 @@ public class ChooserDialog {
         XPropertySet xPSetCCButton = createAWTControl(ccButton, BTN_CC,
                 null, new Rectangle(3, 3, 70, 12), 0);
         xPSetCCButton.setPropertyValue("DefaultButton", new Boolean("true"));
-        xPSetCCButton.setPropertyValue("Label", "Cretive Commons");
+        xPSetCCButton.setPropertyValue("Label", "Creative Commons");
         xPSetCCButton.setPropertyValue("Toggle", true);
         FontDescriptor fontDes = (FontDescriptor) xPSetCCButton.getPropertyValue("FontDescriptor");
         fontDes.Weight = 150;
@@ -333,7 +334,7 @@ public class ChooserDialog {
         String[] trritories = ReadFile.read(getClass().getResourceAsStream(
                 "/org/creativecommons/license/rdf/territory")).split("\\n");
         cmbTList = (XListBox) UnoRuntime.queryInterface(
-                XListBox.class, xControlCont.getControl("cmbterritory"));
+                XListBox.class, xControlCont.getControl(CMB_TERRITORY));
 
         this.setJurisdictionList(Store.get().jurisdictions());
         cmbTList.addItems(trritories, (short) 0);
@@ -482,7 +483,7 @@ public class ChooserDialog {
 
         Object cmbTerritoryList = xMultiServiceFactory.createInstance(
                 "com.sun.star.awt.UnoControlListBoxModel");
-        XPropertySet xPSetList = createAWTControl(cmbTerritoryList, "cmbterritory",
+        XPropertySet xPSetList = createAWTControl(cmbTerritoryList, CMB_TERRITORY,
                 null, new Rectangle(55, 230, 120, 12), 2);
         xPSetList.setPropertyValue("Dropdown", new Boolean("true"));
         xPSetList.setPropertyValue("MultiSelection", new Boolean("false"));
@@ -648,6 +649,8 @@ public class ChooserDialog {
                     getNameContainer().getByName(CHK_WAIVE))).setPropertyValue("State", (short) 0);
             ((XPropertySet) UnoRuntime.queryInterface(XPropertySet.class,
                     getNameContainer().getByName(CHK_YES_CC0))).setPropertyValue("State", (short) 0);
+            ((XPropertySet) UnoRuntime.queryInterface(XPropertySet.class,
+                    getNameContainer().getByName(CMB_TERRITORY))).setPropertyValue("Enabled", Boolean.FALSE);
             cmbTList.selectItemPos((short) 0, true);
             ((XPropertySet) UnoRuntime.queryInterface(XPropertySet.class,
                     getNameContainer().getByName(CHK_YES_PD))).setPropertyValue("State", (short) 0);

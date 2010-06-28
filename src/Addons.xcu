@@ -51,8 +51,8 @@
                                         <value>com.sun.star.drawing.DrawingDocument,com.sun.star.presentation.PresentationDocument,com.sun.star.sheet.SpreadsheetDocument,com.sun.star.text.TextDocument</value>
                                     </prop>
                                     <prop oor:name="Title" oor:type="xs:string">
-                                        <value>Insert License Statement</value>
-                                        <value xml:lang="en">Insert License Statement</value>
+                                        <value>Insert Sharing &amp; Reuse Permissions Statement</value>
+                                        <value xml:lang="en">Insert Sharing &amp; Reuse Permissions Statement</value>
                                     </prop>
                                 </node>
                                 <node oor:name="m2" oor:op="replace">
@@ -69,8 +69,8 @@
                                         <value>com.sun.star.drawing.DrawingDocument,com.sun.star.presentation.PresentationDocument,com.sun.star.sheet.SpreadsheetDocument,com.sun.star.text.TextDocument</value>
                                     </prop>
                                     <prop oor:name="Title" oor:type="xs:string">
-                                        <value>Set Document License</value>
-                                        <value xml:lang="en">Set Document License</value>
+                                        <value>Set Sharing &amp; Reuse Permissions</value>
+                                        <value xml:lang="en">Set Sharing &amp; Reuse Permissions</value>
                                     </prop>
                                 </node>
                             </node>
