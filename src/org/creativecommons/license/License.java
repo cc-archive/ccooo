@@ -21,6 +21,7 @@ import java.net.URL;
 public class License {
     
     private String license_uri;
+    private String territory;
     private Store licenseStore;
     
     /**
@@ -31,16 +32,30 @@ public class License {
         this.license_uri = license_uri;
         this.licenseStore = Store.get();
     } 
-    
+    public License(String license_uri, String territory) {
+
+        this.license_uri = license_uri;
+        this.territory = territory;
+        this.licenseStore = Store.get();
+    }
     public String getLicenseUri() {
         return this.license_uri;
     }
     
     public String getName() {
-        
-        return this.licenseStore.literal(this.license_uri, DC.title, "en").getString() + " " +
-                this.licenseStore.literal(this.license_uri, DCTerms.hasVersion, "").getString() + " " +
-                this.getJurisdiction().getTitle();
+        try {
+            return this.licenseStore.literal(this.license_uri, DC.title, "en").getString() + " "
+                    + this.licenseStore.literal(this.license_uri, DCTerms.hasVersion, "").getString() + " "
+                    + this.getJurisdiction().getTitle();
+        } catch (NullPointerException ex) {
+            try{
+                return this.licenseStore.literal(this.license_uri, DC.title, "en").getString();
+            }catch (NullPointerException e){
+                return "CC0" + " "
+                    + this.licenseStore.literal(this.license_uri,
+                    DCTerms.hasVersion, "").getString() + " " + "Universal";
+            }
+        }
     }
     public String getName(String locale) {
 
@@ -67,8 +82,12 @@ public class License {
      *
      */
     public String getImageUrl() {
-        
-        return "http://i.creativecommons.org/l/" + this.getCode() + "/" + this.getVersion() + "/88x31.png";
+        try{
+        return "http://i.creativecommons.org/l/" + this.getCode() + "/"
+                + this.getVersion() + "/88x31.png";
+        }catch(NullPointerException ex){
+            return "http://i.creativecommons.org/l/" + this.getCode() + "/88x31.png";
+        }
     }
     
     /**
@@ -94,7 +113,7 @@ public class License {
         return null;
     }
 
-    public String getVersion() {
+    public String getVersion() throws NullPointerException{
         return this.licenseStore.literal(this.license_uri, DCTerms.hasVersion, "").getString();
     }
     

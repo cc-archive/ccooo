@@ -102,7 +102,7 @@ public class PicasaDialog {
 
             XPropertySet xPSetDialog = createAWTControl(dlgLicenseSelector, "dlgMainForm",
                     "", new Rectangle(100, 100, 240, 360));//360
-            xPSetDialog.setPropertyValue("Title", new String("Insert Clip Art from Picasa"));
+            xPSetDialog.setPropertyValue("Title", new String("Insert Picture from Picasa"));
             xPSetDialog.setPropertyValue("Step", (short) 1);
 
             // get the name container for the dialog for inserting other elements
