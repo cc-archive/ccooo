@@ -8,21 +8,19 @@
 package org.creativecommons.openoffice.ui.license;
 
 import com.sun.star.awt.FontDescriptor;
-import com.sun.star.lang.IllegalArgumentException;
-import com.sun.star.uno.Exception;
+import com.sun.star.awt.XActionListener;
 import com.sun.star.awt.XButton;
 import com.sun.star.awt.XCheckBox;
 import com.sun.star.awt.XControl;
 import com.sun.star.awt.XControlContainer;
 import com.sun.star.awt.XControlModel;
 import com.sun.star.awt.XDialog;
+import com.sun.star.awt.XItemListener;
 import com.sun.star.awt.XListBox;
 import com.sun.star.awt.XRadioButton;
 import com.sun.star.awt.XToolkit;
 import com.sun.star.awt.XWindow;
 import com.sun.star.beans.PropertyValue;
-import com.sun.star.beans.PropertyVetoException;
-import com.sun.star.beans.UnknownPropertyException;
 import com.sun.star.beans.XPropertySet;
 import com.sun.star.container.NoSuchElementException;
 import com.sun.star.container.XNameContainer;
@@ -30,8 +28,10 @@ import com.sun.star.graphic.XGraphic;
 import com.sun.star.graphic.XGraphicProvider;
 import com.sun.star.lang.WrappedTargetException;
 import com.sun.star.lang.XComponent;
+import com.sun.star.lang.XEventListener;
 import com.sun.star.lang.XMultiComponentFactory;
 import com.sun.star.lang.XMultiServiceFactory;
+import com.sun.star.uno.Exception;
 import com.sun.star.uno.UnoRuntime;
 import com.sun.star.uno.XComponentContext;
 import java.awt.Rectangle;
@@ -70,6 +70,7 @@ public class ChooserDialog {
     private List<Jurisdiction> jurisdictionList = null;
     private IJurisdiction selectedJurisdiction = null;
     private boolean cancelled = true;
+    
     // TODO put these labels in a properties file
     public static final String BTN_OK = "finishbt";
     public static final String finishButtonLabel = "OK";
@@ -130,7 +131,8 @@ public class ChooserDialog {
                 XNameContainer.class, dlgLicenseSelector);
 
         // get the service manager from the dialog model
-        this.xMultiServiceFactory = (XMultiServiceFactory) UnoRuntime.queryInterface(XMultiServiceFactory.class, dlgLicenseSelector);
+        this.xMultiServiceFactory = (XMultiServiceFactory) UnoRuntime.queryInterface(
+                XMultiServiceFactory.class, dlgLicenseSelector);
 
         ///////////////////////////////////////tabs
         Object ccButton = xMultiServiceFactory.createInstance(
@@ -165,8 +167,6 @@ public class ChooserDialog {
                 "com.sun.star.awt.UnoControlGroupBoxModel");
         XPropertySet xpsBox = createAWTControl(
                 oGBResults, "box", null, new Rectangle(2, 15, 206, 243), 0);
-        //xpsBox.setPropertyValue("Border", new Short((short) 1));
-
         crateCC0LicenseTab();
         createCCLicenseTab();
         cratePDLicenseTab();
@@ -199,7 +199,8 @@ public class ChooserDialog {
         Object dialog = xMultiComponentFactory.createInstanceWithContext(
                 "com.sun.star.awt.UnoControlDialog", m_xContext); //esse
         XControl xControl = (XControl) UnoRuntime.queryInterface(XControl.class, dialog);
-        XControlModel xControlModel = (XControlModel) UnoRuntime.queryInterface(XControlModel.class, dlgLicenseSelector);
+        XControlModel xControlModel = (XControlModel) UnoRuntime.queryInterface(
+                XControlModel.class, dlgLicenseSelector);
         xControl.setModel(xControlModel);
 
         // add an action listener to the Previous button control
@@ -223,7 +224,6 @@ public class ChooserDialog {
         while (it.hasNext()) {
             Jurisdiction j = it.next();
             cmbJList.addItem(j.getTitle(), count++);
-
         }
 
         // add a bogus place-holder for Unported in the JurisdictionList to
@@ -235,57 +235,24 @@ public class ChooserDialog {
         cmbJList.makeVisible((short) 0);
 
         // listen for license selection changes
-
-        ((XRadioButton) UnoRuntime.queryInterface(XRadioButton.class,
-                xControlCont.getControl(RDO_ALLOW_COMERCIAL_YES))).addItemListener(
-                new UpdateLicenseListener(this));
-        ((XRadioButton) UnoRuntime.queryInterface(XRadioButton.class,
-                xControlCont.getControl(RDO_ALLOW_COMERCIAL_NO))).addItemListener(
-                new UpdateLicenseListener(this));
-        ((XRadioButton) UnoRuntime.queryInterface(XRadioButton.class,
-                xControlCont.getControl(RDO_ALLOW_MODIFICATIONS_YES))).addItemListener(
-                new UpdateLicenseListener(this));
-        ((XRadioButton) UnoRuntime.queryInterface(XRadioButton.class,
-                xControlCont.getControl(RDO_ALLOW_MODIFICATIONS_SHARE_ALIKE))).addItemListener(
-                new UpdateLicenseListener(this));
-        ((XRadioButton) UnoRuntime.queryInterface(XRadioButton.class,
-                xControlCont.getControl(RDO_ALLOW_MODIFICATIONS_NO))).addItemListener(
-                new UpdateLicenseListener(this));
+        addListners(XRadioButton.class, RDO_ALLOW_COMERCIAL_YES, new UpdateLicenseListener(this));
+        addListners(XRadioButton.class, RDO_ALLOW_COMERCIAL_NO, new UpdateLicenseListener(this));
+        addListners(XRadioButton.class, RDO_ALLOW_MODIFICATIONS_YES, new UpdateLicenseListener(this));
+        addListners(XRadioButton.class, RDO_ALLOW_MODIFICATIONS_SHARE_ALIKE, new UpdateLicenseListener(this));
+        addListners(XRadioButton.class, RDO_ALLOW_MODIFICATIONS_NO, new UpdateLicenseListener(this));
         cmbJList.addItemListener(new JurisdictionSelectListener(this));
 
-        ((XCheckBox) UnoRuntime.queryInterface(XCheckBox.class, xControlCont.getControl(CHK_WAIVE))).addItemListener(
-                new AcceptWaiveListener(this));
-        ((XCheckBox) UnoRuntime.queryInterface(XCheckBox.class, xControlCont.getControl(CHK_YES_CC0))).addItemListener(
-                new AcceptListener(this));
-        ((XCheckBox) UnoRuntime.queryInterface(XCheckBox.class, xControlCont.getControl(CHK_YES_PD))).addItemListener(
-                new AcceptListener(this));
+        addListners(XCheckBox.class, CHK_WAIVE, new AcceptWaiveListener(this));
+        addListners(XCheckBox.class, CHK_YES_CC0, new AcceptListener(this));
+        addListners(XCheckBox.class, CHK_YES_PD, new AcceptListener(this));
 
-        // add an action listener to the Faq button control
-        Object objectButton3 = xControlCont.getControl(BTN_FAQ);
-        XButton xFaqButton = (XButton) UnoRuntime.queryInterface(XButton.class, objectButton3);
-        xFaqButton.addActionListener(new FaqClickListener(this, this.m_xContext));
-
-        // add an action listener to the Finish button control
-        Object objectButton4 = xControlCont.getControl(BTN_OK);
-        XButton xFinishButton = (XButton) UnoRuntime.queryInterface(XButton.class, objectButton4);
-        xFinishButton.addActionListener(new FinishClickListener(this, this.addin));
-
-        // add an action listener to the Cancel button control
-        Object objectButton5 = xControlCont.getControl(BTN_CANCEL);
-        XButton xCancelButton = (XButton) UnoRuntime.queryInterface(XButton.class, objectButton5);
-        xCancelButton.addActionListener(new CancelClickListener(this));
-
-        ccButton = xControlCont.getControl(BTN_CC);
-        XButton xCCButton = (XButton) UnoRuntime.queryInterface(XButton.class, ccButton);
-        xCCButton.addActionListener(new CCClickListener(this));
-
-        cc0Button = xControlCont.getControl(BTN_CC0);
-        XButton xCC0Button = (XButton) UnoRuntime.queryInterface(XButton.class, cc0Button);
-        xCC0Button.addActionListener(new CC0ClickListener(this));
-
-        pdButton = xControlCont.getControl(BTN_PUBLICDOMAIN);
-        XButton xPDButton = (XButton) UnoRuntime.queryInterface(XButton.class, pdButton);
-        xPDButton.addActionListener(new PDClickListener(this));
+        // add an action listener to the Faq buttons
+        addListners(XButton.class, BTN_FAQ, new FaqClickListener(this, this.m_xContext));
+        addListners(XButton.class, BTN_OK, new FinishClickListener(this, this.addin));
+        addListners(XButton.class, BTN_CANCEL, new CancelClickListener(this));
+        addListners(XButton.class, BTN_CC, new CCClickListener(this));
+        addListners(XButton.class, BTN_CC0, new CC0ClickListener(this));
+        addListners(XButton.class, BTN_PUBLICDOMAIN, new PDClickListener(this));
 
         if (this.addin.getProgramWrapper().getDocumentLicense() != null) {
             this.setSelectedLicense(this.addin.getProgramWrapper().getDocumentLicense());
@@ -347,7 +314,6 @@ public class ChooserDialog {
         // dispose the dialog
         XComponent xComponent = (XComponent) UnoRuntime.queryInterface(XComponent.class, dialog);
         xComponent.dispose();
-
     }
 
     private void createCCLicenseTab() throws Exception {
@@ -383,7 +349,7 @@ public class ChooserDialog {
                 "No", new Rectangle(20, 75, 30, 12), 1);
         xpsRadioCommercialNo.setPropertyValue("State", new Short((short) 0));
 
-///////////////////////////////////Allow modifications of your work?
+        ///////////////////////////////////Allow modifications of your work?
 
         Object lblAllowModifications = xMultiServiceFactory.createInstance(
                 "com.sun.star.awt.UnoControlFixedTextModel");
@@ -419,12 +385,10 @@ public class ChooserDialog {
 
         Object cmbJurisdictionList = xMultiServiceFactory.createInstance(
                 "com.sun.star.awt.UnoControlListBoxModel");
-
         XPropertySet xPSetList = createAWTControl(cmbJurisdictionList, CMB_JURISDICTION,
                 null, new Rectangle(90, 150, 60, 12), 1);
         xPSetList.setPropertyValue("Dropdown", new Boolean("true"));
         xPSetList.setPropertyValue("MultiSelection", new Boolean("false"));
-
     }
 
     private void crateCC0LicenseTab() throws Exception {
@@ -522,7 +486,6 @@ public class ChooserDialog {
         xpsTxtDeed.setPropertyValue("VScroll", true);
         xpsTxtDeed.setPropertyValue("Text", pdLegalCode);
 
-
         Object chkYes = xMultiServiceFactory.createInstance(
                 "com.sun.star.awt.UnoControlCheckBoxModel");
         XPropertySet xpsChkYes = createAWTControl(chkYes, CHK_YES_PD,
@@ -576,6 +539,20 @@ public class ChooserDialog {
         }
     }
 
+    private void addListners(Class type, String controlName, XEventListener listener) {
+        if (type == XButton.class) {
+            Object objectButton = xControlCont.getControl(controlName);
+            XButton xFinishButton = (XButton) UnoRuntime.queryInterface(XButton.class, objectButton);
+            xFinishButton.addActionListener((XActionListener) listener);
+        } else if (type == XRadioButton.class) {
+            ((XRadioButton) UnoRuntime.queryInterface(XRadioButton.class,
+                    xControlCont.getControl(controlName))).addItemListener((XItemListener) listener);
+        } else if (type == XCheckBox.class) {
+            ((XCheckBox) UnoRuntime.queryInterface(XCheckBox.class,
+                    xControlCont.getControl(controlName))).addItemListener((XItemListener) listener);
+        }
+    }
+
     private XPropertySet createAWTControl(Object objControl, String ctrlName,
             String ctrlCaption, Rectangle posSize, int step) throws Exception {
 
@@ -595,11 +572,10 @@ public class ChooserDialog {
         if ((getNameContainer() != null) && (!getNameContainer().hasByName(ctrlName))) {
             getNameContainer().insertByName(ctrlName, objControl);
         }
-
         return xpsProperties;
     }
 
-    public XGraphic getGraphic(String _sImageUrl) {
+    private XGraphic getGraphic(String _sImageUrl) {
 
         XGraphic xGraphic = null;
         try {
@@ -620,21 +596,45 @@ public class ChooserDialog {
         }
     }
 
-    protected void setLicenseType(int type) {
+    private void setCRadioButtonValue(String controlName, Boolean b) {
+
+        try {
+            XPropertySet xPSetList = (XPropertySet) UnoRuntime.queryInterface(XPropertySet.class,
+                    this.getNameContainer().getByName(controlName));
+            xPSetList.setPropertyValue("State", (b ? new Short((short) 1) : new Short((short) 0))); // b.booleanValue());
+        }  catch (Exception ex) {
+            Logger.getLogger(ChooserDialog.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+    }
+
+    private Boolean getRadioButtonValue(String rdoName) {
+        try {
+            XPropertySet xPSetList = (XPropertySet) UnoRuntime.queryInterface(XPropertySet.class,
+                    this.getNameContainer().getByName(rdoName));
+            return (((Short) xPSetList.getPropertyValue("State")).intValue() == 1);
+
+        }  catch (Exception ex) {
+            ex.printStackTrace();
+            return null;
+        }
+    } // getRadioButtonValue
+
+    public void setLicenseType(int type) {
         String[] btnArray = new String[]{BTN_CC, BTN_CC0, BTN_PUBLICDOMAIN};
         try {
             for (int i = 0; i < btnArray.length; i++) {
                 XPropertySet xPSetLicenseButton = ((XPropertySet) UnoRuntime.queryInterface(XPropertySet.class,
                         getNameContainer().getByName(btnArray[i])));
                 FontDescriptor fontDes = (FontDescriptor) xPSetLicenseButton.getPropertyValue("FontDescriptor");
+                xPSetLicenseButton.setPropertyValue("State", (short) 0);
                 if (i + 1 == type) {
                     fontDes.Weight = 150;
                     xPSetLicenseButton.setPropertyValue("State", (short) 1);
                 } else {
                     fontDes.Weight = 100;
                 }
-                xPSetLicenseButton.setPropertyValue("FontDescriptor", fontDes);
-                xPSetLicenseButton.setPropertyValue("State", (short) 0);
+                xPSetLicenseButton.setPropertyValue("FontDescriptor", fontDes);              
             }
             if (type != 1) {
                 xPSetFinishButton.setPropertyValue("Enabled", false);
@@ -656,58 +656,10 @@ public class ChooserDialog {
                     getNameContainer().getByName(CHK_YES_PD))).setPropertyValue("State", (short) 0);
 
             xPSetDialog.setPropertyValue("Step", type);
-        } catch (NoSuchElementException ex) {
-            Logger.getLogger(ChooserDialog.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (UnknownPropertyException ex) {
-            Logger.getLogger(ChooserDialog.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (PropertyVetoException ex) {
-            Logger.getLogger(ChooserDialog.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (IllegalArgumentException ex) {
-            Logger.getLogger(ChooserDialog.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (WrappedTargetException ex) {
+        }  catch (Exception ex) {
             Logger.getLogger(ChooserDialog.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
-
-    protected void setCRadioButtonValue(String controlName, Boolean b) {
-
-        try {
-            XPropertySet xPSetList = (XPropertySet) UnoRuntime.queryInterface(XPropertySet.class,
-                    this.getNameContainer().getByName(controlName));
-            xPSetList.setPropertyValue("State", (b ? new Short((short) 1) : new Short((short) 0))); // b.booleanValue());
-        } catch (com.sun.star.lang.IllegalArgumentException ex) {
-            ex.printStackTrace();
-        } catch (PropertyVetoException ex) {
-            ex.printStackTrace();
-        } catch (UnknownPropertyException ex) {
-            ex.printStackTrace();
-        } catch (WrappedTargetException ex) {
-            ex.printStackTrace();
-        } catch (NoSuchElementException ex) {
-            ex.printStackTrace();
-        }
-
-    }
-
-    protected Boolean getRadioButtonValue(String rdoName) {
-        try {
-
-            XPropertySet xPSetList = (XPropertySet) UnoRuntime.queryInterface(XPropertySet.class,
-                    this.getNameContainer().getByName(rdoName));
-            return (((Short) xPSetList.getPropertyValue("State")).intValue() == 1);
-
-        } catch (UnknownPropertyException ex) {
-            ex.printStackTrace();
-            return null;
-        } catch (WrappedTargetException ex) {
-            ex.printStackTrace();
-            return null;
-        } catch (NoSuchElementException ex) {
-            ex.printStackTrace();
-            return null;
-        }
-
-    } // getRadioButtonValue
 
     public IJurisdiction getSelectedJurisdiction() {
         return selectedJurisdiction;
@@ -721,7 +673,7 @@ public class ChooserDialog {
         return jurisdictionList;
     }
 
-    protected void setJurisdictionList(List<Jurisdiction> jurisdictionList) {
+    public void setJurisdictionList(List<Jurisdiction> jurisdictionList) {
         this.jurisdictionList = jurisdictionList;
     }
 
@@ -745,10 +697,7 @@ public class ChooserDialog {
                         ChooserDialog.RDO_ALLOW_MODIFICATIONS_SHARE_ALIKE).booleanValue(),
                         this.getSelectedJurisdiction());
             }
-        } // getSelectedLicense
-        catch (UnknownPropertyException ex) {
-            Logger.getLogger(ChooserDialog.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (WrappedTargetException ex) {
+        } catch (Exception ex) {
             Logger.getLogger(ChooserDialog.class.getName()).log(Level.SEVERE, null, ex);
         }
         return null;
@@ -774,22 +723,11 @@ public class ChooserDialog {
 
     } // setSelectedLicense
 
-    void updateSelectedLicense() {
+    public void updateSelectedLicense() {
         try {
-
             XPropertySet xpsSelectedLicense = (XPropertySet) UnoRuntime.queryInterface(XPropertySet.class,
                     this.getNameContainer().getByName(LBL_SELECTED_LICENSE));
             xpsSelectedLicense.setPropertyValue("Label", this.getSelectedLicense().getName());
-        } catch (UnknownPropertyException ex) {
-            ex.printStackTrace();
-        } catch (com.sun.star.lang.IllegalArgumentException ex) {
-            ex.printStackTrace();
-        } catch (PropertyVetoException ex) {
-            ex.printStackTrace();
-        } catch (WrappedTargetException ex) {
-            ex.printStackTrace();
-        } catch (NoSuchElementException ex) {
-            ex.printStackTrace();
         } catch (Exception ex) {
             ex.printStackTrace();
         }
@@ -809,6 +747,6 @@ public class ChooserDialog {
 
     public void close() {
         this.xDialog.endExecute();
-
     }
 } // ChooserDialog
+
