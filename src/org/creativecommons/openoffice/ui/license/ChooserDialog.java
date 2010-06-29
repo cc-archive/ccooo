@@ -95,7 +95,8 @@ public class ChooserDialog {
     public static final String LBL_ALLOW_COMERCIAL_USE = "allowCommercialUse";
     public static final String LBL_ALLOW_MODIFICATIONS = "allowModifications";
     public static final String LBL_JURISDICTION_LIST = "lblJurisdictionList";
-    public static final String LBL_INSTRUCTIONS_CC0 = "lblInstructions";
+    public static final String LBL_INSTRUCTIONS_CC = "lblInstructionsCC";
+    public static final String LBL_INSTRUCTIONS_CC0 = "lblInstructionsCC0";
     public static final String CMB_JURISDICTION = "cmbJurisdiction";
     public static final String CMB_TERRITORY = "cmbTerritory";
     public static final String TXT_LEGAL_CODE_CC0 = "txtLegalCodeCC0";
@@ -154,6 +155,10 @@ public class ChooserDialog {
         xPSetCC0Button.setPropertyValue("DefaultButton", new Boolean("true"));
         xPSetCC0Button.setPropertyValue("Label", "CC0");
         xPSetCC0Button.setPropertyValue("Toggle", true);
+        fontDes = (FontDescriptor) xPSetCC0Button.getPropertyValue("FontDescriptor");
+        fontDes.Weight = 75;
+        xPSetCC0Button.setPropertyValue("FontDescriptor", fontDes);
+        xPSetCC0Button.setPropertyValue("State", (short) 0);
 
         Object pdButton = xMultiServiceFactory.createInstance(
                 "com.sun.star.awt.UnoControlButtonModel");
@@ -162,6 +167,10 @@ public class ChooserDialog {
         xPSetPDButton.setPropertyValue("DefaultButton", new Boolean("true"));
         xPSetPDButton.setPropertyValue("Label", "Public Domain");
         xPSetPDButton.setPropertyValue("Toggle", true);
+        fontDes = (FontDescriptor) xPSetPDButton.getPropertyValue("FontDescriptor");
+        fontDes.Weight = 75;
+        xPSetPDButton.setPropertyValue("FontDescriptor", fontDes);
+        xPSetPDButton.setPropertyValue("State", (short) 0);
 
         Object oGBResults = xMultiServiceFactory.createInstance(
                 "com.sun.star.awt.UnoControlGroupBoxModel");
@@ -389,6 +398,26 @@ public class ChooserDialog {
                 null, new Rectangle(90, 150, 60, 12), 1);
         xPSetList.setPropertyValue("Dropdown", new Boolean("true"));
         xPSetList.setPropertyValue("MultiSelection", new Boolean("false"));
+
+        Object hrLine = xMultiServiceFactory.createInstance(
+                "com.sun.star.awt.UnoControlFixedLineModel");
+        XPropertySet xpshrLine=createAWTControl(hrLine, "hrLine",
+                null, new Rectangle(5, 165, 200, 5), 1);
+        xpshrLine.setPropertyValue("Orientation", 0);
+
+        Object lblInstructions = xMultiServiceFactory.createInstance(
+                "com.sun.star.awt.UnoControlFixedTextModel");
+        XPropertySet xpsLblInstructions=createAWTControl(lblInstructions, LBL_INSTRUCTIONS_CC,
+                "With a Creative Commons license, you keep your copyright but allow " +
+                "people to copy and distribute your work provided they give you credit  " +
+                "— and only on the conditions you specify here. " +
+                "\n\nIf you want to offer your work with no conditions or you" +
+                " want to certify a work as public domain, choose one of our " +
+                "public domain tools.(CC0 & Public Domain)", new Rectangle(10, 175, 195, 80), 1);
+        xpsLblInstructions.setPropertyValue("MultiLine", true);
+        FontDescriptor fontDes = (FontDescriptor) xpsLblInstructions.getPropertyValue("FontDescriptor");
+        fontDes.Weight = 75;
+        xpsLblInstructions.setPropertyValue("FontDescriptor", fontDes);
     }
 
     private void crateCC0LicenseTab() throws Exception {
@@ -626,13 +655,13 @@ public class ChooserDialog {
             for (int i = 0; i < btnArray.length; i++) {
                 XPropertySet xPSetLicenseButton = ((XPropertySet) UnoRuntime.queryInterface(XPropertySet.class,
                         getNameContainer().getByName(btnArray[i])));
-                FontDescriptor fontDes = (FontDescriptor) xPSetLicenseButton.getPropertyValue("FontDescriptor");
-                xPSetLicenseButton.setPropertyValue("State", (short) 0);
+                FontDescriptor fontDes = (FontDescriptor) xPSetLicenseButton.getPropertyValue("FontDescriptor");              
                 if (i + 1 == type) {
                     fontDes.Weight = 150;
                     xPSetLicenseButton.setPropertyValue("State", (short) 1);
                 } else {
-                    fontDes.Weight = 100;
+                    fontDes.Weight = 50;
+                    xPSetLicenseButton.setPropertyValue("State", (short) 0);
                 }
                 xPSetLicenseButton.setPropertyValue("FontDescriptor", fontDes);              
             }
