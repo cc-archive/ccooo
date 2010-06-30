@@ -5,10 +5,10 @@
  * licensed under the GNU LGPL License; see licenses/LICENSE for details
  *
  */
-
 package org.creativecommons.openoffice.program;
 
 import com.sun.star.beans.IllegalTypeException;
+import com.sun.star.beans.NotRemoveableException;
 import com.sun.star.beans.PropertyExistException;
 import com.sun.star.beans.PropertyVetoException;
 import com.sun.star.beans.UnknownPropertyException;
@@ -26,6 +26,8 @@ import com.sun.star.rdf.XNamedGraph;
 import com.sun.star.rdf.XURI;
 import com.sun.star.uno.UnoRuntime;
 import com.sun.star.uno.XComponentContext;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.creativecommons.license.License;
 import org.creativecommons.openoffice.Constants;
 
@@ -34,47 +36,52 @@ import org.creativecommons.openoffice.Constants;
  * @author nathan
  */
 public abstract class OOoProgram implements IVisibleNotice {
-    
-    
+
     protected XComponent component;
     protected XComponentContext m_xContext;
-    
+
     /** Creates a new instance of OOoProgram */
-    public OOoProgram(XComponent component,XComponentContext m_xContext) {
+    public OOoProgram(XComponent component, XComponentContext m_xContext) {
         this.component = component;
-        this.m_xContext=m_xContext;
+        this.m_xContext = m_xContext;
     }
-    
-    
+
     public License getDocumentLicense() {
-        
+
         // Return the License for the active document, if it exists       
-        XDocumentInfoSupplier xDocumentInfoSupplier = (XDocumentInfoSupplier)
-                UnoRuntime.queryInterface(XDocumentInfoSupplier.class, this.component);
-        
-        XDocumentInfo docInfo = xDocumentInfoSupplier.getDocumentInfo();        
+        XDocumentInfoSupplier xDocumentInfoSupplier = (XDocumentInfoSupplier) UnoRuntime.queryInterface(XDocumentInfoSupplier.class, this.component);
+
+        XDocumentInfo docInfo = xDocumentInfoSupplier.getDocumentInfo();
         XPropertySet docProperties = (XPropertySet) UnoRuntime.queryInterface(
                 XPropertySet.class, docInfo);
-        
-        if (docProperties.getPropertySetInfo().hasPropertyByName(Constants.LICENSE_URI)) {
-            
+
+        if (docProperties.getPropertySetInfo().hasPropertyByName(Constants.LICENSE_URI)
+                && docProperties.getPropertySetInfo().hasPropertyByName(Constants.TERRITORY)) {
             try {
-                
-                return new License((String)docProperties.getPropertyValue(Constants.LICENSE_URI));
+
+                return new License((String) docProperties.getPropertyValue(Constants.LICENSE_URI),
+                        (String) docProperties.getPropertyValue(Constants.TERRITORY));
             } catch (WrappedTargetException ex) {
                 ex.printStackTrace();
             } catch (UnknownPropertyException ex) {
                 ex.printStackTrace();
             }
-            
+        } else if (docProperties.getPropertySetInfo().hasPropertyByName(Constants.LICENSE_URI)) {
+            try {
+                return new License((String) docProperties.getPropertyValue(Constants.LICENSE_URI));
+            } catch (WrappedTargetException ex) {
+                ex.printStackTrace();
+            } catch (UnknownPropertyException ex) {
+                ex.printStackTrace();
+            }
         }
-        
+
         return null;
-        
+
     } // getDocumentLicense
-    
+
     public abstract boolean hasVisibleNotice();
-    
+
     /**
      * Create and insert an auto-text containing the license
      *
@@ -83,27 +90,29 @@ public abstract class OOoProgram implements IVisibleNotice {
      * @param licenseImgURL The license "button" URL.
      */
     public abstract void insertVisibleNotice();
-    
+
     public void setDocumentLicense(License license) {
-        
-        XDocumentInfoSupplier xDocumentInfoSupplier = (XDocumentInfoSupplier)
-                UnoRuntime.queryInterface(XDocumentInfoSupplier.class, this.component);
-        
-        XDocumentInfo docInfo = xDocumentInfoSupplier.getDocumentInfo();        
+
+        XDocumentInfoSupplier xDocumentInfoSupplier = (XDocumentInfoSupplier) UnoRuntime.queryInterface(XDocumentInfoSupplier.class, this.component);
+
+        XDocumentInfo docInfo = xDocumentInfoSupplier.getDocumentInfo();
         XPropertySet docProperties = (XPropertySet) UnoRuntime.queryInterface(
                 XPropertySet.class, docInfo);
-        
+        XPropertyContainer docPropertyContainer = (XPropertyContainer) UnoRuntime.queryInterface(XPropertyContainer.class,
+                docInfo);
         if (!docProperties.getPropertySetInfo().hasPropertyByName(Constants.LICENSE_URI)) {
-            
+
             // add the necessary properties to this document
-            XPropertyContainer docPropertyContainer = (XPropertyContainer)
-                    UnoRuntime.queryInterface(XPropertyContainer.class,
-                        docInfo);
+
             try {
-                docPropertyContainer.addProperty(Constants.LICENSE_URI, 
-                        com.sun.star.beans.PropertyAttribute.MAYBEVOID,"");
-                docPropertyContainer.addProperty(Constants.LICENSE_NAME, 
-                        com.sun.star.beans.PropertyAttribute.MAYBEVOID,"");
+                docPropertyContainer.addProperty(Constants.LICENSE_URI,
+                        com.sun.star.beans.PropertyAttribute.MAYBEVOID, "");
+                docPropertyContainer.addProperty(Constants.LICENSE_NAME,
+                        com.sun.star.beans.PropertyAttribute.MAYBEVOID, "");
+                if (license.getTerritory() != null) {
+                    docPropertyContainer.addProperty(Constants.TERRITORY,
+                            com.sun.star.beans.PropertyAttribute.REMOVEABLE, "");
+                }
             } catch (com.sun.star.lang.IllegalArgumentException ex) {
                 ex.printStackTrace();
             } catch (PropertyExistException ex) {
@@ -112,26 +121,35 @@ public abstract class OOoProgram implements IVisibleNotice {
                 ex.printStackTrace();
             }
         }
-        
-        try {            
+
+        try {
             docProperties.setPropertyValue(Constants.LICENSE_URI, license.getLicenseUri());
             docProperties.setPropertyValue(Constants.LICENSE_NAME, license.getName());
-            
+            if (license.getTerritory() != null) {
+                docProperties.setPropertyValue(Constants.TERRITORY, license.getTerritory());
+            } else if(docProperties.getPropertySetInfo().hasPropertyByName(Constants.TERRITORY)){
+                try {
+                    docPropertyContainer.removeProperty(Constants.TERRITORY);
+                } catch (NotRemoveableException ex) {
+                    Logger.getLogger(OOoProgram.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+
         } catch (com.sun.star.lang.IllegalArgumentException ex) {
-            ex.printStackTrace();
+            Logger.getLogger(OOoProgram.class.getName()).log(Level.SEVERE, null, ex);
         } catch (UnknownPropertyException ex) {
-            ex.printStackTrace();
+            Logger.getLogger(OOoProgram.class.getName()).log(Level.SEVERE, null, ex);
         } catch (PropertyVetoException ex) {
-            ex.printStackTrace();
+            Logger.getLogger(OOoProgram.class.getName()).log(Level.SEVERE, null, ex);
         } catch (WrappedTargetException ex) {
-            ex.printStackTrace();
+            Logger.getLogger(OOoProgram.class.getName()).log(Level.SEVERE, null, ex);
         }
 
         try {
-            String author = null,title = null;
+            String author = null, title = null;
             try {
-                author = (String)docProperties.getPropertyValue("Author");
-                title = (String)docProperties.getPropertyValue("Title");
+                author = (String) docProperties.getPropertyValue("Author");
+                title = (String) docProperties.getPropertyValue("Title");
             } catch (Exception ex) {
                 ex.printStackTrace();
             }
@@ -181,7 +199,7 @@ public abstract class OOoProgram implements IVisibleNotice {
             e.printStackTrace();
         }
     }
-        
+
     public XComponent getComponent() {
         return component;
     }
@@ -189,5 +207,4 @@ public abstract class OOoProgram implements IVisibleNotice {
     public void setComponent(XComponent component) {
         this.component = component;
     }
-    
 }

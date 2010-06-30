@@ -28,12 +28,12 @@ public class License {
      * Creates a new instance of License
      */
     public License(String license_uri) {
-        
+
         this.license_uri = license_uri;
         this.licenseStore = Store.get();
     } 
     public License(String license_uri, String territory) {
-
+        
         this.license_uri = license_uri;
         this.territory = territory;
         this.licenseStore = Store.get();
