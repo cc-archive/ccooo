@@ -28,8 +28,8 @@ public class JurisdictionSelectListener extends UpdateLicenseListener
     public void itemStateChanged(ItemEvent event) {
         
         this.getDialog().setSelectedJurisdiction(
-                this.getDialog().getJurisdictionList().get(event.Selected));
-        
+                (Jurisdiction)this.getDialog().getJurisdictionList().get(event.Selected));
+
         super.itemStateChanged(event);
         
     }

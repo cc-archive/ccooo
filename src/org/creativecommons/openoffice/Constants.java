@@ -19,5 +19,6 @@ public interface Constants {
     public static final String LICENSE_URI = "license";
     public static final String LICENSE_NAME = "License Name";
     public static final String LANGUAGE_FILE_NAME = "language.properties";
+    public static final String TERRITORY = "territory";
     
 }

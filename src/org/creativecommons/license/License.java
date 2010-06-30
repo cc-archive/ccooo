@@ -113,6 +113,9 @@ public class License {
         return null;
     }
 
+    public String getTerritory() {
+        return this.territory;
+    }
     public String getVersion() throws NullPointerException{
         return this.licenseStore.literal(this.license_uri, DCTerms.hasVersion, "").getString();
     }

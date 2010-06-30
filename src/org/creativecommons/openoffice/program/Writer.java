@@ -71,8 +71,8 @@ public class Writer extends OOoProgram {
             XPropertySet xProps = (XPropertySet) UnoRuntime.queryInterface(
                     XPropertySet.class, xImage);
             
-//            // helper-stuff to let OOo create an internal name of the graphic
-//            // that can be used later (internal name consists of various checksums)
+            // helper-stuff to let OOo create an internal name of the graphic
+            // that can be used later (internal name consists of various checksums)
             System.out.println(img.getSelectedImageURL());
             String sName = PageHelper.createUniqueName(xBitmapContainer, img.getPhotoID());
             xBitmapContainer.insertByName(sName, img.getSelectedImageURL());
@@ -245,24 +245,53 @@ public class Writer extends OOoProgram {
                     mxTextFields, "License Name", license.getName());
             XDependentTextField licenseURLField = createUserTextField(mxDocFactory,
                     mxTextFields, "License URL", license.getLicenseUri());
+
             
             // insert the license graphic if available
-            if (license.getImageUrl() != null)
+            if (license.getImageUrl() != null) {
                 embedGraphic(mxDocFactory, docCursor, license.getImageUrl());
-            
+            }
             // insert the licensing statement
-            mxDocText.insertControlCharacter(docCursor, ControlCharacter.PARAGRAPH_BREAK, false );
-            mxDocText.insertString(docCursor, "This document is licensed under the ", false );
-            mxDocText.insertTextContent(docCursor, licenseNameField, false );
-            mxDocText.insertString(docCursor, " license, available at ", false );
-            mxDocText.insertTextContent(docCursor, licenseURLField, false );
-            mxDocText.insertString(docCursor, ".", false );
-            mxDocText.insertControlCharacter(docCursor, ControlCharacter.PARAGRAPH_BREAK, false );
+            if (license.getName().equals("CC0 1.0 Universal")) {
+                mxDocText.insertControlCharacter(docCursor, ControlCharacter.PARAGRAPH_BREAK, false);
+                mxDocText.insertString(docCursor, "To the extent possible under law, the person who associated ", false);
+                mxDocText.insertTextContent(docCursor, licenseNameField, false);
+                mxDocText.insertString(docCursor, " with this work has waived all "
+                        + "copyright and related or neighboring rights to this work. "
+                        + "The summary of the Legal Code is available at ", false);
+                mxDocText.insertTextContent(docCursor, licenseURLField, false);
+                mxDocText.insertString(docCursor, ".", false);
+                if (license.getTerritory() != null) {
+                    System.out.println("writer");
+                    XDependentTextField territory = createUserTextField(mxDocFactory,
+                            mxTextFields, "Territory", license.getTerritory());
+                    mxDocText.insertString(docCursor, "This work is published from ", false);
+                    mxDocText.insertTextContent(docCursor, territory, false);
+                }
+                mxDocText.insertControlCharacter(docCursor, ControlCharacter.PARAGRAPH_BREAK, false);
+
+            } else if (license.getName().equals("Public Domain")) {
+                mxDocText.insertControlCharacter(docCursor, ControlCharacter.PARAGRAPH_BREAK, false);
+                mxDocText.insertString(docCursor, "This document in the ", false);
+                mxDocText.insertTextContent(docCursor, licenseNameField, false);
+                mxDocText.insertString(docCursor, ". The summary of the Legal Code is available at ", false);
+                mxDocText.insertTextContent(docCursor, licenseURLField, false);
+                mxDocText.insertString(docCursor, ".", false);
+                mxDocText.insertControlCharacter(docCursor, ControlCharacter.PARAGRAPH_BREAK, false);
+
+            } else {
+                mxDocText.insertControlCharacter(docCursor, ControlCharacter.PARAGRAPH_BREAK, false);
+                mxDocText.insertString(docCursor, "This document is licensed under the ", false);
+                mxDocText.insertTextContent(docCursor, licenseNameField, false);
+                mxDocText.insertString(docCursor, " license, available at ", false);
+                mxDocText.insertTextContent(docCursor, licenseURLField, false);
+                mxDocText.insertString(docCursor, ".", false);
+                mxDocText.insertControlCharacter(docCursor, ControlCharacter.PARAGRAPH_BREAK, false);
+            }
             
             // Refresh the fields
             ( (XRefreshable)UnoRuntime.queryInterface(
-                    XRefreshable.class, mxTextFields.getTextFields())
-                    ).refresh();
+                    XRefreshable.class, mxTextFields.getTextFields())).refresh();
             
         } catch (com.sun.star.lang.IllegalArgumentException ex) {
             ex.printStackTrace();
@@ -354,8 +383,7 @@ public class Writer extends OOoProgram {
                     XPropertySet.class, mxDocFactory.createInstance(
                     "com.sun.star.text.FieldMaster.User" ) );
             
-            xMasterPropSet.setPropertyValue( "Name", field_name );
-            
+            xMasterPropSet.setPropertyValue( "Name", field_name );            
         }
         return xMasterPropSet;
     }
@@ -377,12 +405,16 @@ public class Writer extends OOoProgram {
             
             updateMasterField("License Name", license.getName(), mxTextFields, mxDocFactory);
             updateMasterField("License URL", license.getLicenseUri(), mxTextFields, mxDocFactory);
+            if(license.getTerritory()!=null){
+                updateMasterField("Territory", license.getTerritory(), mxTextFields, mxDocFactory);
+            }else{
+
+            }
         } catch (WrappedTargetException ex) {
             ex.printStackTrace();
         } catch (com.sun.star.uno.Exception ex) {
             ex.printStackTrace();
-        }
-        
+        }        
     }
 
     public void updateVisibleNotice() {

@@ -12,14 +12,15 @@ import com.sun.star.lang.EventObject;
  *
  * @author akila
  */
-public class CC0ClickListener extends UpdateLicenseListener implements XActionListener {
-
+public class CC0ClickListener implements XActionListener {
+    
+    private ChooserDialog dialog;
     public CC0ClickListener(ChooserDialog dialog) {
-        super(dialog);
+        this.dialog=dialog;
     }
 
     public void actionPerformed(ActionEvent arg0) {
-        this.getDialog().setLicenseType(2);
+        this.dialog.setLicenseType(2);
     }
 
     @Override

@@ -58,6 +58,8 @@ import org.creativecommons.openoffice.util.ReadFile;
  */
 public class ChooserDialog {
 
+    private String selectedTerritory;
+    private String[] trritories;
     private XMultiServiceFactory xMultiServiceFactory = null;
     protected XComponentContext m_xContext = null;
     protected XMultiComponentFactory xMultiComponentFactory = null;
@@ -139,7 +141,7 @@ public class ChooserDialog {
         Object ccButton = xMultiServiceFactory.createInstance(
                 "com.sun.star.awt.UnoControlButtonModel");
         XPropertySet xPSetCCButton = createAWTControl(ccButton, BTN_CC,
-                null, new Rectangle(3, 3, 70, 12), 0);
+                null, new Rectangle(4, 3, 70, 12), 0);
         xPSetCCButton.setPropertyValue("DefaultButton", new Boolean("true"));
         xPSetCCButton.setPropertyValue("Label", "Creative Commons");
         xPSetCCButton.setPropertyValue("Toggle", true);
@@ -163,7 +165,7 @@ public class ChooserDialog {
         Object pdButton = xMultiServiceFactory.createInstance(
                 "com.sun.star.awt.UnoControlButtonModel");
         XPropertySet xPSetPDButton = createAWTControl(pdButton, BTN_PUBLICDOMAIN,
-                null, new Rectangle(93, 3, 60, 12), 0);
+                null, new Rectangle(92, 3, 60, 12), 0);
         xPSetPDButton.setPropertyValue("DefaultButton", new Boolean("true"));
         xPSetPDButton.setPropertyValue("Label", "Public Domain");
         xPSetPDButton.setPropertyValue("Toggle", true);
@@ -238,11 +240,12 @@ public class ChooserDialog {
         // add a bogus place-holder for Unported in the JurisdictionList to
         // ensure indices match up when determining the item selectedJurisdiction
         this.getJurisdictionList().add(0, null);
+        System.out.println(this.getJurisdictionList().get(0)+"addddddddddddd");
 
         // Pre-select Unported
         cmbJList.selectItemPos((short) 0, true);
         cmbJList.makeVisible((short) 0);
-
+        
         // listen for license selection changes
         addListners(XRadioButton.class, RDO_ALLOW_COMERCIAL_YES, new UpdateLicenseListener(this));
         addListners(XRadioButton.class, RDO_ALLOW_COMERCIAL_NO, new UpdateLicenseListener(this));
@@ -250,7 +253,7 @@ public class ChooserDialog {
         addListners(XRadioButton.class, RDO_ALLOW_MODIFICATIONS_SHARE_ALIKE, new UpdateLicenseListener(this));
         addListners(XRadioButton.class, RDO_ALLOW_MODIFICATIONS_NO, new UpdateLicenseListener(this));
         cmbJList.addItemListener(new JurisdictionSelectListener(this));
-
+        
         addListners(XCheckBox.class, CHK_WAIVE, new AcceptWaiveListener(this));
         addListners(XCheckBox.class, CHK_YES_CC0, new AcceptListener(this));
         addListners(XCheckBox.class, CHK_YES_PD, new AcceptListener(this));
@@ -307,15 +310,16 @@ public class ChooserDialog {
                 "Use the option \"International\" if you desire a license using "
                 + "\nlanguage and terminology from international treaties. ", 1);
 
-        String[] trritories = ReadFile.read(getClass().getResourceAsStream(
+        trritories = ReadFile.read(getClass().getResourceAsStream(
                 "/org/creativecommons/license/rdf/territory")).split("\\n");
         cmbTList = (XListBox) UnoRuntime.queryInterface(
                 XListBox.class, xControlCont.getControl(CMB_TERRITORY));
 
-        this.setJurisdictionList(Store.get().jurisdictions());
-        cmbTList.addItems(trritories, (short) 0);
+        cmbTList.addItem("", (short) 0);
+        cmbTList.addItems(trritories, (short) 1);
         cmbTList.selectItemPos((short) 0, true);
         cmbTList.makeVisible((short) 0);
+        cmbTList.addItemListener(new TerritorySelectListener(this));
         // execute the dialog
         this.xDialog = (XDialog) UnoRuntime.queryInterface(XDialog.class, dialog);
         this.xDialog.execute();
@@ -412,7 +416,7 @@ public class ChooserDialog {
                 "people to copy and distribute your work provided they give you credit  " +
                 "— and only on the conditions you specify here. " +
                 "\n\nIf you want to offer your work with no conditions or you" +
-                " want to certify a work as public domain, choose one of our " +
+                " want to certify a work as public domain, choose one of the " +
                 "public domain tools.(CC0 & Public Domain)", new Rectangle(10, 175, 195, 80), 1);
         xpsLblInstructions.setPropertyValue("MultiLine", true);
         FontDescriptor fontDes = (FontDescriptor) xpsLblInstructions.getPropertyValue("FontDescriptor");
@@ -698,7 +702,16 @@ public class ChooserDialog {
         this.selectedJurisdiction = selected;
     }
 
-    public List<Jurisdiction> getJurisdictionList() {
+    public void setSelectedTerritory(int selecion) {
+        if(selecion>0){
+            selectedTerritory=trritories[selecion-1];
+            System.out.println(selectedTerritory);
+        }else{
+            selectedTerritory=null;
+        }
+    }
+    
+    public List getJurisdictionList() {
         return jurisdictionList;
     }
 
@@ -712,9 +725,9 @@ public class ChooserDialog {
             Chooser licenseChooser = new Chooser();
             int type = (Integer) xPSetDialog.getPropertyValue("Step");
             if (type == 2) {
-                return licenseChooser.selectPDTools(cmbTList.getSelectedItem(), 2);
+  //              return licenseChooser.selectPDTools(selectedTerritory, 2);
             } else if (type == 3) {
-                return licenseChooser.selectPDTools(null, 3);
+  //              return licenseChooser.selectPDTools(null, 3);
             } else {
                 return licenseChooser.selectLicense(this.getRadioButtonValue(
                         ChooserDialog.RDO_ALLOW_MODIFICATIONS_YES).booleanValue()

@@ -14,6 +14,7 @@ import com.sun.star.beans.PropertyVetoException;
 import com.sun.star.beans.UnknownPropertyException;
 import com.sun.star.beans.XPropertySet;
 import com.sun.star.container.NoSuchElementException;
+import com.sun.star.lang.EventObject;
 import com.sun.star.lang.WrappedTargetException;
 import com.sun.star.uno.UnoRuntime;
 
@@ -21,11 +22,11 @@ import com.sun.star.uno.UnoRuntime;
  *
  * @author akila
  */
-public class AcceptListener extends UpdateLicenseListener
-        implements XItemListener {
+public class AcceptListener implements XItemListener {
 
+    private ChooserDialog dialog;
     public AcceptListener(ChooserDialog dialog) {
-        super(dialog);
+        this.dialog=dialog;
     }
 
     @Override
@@ -37,10 +38,10 @@ public class AcceptListener extends UpdateLicenseListener
             if (allow_Remixing.getState() == (short) 0) {
                 // if remixing is not allowed, you can't require Share-Alike
                 ((XPropertySet) UnoRuntime.queryInterface(XPropertySet.class,
-                        this.getDialog().getNameContainer().getByName(ChooserDialog.BTN_OK))).setPropertyValue("Enabled", Boolean.FALSE);
+                        this.dialog.getNameContainer().getByName(ChooserDialog.BTN_OK))).setPropertyValue("Enabled", Boolean.FALSE);
             } else {
                 ((XPropertySet) UnoRuntime.queryInterface(XPropertySet.class,
-                        this.getDialog().getNameContainer().getByName(ChooserDialog.BTN_OK))).setPropertyValue("Enabled", Boolean.TRUE);
+                        this.dialog.getNameContainer().getByName(ChooserDialog.BTN_OK))).setPropertyValue("Enabled", Boolean.TRUE);
             }
 
         } catch (com.sun.star.lang.IllegalArgumentException ex) {
@@ -54,6 +55,8 @@ public class AcceptListener extends UpdateLicenseListener
         } catch (NoSuchElementException ex) {
             ex.printStackTrace();
         }
-        super.itemStateChanged(event);
+    }
+
+    public void disposing(EventObject arg0) {
     }
 }
