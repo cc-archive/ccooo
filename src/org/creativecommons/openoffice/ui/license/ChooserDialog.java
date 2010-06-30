@@ -240,8 +240,7 @@ public class ChooserDialog {
         // add a bogus place-holder for Unported in the JurisdictionList to
         // ensure indices match up when determining the item selectedJurisdiction
         this.getJurisdictionList().add(0, null);
-        System.out.println(this.getJurisdictionList().get(0)+"addddddddddddd");
-
+        
         // Pre-select Unported
         cmbJList.selectItemPos((short) 0, true);
         cmbJList.makeVisible((short) 0);
@@ -307,7 +306,7 @@ public class ChooserDialog {
                 + "\nwork — not derivative works based on it.", 1);
 
         setInfoImage(new Rectangle(155, 148, 9, 10), CMB_JURISDICTION,
-                "Use the option \"International\" if you desire a license using "
+                "Use the option \"Unported\" if you desire a license using "
                 + "\nlanguage and terminology from international treaties. ", 1);
 
         trritories = ReadFile.read(getClass().getResourceAsStream(
@@ -725,9 +724,9 @@ public class ChooserDialog {
             Chooser licenseChooser = new Chooser();
             int type = (Integer) xPSetDialog.getPropertyValue("Step");
             if (type == 2) {
-  //              return licenseChooser.selectPDTools(selectedTerritory, 2);
+                return licenseChooser.selectPDTools(selectedTerritory, 2);
             } else if (type == 3) {
-  //              return licenseChooser.selectPDTools(null, 3);
+                return licenseChooser.selectPDTools(null, 3);
             } else {
                 return licenseChooser.selectLicense(this.getRadioButtonValue(
                         ChooserDialog.RDO_ALLOW_MODIFICATIONS_YES).booleanValue()
