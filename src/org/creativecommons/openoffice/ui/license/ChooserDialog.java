@@ -338,8 +338,9 @@ public class ChooserDialog {
 
         Object lblSelectedLicense = xMultiServiceFactory.createInstance(
                 "com.sun.star.awt.UnoControlFixedTextModel");
-        createAWTControl(lblSelectedLicense, LBL_SELECTED_LICENSE,
-                null, new Rectangle(60, 20, 200, 15), 1);
+        XPropertySet xpsSelectedLicense = createAWTControl(lblSelectedLicense, LBL_SELECTED_LICENSE,
+                null, new Rectangle(60, 20, 145, 30), 1);
+        xpsSelectedLicense.setPropertyValue("MultiLine", true);
 
         /////////////////////////////////////Allow commercial uses of your work?
         Object lblAllowCommercialUse = xMultiServiceFactory.createInstance(
