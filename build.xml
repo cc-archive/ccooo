@@ -67,6 +67,19 @@
     nbproject/build-impl.xml file. 
 
     -->
+    <!--Used for building the translation resource bundle
+    But this may take about 3 minutes, so this is disabled by default.
+    You can enable it by uncommenting the follwoing lines or you can build
+    the resource bundle alternatively using the make_pot.sh make_bundle.sh
+    please refer the README-->
+    <!--<target name="-pre-compile">
+        <exec executable="bash" os="Linux">
+            <arg line="make_pot.sh"/>
+        </exec>
+        <exec executable="bash" os="Linux">
+            <arg line="make_bundle.sh"/>
+        </exec>
+    </target>-->
 
     <target name="-pre-jar">
         <manifest file="${build.dir}/MANIFEST.MF" mode="update">
