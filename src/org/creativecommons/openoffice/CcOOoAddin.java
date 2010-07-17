@@ -43,7 +43,9 @@ import com.sun.star.text.XTextDocument;
 import com.sun.star.awt.XMessageBoxFactory;
 import com.sun.star.awt.XWindowPeer;
 import com.sun.star.beans.NamedValue;
+import com.sun.star.beans.PropertyValue;
 import com.sun.star.beans.XPropertySet;
+import com.sun.star.container.XNameAccess;
 import com.sun.star.document.XDocumentInfo;
 import com.sun.star.document.XDocumentInfoSupplier;
 import com.sun.star.frame.XController;
@@ -51,6 +53,7 @@ import com.sun.star.frame.XFrame;
 import com.sun.star.frame.XModel;
 import com.sun.star.lang.XServiceInfo;
 import com.sun.star.uno.AnyConverter;
+import java.util.Locale;
 import org.creativecommons.license.License;
 import org.creativecommons.license.StoreThread;
 import org.creativecommons.openoffice.program.Calc;
@@ -63,6 +66,7 @@ import org.creativecommons.openoffice.ui.flickr.PictureFlickrDialog;
 import org.creativecommons.openoffice.ui.openclipart.OpenClipArtDialog;
 import org.creativecommons.openoffice.ui.picasa.PicasaDialog;
 import org.creativecommons.openoffice.ui.wikimedia.WikimediaDialog;
+import static org.creativecommons.openoffice.util.Util.setLocale;
 
 /**
  *  The Creative Commons OpenOffice.org AddIn core class.
@@ -110,12 +114,28 @@ public final class CcOOoAddin extends WeakBase
             // get the service manager from the component context
             this.xMultiComponentFactory = this.m_xContext.getServiceManager();
 
-        } catch (Exception ex) {
-            ex.printStackTrace();
-        }
-    }
+        //set the locale for UI
 
-    ;
+         Object oProvider =
+            xMultiComponentFactory.createInstanceWithContext("com.sun.star.configuration.ConfigurationProvider", m_xContext);
+         XMultiServiceFactory xConfigurationServiceFactory =
+            (XMultiServiceFactory)UnoRuntime.queryInterface(XMultiServiceFactory.class, oProvider);
+
+         PropertyValue[] lArgs    = new PropertyValue[1];
+         lArgs[0] = new PropertyValue();
+         lArgs[0].Name  = "nodepath";
+         lArgs[0].Value = "/org.openoffice.Setup/L10N";
+
+         Object configAccess =  xConfigurationServiceFactory.createInstanceWithArguments(
+            "com.sun.star.configuration.ConfigurationAccess",lArgs);
+
+         XNameAccess xNameAccess = (XNameAccess)UnoRuntime.queryInterface(XNameAccess.class, configAccess);
+         setLocale(new Locale(xNameAccess.getByName("ooLocale").toString()));
+
+      } catch (Exception ex) {
+          ex.printStackTrace();
+      }
+    }
 
     // Generated method stubs
     public static XSingleComponentFactory __getComponentFactory(String sImplementationName) {
@@ -253,7 +273,7 @@ public final class CcOOoAddin extends WeakBase
                 insertPictureFlickr();
             }
             else if (aURL.Path.compareTo("InsertOpenClipArt") == 0) {
-                insertOpenClipArt();                
+                insertOpenClipArt();
             }
             else if (aURL.Path.compareTo("InsertWikimediaCommons") == 0) {
                 insertWikimediaImage();
