@@ -1,0 +1,83 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2010-07-16 10:33+0530\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=CHARSET\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: src/org/creativecommons/openoffice/ui/license/ChooserDialog.java:147
+msgid "util.Creative_Commons"
+msgstr ""
+
+#: src/org/creativecommons/openoffice/ui/license/ChooserDialog.java:171
+msgid "util.Public_Domain"
+msgstr ""
+
+#: src/org/creativecommons/openoffice/ui/license/ChooserDialog.java:234
+msgid "util.Unported"
+msgstr ""
+
+#: src/org/creativecommons/openoffice/ui/license/ChooserDialog.java:284
+msgid "license.help.commercial"
+msgstr ""
+
+#: src/org/creativecommons/openoffice/ui/license/ChooserDialog.java:289
+msgid "license.help.noncommercial"
+msgstr ""
+
+#: src/org/creativecommons/openoffice/ui/license/ChooserDialog.java:294
+msgid "license.help.derivatives"
+msgstr ""
+
+#: src/org/creativecommons/openoffice/ui/license/ChooserDialog.java:304
+msgid "char.nd_description"
+msgstr ""
+
+#: src/org/creativecommons/openoffice/ui/license/ChooserDialog.java:350
+msgid "api.commercial"
+msgstr ""
+
+#: src/org/creativecommons/openoffice/ui/license/ChooserDialog.java:356
+#: src/org/creativecommons/openoffice/ui/license/ChooserDialog.java:376
+msgid "util.Yes"
+msgstr ""
+
+#: src/org/creativecommons/openoffice/ui/license/ChooserDialog.java:363
+#: src/org/creativecommons/openoffice/ui/license/ChooserDialog.java:390
+msgid "util.No"
+msgstr ""
+
+#: src/org/creativecommons/openoffice/ui/license/ChooserDialog.java:371
+msgid "api.derivatives"
+msgstr ""
+
+#: src/org/creativecommons/openoffice/ui/license/ChooserDialog.java:383
+msgid "Yes, as long as others share alike"
+msgstr ""
+
+#: src/org/creativecommons/openoffice/ui/license/ChooserDialog.java:398
+msgid "license.jurisdiction_question"
+msgstr ""
+
+#: src/org/creativecommons/openoffice/ui/license/ChooserDialog.java:436
+msgid "license.zero.confirm_waiver_1"
+msgstr ""
+
+#: src/org/creativecommons/openoffice/ui/license/ChooserDialog.java:455
+msgid "license.zero.confirm_waiver"
+msgstr ""
+
+#: src/org/creativecommons/openoffice/ui/license/ChooserDialog.java:530
+msgid "license.zero.confirm_reading"
+msgstr ""
