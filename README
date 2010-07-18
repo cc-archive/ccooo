@@ -10,5 +10,23 @@ Building with NetBeans IDE is a lot easier because it has a native support for o
 
 ccooo Add-In may be installed from the Extension Manager in OpenOffice.Org environment. Add the OXT file located in the distribution directory (./dist) and restart the OpenOffice.Org.
 
-Please report any problems or suggestions to the authors, Cassio Melo <cassio.ufpe@gmail.com> and François Déchelle <francois@dechelle.net>.
+Please report any problems or suggestions to the authors, Cassio Melo <cassio.ufpe@gmail.com> and Franï¿½ois Dï¿½chelle <francois@dechelle.net>.
 
+0.7.0
+July 18 2010
+How to add localized strings
+----------------------------
+* Get the .po files from code.creativecommons.org/svnroot/i18n/trunk/i18n/
+* Copy the i18n folder to the root of the project.
+* Run make_bundle.sh
+    bash make_bundle.sh
+
+How to extract new strings (Update .po files)
+---------------------------------------------
+* Run make_pot.sh
+    bash make_pot.sh
+* Merge /pot/messages.pot file with exsisting .po files
+
+This can be configured to run automatically when compiling the project.
+Uncomment line 75-82 of build.xml to run the make_bundle.sh and make_pot.sh
+when compiling.
