@@ -28,5 +28,5 @@ How to extract new strings (Update .po files)
 * Merge /pot/messages.pot file with exsisting .po files
 
 This can be configured to run automatically when compiling the project.
-Uncomment line 75-82 of build.xml to run the make_bundle.sh and make_pot.sh
+Uncomment line 75-82 of the build.xml to run the make_bundle.sh and make_pot.sh
 when compiling.
