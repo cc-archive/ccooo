@@ -33,11 +33,12 @@ public class SearchThread extends Thread {
         picasaDialog.enableControl(PicasaDialog.BTN_SEARCH, false);
         picasaDialog.saveSearch();
         picasaDialog.setProgressValue(0);
+        String licenseID = picasaDialog.getLicense();
         ArrayList<Image> imgList = null;
         if (buttonName.equalsIgnoreCase(PicasaDialog.BTN_SEARCH)) {
             //PicasaConnection p=PicasaConnection.instance;
             PicasaConnection.instance.searchPhotos(
-                    picasaDialog.GetTags(), picasaDialog.getCurrentPage());
+                    picasaDialog.GetTags(), picasaDialog.getCurrentPage(),licenseID);
             picasaDialog.setCurrentPage(1);
             imgList = new ArrayList<Image>();
             int currentPage = picasaDialog.getCurrentPage();

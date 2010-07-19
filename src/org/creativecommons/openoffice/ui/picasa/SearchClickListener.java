@@ -23,14 +23,18 @@ public class SearchClickListener implements XActionListener{
         this.picasaDialog = picasaDialog;
         this.addin = addin;
     }
-    
+
     public void actionPerformed(ActionEvent a) {
+
+        if (!picasaDialog.IsInputValid()) {
+            return;
+        }
         SearchThread th = new SearchThread(picasaDialog,a.ActionCommand);
         th.start();
-        
+
     } // actionPerformed
-    
+
     public void disposing(EventObject e) {
     }
-    
+
 }

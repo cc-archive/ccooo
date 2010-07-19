@@ -7,7 +7,7 @@
  * TODO:
  * Support for selecting images based on license
  * Get different sizes of images
- * 
+ *
  */
 package org.creativecommons.openoffice.program;
 
@@ -37,7 +37,7 @@ public class PicasaConnection {
     protected PicasaConnection() {
     }
 
-    public ArrayList<Image> searchPhotos(String[] tags, int currentPage) {
+    public ArrayList<Image> searchPhotos(String[] tags, int currentPage, String licenseID) {
 
         imgList.removeAll(imgList);
         String tagLine = "";
@@ -52,7 +52,7 @@ public class PicasaConnection {
             DocumentBuilder docBuilder = docBuilderFactory.newDocumentBuilder();
             Document doc = docBuilder.parse("http://picasaweb.google.com/data/feed/base/"
                     + "all?alt=rss&kind=photo&access=public&filter=1&q="
-                    + tagLine + "&imglic=creative_commons&thumbsize=144");//CC-BY
+                    + tagLine + "&imglic="+licenseID+"&thumbsize=144");//CC-BY
             //&imgmax=94, 110, 128, 200, 220, 288, 320, 400, 512, 576, 640, 720, 800, 912, 1024, 1152, 1280, 1440, 1600
 
             //normalize text representation

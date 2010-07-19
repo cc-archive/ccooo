@@ -10,11 +10,13 @@ package org.creativecommons.openoffice.ui.picasa;
 import com.sun.star.awt.SystemPointer;
 import java.awt.Rectangle;
 import com.sun.star.awt.XButton;
+import com.sun.star.awt.XCheckBox;
 import com.sun.star.awt.XPointer;
 import com.sun.star.awt.XControl;
 import com.sun.star.awt.XControlContainer;
 import com.sun.star.awt.XControlModel;
 import com.sun.star.awt.XDialog;
+import com.sun.star.awt.XRadioButton;
 import com.sun.star.awt.XToolkit;
 import com.sun.star.awt.XWindow;
 import com.sun.star.beans.XPropertySet;
@@ -59,7 +61,7 @@ public class PicasaDialog {
     public static final String LBL_TAGS = "lblTags";
     public static final String TXT_TAGS = "txtTags";
     //public static final String LBL_LICENSE = "lblLicense";
-    //public static final String LISTBOX_LICENSE = "cmbLicense";    
+    //public static final String LISTBOX_LICENSE = "cmbLicense";
     public static final String BTN_SEARCH = "btnSearch";
     public static final String searchButtonLabel = "Search";
     public static final String GB_RESULTS = "gbResults";
@@ -68,10 +70,21 @@ public class PicasaDialog {
     public static final String BTN_PREVIOUS = "btnPrevious";
     public static final String BTN_PREVIOUSLABEL = "Previous";
     public static final String PB_NAME = "progressBar";
+    public static final String RDO_COMMERCIALNAME = "rdoCommercial";
+    public static final String RDO_COMMERCIALLABEL = "Search for works I can use for commercial purposes";
+    public static final String RDO_UPDATENAME = "chkUpdate";
+    public static final String RDO_UPDATELABEL = "Search for works I can modify, adapt, or build upon";
+    public static final String RDO_CCNAME = "rdoCC";
+    public static final String RDO_CCLABEL = "Images with Creative Commons Licenses (Including above two)";
+
     public static final int SHOWRESULTSPERROW = 4;
     public static final int SHOWRESULTSPERCOLUMN = 4;
     public static final int POSITIONWIDTHHEIGHT = 45;//50
-    public static final int LOCATIONIMAGESY = 40;//100
+    public static final int LOCATIONIMAGESY = 80;//100
+
+    private short savedCommercialStatus;
+    private short savedUpdateStatus;
+    private short savedCCStatus;
 
     /**
      * Creates a new instance of ChooserDialog
@@ -101,7 +114,7 @@ public class PicasaDialog {
                     UnoRuntime.queryInterface(XMultiServiceFactory.class, dlgLicenseSelector);
 
             XPropertySet xPSetDialog = createAWTControl(dlgLicenseSelector, "dlgMainForm",
-                    "", new Rectangle(100, 100, 240, 360));//360
+                    "", new Rectangle(100, 100, 240, 400));//360
             xPSetDialog.setPropertyValue("Title", new String("Insert Picture from Picasa"));
             xPSetDialog.setPropertyValue("Step", (short) 1);
 
@@ -120,6 +133,24 @@ public class PicasaDialog {
             Object txtTags = msfLicenseSelector.createInstance(
                     "com.sun.star.awt.UnoControlEditModel");
             createAWTControl(txtTags, TXT_TAGS, "", new Rectangle(30, 10, 150, 12));
+
+            Object rdoCommercial = msfLicenseSelector.createInstance(
+                    "com.sun.star.awt.UnoControlRadioButtonModel");
+            XPropertySet xpsRDOProperties = createAWTControl(rdoCommercial, RDO_COMMERCIALNAME, RDO_COMMERCIALLABEL,
+                    new Rectangle(10, 32, 150, 12));
+            xpsRDOProperties.setPropertyValue("State", new Short((short) 1));
+
+            Object rdoUpdate = msfLicenseSelector.createInstance(
+                    "com.sun.star.awt.UnoControlRadioButtonModel");
+            xpsRDOProperties = createAWTControl(rdoUpdate, RDO_UPDATENAME, RDO_UPDATELABEL,
+                    new Rectangle(10, 49, 150, 12));
+            xpsRDOProperties.setPropertyValue("State", new Short((short) 0));
+
+            Object chkCC = msfLicenseSelector.createInstance(
+                    "com.sun.star.awt.UnoControlRadioButtonModel");
+            xpsRDOProperties = createAWTControl(chkCC, RDO_CCNAME, RDO_CCLABEL,
+                    new Rectangle(10, 66, 150, 12)); //(50, 66, 150, 12));
+            xpsRDOProperties.setPropertyValue("State", new Short((short) 0));
 
             Object searchButton = msfLicenseSelector.createInstance(
                     "com.sun.star.awt.UnoControlButtonModel");
@@ -156,7 +187,7 @@ public class PicasaDialog {
             // Set the properties at the model - keep in mind to pass the property names in alphabetical order!
             xPBModelMPSet.setPropertyValues(
                     new String[]{"Height", "Name", "PositionX", "PositionY", "Width"},
-                    new Object[]{new Integer(8), PB_NAME, new Integer(10), new Integer(350)/*418*/, new Integer(220)});
+                    new Object[]{new Integer(8), PB_NAME, new Integer(10), new Integer(390)/*418*/, new Integer(220)});
 
             // The controlmodel is not really available until inserted to the Dialog container
             getNameContainer().insertByName(PB_NAME, oPBar);
@@ -268,11 +299,11 @@ public class PicasaDialog {
                 currentX += POSITIONWIDTHHEIGHT + 10;
 
                 if (currentList.size() > currentPositionInList) {
-                    createImageControl(currentList.get(currentPositionInList), 
+                    createImageControl(currentList.get(currentPositionInList),
                             new Rectangle(currentX,currentY, POSITIONWIDTHHEIGHT,
                             POSITIONWIDTHHEIGHT), String.valueOf(currentPositionInList));
                 } else {
-                    createImageControl(null, new Rectangle(currentX, currentY, 
+                    createImageControl(null, new Rectangle(currentX, currentY,
                             POSITIONWIDTHHEIGHT, POSITIONWIDTHHEIGHT),
                             String.valueOf(currentPositionInList));
                 }
@@ -294,7 +325,7 @@ public class PicasaDialog {
                 isNewCreated = true;
             }
 
-            createAWTControl(button, BTN_NEXT, BTN_NEXTLABEL, new Rectangle(150, 330, 40, 15));//395
+            createAWTControl(button, BTN_NEXT, BTN_NEXTLABEL, new Rectangle(150, 370, 40, 15));//395
 
             if (isNewCreated) {
                 XButton xNextButton = (XButton) UnoRuntime.queryInterface(XButton.class,
@@ -314,7 +345,7 @@ public class PicasaDialog {
                 isNewCreated = true;
             }
 
-            createAWTControl(button, BTN_PREVIOUS, BTN_PREVIOUSLABEL, new Rectangle(50, 330, 40, 15)); //395
+            createAWTControl(button, BTN_PREVIOUS, BTN_PREVIOUSLABEL, new Rectangle(50, 370, 40, 15)); //395
 
             if (isNewCreated) {
                 XButton xPrevButton = (XButton) UnoRuntime.queryInterface(XButton.class,
@@ -586,6 +617,36 @@ public class PicasaDialog {
         }
     }
 
+        public String getLicense() {
+
+        boolean commercial = getRadioButtonStatus(RDO_COMMERCIALNAME);
+        boolean update = getRadioButtonStatus(RDO_UPDATENAME);
+        boolean cc = getRadioButtonStatus(RDO_CCNAME);
+
+        if (commercial) {
+            return "commercial";
+        } else if (update) {
+            return "remix";
+        } else if (cc) {
+            return "creative_commons";
+        }
+
+        //default atribution license
+        return "4";
+    }
+
+    public boolean getRadioButtonStatus(String ctrlName) {
+
+        Object oLicense = xControlCont.getControl(ctrlName);
+        XRadioButton radioButton = (XRadioButton) UnoRuntime.queryInterface(XRadioButton.class, oLicense);
+
+        Object value = radioButton.getState();
+        if (value != null) {
+                return (Boolean)value;
+        }
+        return false;
+    }
+
     public XNameContainer getNameContainer() {
         return xNameCont;
     }
@@ -611,6 +672,15 @@ public class PicasaDialog {
         this.xDialog.endExecute();
     }
 
+    public boolean IsInputValid() {
+
+        if (this.GetTags().length == 0) {
+            return false;
+        }
+
+        return true;
+    }
+
     public void saveSearch() {
 
         try {
@@ -622,6 +692,24 @@ public class PicasaDialog {
                     XPropertySet.class, xControlModel);
             String selTags = (String) xPSet.getPropertyValue("Text");
             this.savedTags = selTags.trim();
+
+            if (getRadioButtonStatus(RDO_COMMERCIALNAME)) {
+                savedCommercialStatus = 1;
+            } else {
+                savedCommercialStatus = 0;
+            }
+
+            if (getRadioButtonStatus(RDO_UPDATENAME)) {
+                savedUpdateStatus = 1;
+            } else {
+                savedUpdateStatus = 0;
+            }
+
+            if (getRadioButtonStatus(RDO_CCNAME)) {
+                savedCCStatus = 1;
+            } else {
+                savedCCStatus = 0;
+            }
 
         } catch (Exception ex) {
             ex.printStackTrace();
@@ -643,6 +731,18 @@ public class PicasaDialog {
                     XPropertySet.class, xControlModel);
             xPSet.setPropertyValue("Text", this.savedTags);
 
+            Object oLicense = xControlCont.getControl(RDO_COMMERCIALNAME);
+            XCheckBox checkBox = (XCheckBox) UnoRuntime.queryInterface(
+                    XCheckBox.class, oLicense);
+            checkBox.setState(savedCommercialStatus);
+
+            oLicense = xControlCont.getControl(RDO_UPDATENAME);
+            checkBox = (XCheckBox) UnoRuntime.queryInterface(XCheckBox.class, oLicense);
+            checkBox.setState(savedUpdateStatus);
+
+            oLicense = xControlCont.getControl(RDO_CCNAME);
+            checkBox = (XCheckBox) UnoRuntime.queryInterface(XCheckBox.class, oLicense);
+            checkBox.setState(savedCCStatus);
 
         } catch (Exception ex) {
             ex.printStackTrace();
