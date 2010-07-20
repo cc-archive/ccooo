@@ -58,7 +58,7 @@ public class SearchThread extends Thread {
             int start = currentPage - 1 < 0 ? 0 : (currentPage - 1);
             int limit = currentPage * noOfImg + 1 < OpenClipArtConnection.imgList.size() ?
                 currentPage * noOfImg + 1 : OpenClipArtConnection.imgList.size() - 1;
-            for (int i = start; i <= limit; i++) {
+            for (int i = start*noOfImg; i <= limit; i++) {
                 imgList.add(OpenClipArtConnection.imgList.get(i));
                 System.out.println(i);
             }

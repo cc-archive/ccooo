@@ -6,30 +6,28 @@
 package org.creativecommons.openoffice.ui.openclipart;
 
 import com.sun.star.awt.ActionEvent;
-import com.sun.star.awt.XActionListener;
 import com.sun.star.lang.EventObject;
 import org.creativecommons.openoffice.CcOOoAddin;
+import org.creativecommons.openoffice.ui.SearchClickListener;
 
 /**
  *
  * @author Husleag Mihai
  */
-public class SearchClickListener implements XActionListener{
+public class OpenClipArtSearchClickListener extends SearchClickListener{
 
-    private OpenClipArtDialog openClipArtDialog;
-    private CcOOoAddin addin;
-
-    public SearchClickListener(OpenClipArtDialog openClipArtDialog, CcOOoAddin addin){
-        this.openClipArtDialog = openClipArtDialog;
-        this.addin = addin;
+    public OpenClipArtSearchClickListener(OpenClipArtDialog openClipArtDialog, CcOOoAddin addin){
+        super( openClipArtDialog,addin);
     }
     
+    @Override
     public void actionPerformed(ActionEvent a) {
-        SearchThread th = new SearchThread(openClipArtDialog,a.ActionCommand);
+        SearchThread th = new SearchThread((OpenClipArtDialog) imageDialog,a.ActionCommand);
         th.start();
         
     } // actionPerformed
     
+    @Override
     public void disposing(EventObject e) {
     }
     

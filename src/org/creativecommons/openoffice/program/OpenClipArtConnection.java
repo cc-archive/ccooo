@@ -54,7 +54,6 @@ public class OpenClipArtConnection {
 
             for (int s = 0; s < listOfURLs.getLength(); s++) {
                 
-                System.out.println(listOfThumbs.item(s).getAttributes());
                 title = goToDepth(listOfTitles.item(s + 2)).getNodeValue();
                 imgUrlMainPage = goToDepth(listOfDiscriptions.item(s + 2)).getNodeValue();
                 imgUrl = listOfURLs.item(s).getAttributes().getNamedItem("url").getNodeValue();
