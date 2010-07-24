@@ -22,6 +22,9 @@ public class OpenClipArtSearchClickListener extends SearchClickListener{
     
     @Override
     public void actionPerformed(ActionEvent a) {
+        if (!imageDialog.IsInputValid()) {
+            return;
+        }
         SearchThread th = new SearchThread((OpenClipArtDialog) imageDialog,a.ActionCommand);
         th.start();
         
