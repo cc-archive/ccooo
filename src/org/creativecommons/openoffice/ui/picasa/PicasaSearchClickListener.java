@@ -14,12 +14,12 @@ import org.creativecommons.openoffice.CcOOoAddin;
  *
  * @author Husleag Mihai
  */
-public class SearchClickListener implements XActionListener{
+public class PicasaSearchClickListener implements XActionListener{
 
     private PicasaDialog picasaDialog;
     private CcOOoAddin addin;
 
-    public SearchClickListener(PicasaDialog picasaDialog, CcOOoAddin addin){
+    public PicasaSearchClickListener(PicasaDialog picasaDialog, CcOOoAddin addin){
         this.picasaDialog = picasaDialog;
         this.addin = addin;
     }
