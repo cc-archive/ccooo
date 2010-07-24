@@ -9,27 +9,24 @@ import com.sun.star.awt.ActionEvent;
 import com.sun.star.awt.XActionListener;
 import com.sun.star.lang.EventObject;
 import org.creativecommons.openoffice.CcOOoAddin;
+import org.creativecommons.openoffice.ui.SearchClickListener;
 
 /**
  *
  * @author Husleag Mihai
  */
-public class SearchClickListener implements XActionListener{
+public class WikimediaSearchClickListener extends SearchClickListener{
 
-    private WikimediaDialog wikimediaDialog;
-    private CcOOoAddin addin;
-
-    public SearchClickListener(WikimediaDialog wikimediaDialog, CcOOoAddin addin){
-        this.wikimediaDialog = wikimediaDialog;
-        this.addin = addin;
+    public WikimediaSearchClickListener(WikimediaDialog wikimediaDialog, CcOOoAddin addin){
+        super( wikimediaDialog,addin);
     }
     
     public void actionPerformed(ActionEvent a) {
 
-        if (!wikimediaDialog.IsInputValid()) {
+        if (!imageDialog.IsInputValid()) {
             return;
         }
-        SearchThread th = new SearchThread(wikimediaDialog,a.ActionCommand);
+        SearchThread th = new SearchThread((WikimediaDialog) imageDialog,a.ActionCommand);
         th.start();
         
     } // actionPerformed

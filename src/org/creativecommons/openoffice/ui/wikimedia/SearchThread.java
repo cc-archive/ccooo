@@ -36,7 +36,7 @@ public class SearchThread extends Thread {
         ArrayList<Image> imgList = null;
         if (buttonName.equalsIgnoreCase(WikimediaDialog.BTN_SEARCH)) {
             wikimediaDialog.setCurrentPage(1);
-            String[] licenses = wikimediaDialog.getLicense();
+            String[] licenses = wikimediaDialog.getLicenses();
             WikimediaConnection.instance.searchPhotos(wikimediaDialog.GetTags(),licenses);
             imgList = new ArrayList<Image>();
             int currentPage = wikimediaDialog.getCurrentPage();

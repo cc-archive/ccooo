@@ -8,10 +8,11 @@
 package org.creativecommons.openoffice.ui.wikimedia;
 
 import com.sun.star.awt.SystemPointer;
+import com.sun.star.awt.XPopupMenu;
+import com.sun.star.awt.XWindowPeer;
 import java.awt.Rectangle;
 import com.sun.star.awt.XButton;
 import com.sun.star.awt.XCheckBox;
-import com.sun.star.awt.XPointer;
 import com.sun.star.awt.XControl;
 import com.sun.star.awt.XControlContainer;
 import com.sun.star.awt.XControlModel;
@@ -22,43 +23,23 @@ import com.sun.star.beans.XPropertySet;
 import com.sun.star.beans.XMultiPropertySet;
 import com.sun.star.container.XNameContainer;
 import com.sun.star.lang.XComponent;
-import com.sun.star.lang.XMultiComponentFactory;
 import com.sun.star.lang.XMultiServiceFactory;
 import com.sun.star.uno.UnoRuntime;
 import com.sun.star.uno.XComponentContext;
-import java.util.ArrayList;
 import com.sun.star.graphic.XGraphic;
 import org.creativecommons.openoffice.*;
 import org.creativecommons.openoffice.program.Image;
-import com.sun.star.awt.XWindowPeer;
-import com.sun.star.graphic.XGraphicProvider;
-import com.sun.star.beans.PropertyValue;
 import java.util.Date;
+import org.creativecommons.openoffice.ui.InsertImageDialog;
+import org.creativecommons.openoffice.ui.SavedSearchThread;
 
 /**
  *
  * @author Husleag Mihai
  */
-public class WikimediaDialog {
+public class WikimediaDialog extends InsertImageDialog{
 
-    private XMultiServiceFactory xMultiServiceFactory = null;
-    protected XComponentContext m_xContext = null;
-    protected XMultiComponentFactory xMultiComponentFactory = null;
-    private XNameContainer xNameCont = null;
-    private XControlContainer xControlCont = null;
-    private XDialog xDialog = null;
-    private XControl xControl;
-    private XWindowPeer xWindowPeer;
-    private CcOOoAddin addin = null;
-    private int currentPositionInList = 0;
-    public ArrayList<Image> currentList = null;
-    private Image selectedImage = null;
-    private String savedTags;
-    private int currentPage = 0;
-    private boolean isLoadable = false;
-    private Image loadingImage = null;
-    public static final String LBL_TAGS = "lblTags";
-    public static final String TXT_TAGS = "txtTags";
+    
     public static final String CHK_COMMERCIALNAME = "chkCommercial";
     public static final String CHK_COMMERCIALLABEL = "Search for works I can use for commercial purposes";
     public static final String CHK_UPDATENAME = "chkUpdate";
@@ -67,16 +48,6 @@ public class WikimediaDialog {
     public static final String CHK_SHAREALKELABEL = "Include content which requires me to Share-Alike";
     //public static final String LBL_LICENSE = "lblLicense";
     //public static final String LISTBOX_LICENSE = "cmbLicense";    
-    public static final String BTN_SEARCH = "btnSearch";
-    public static final String searchButtonLabel = "Search";
-    public static final String GB_RESULTS = "gbResults";
-    public static final String BTN_NEXT = "btnNext";
-    public static final String BTN_NEXTLABEL = "Next";
-    public static final String BTN_PREVIOUS = "btnPrevious";
-    public static final String BTN_PREVIOUSLABEL = "Previous";
-    public static final String PB_NAME = "progressBar";
-    public static final int SHOWRESULTSPERROW = 4;
-    public static final int SHOWRESULTSPERCOLUMN = 4;
     public static final int POSITIONWIDTHHEIGHT = 45;//50
     public static final int LOCATIONIMAGESY = 80;//100
 
@@ -84,10 +55,8 @@ public class WikimediaDialog {
      * Creates a new instance of ChooserDialog
      */
     public WikimediaDialog(CcOOoAddin addin, XComponentContext m_xContext) {
-        this.addin = addin;
-        this.m_xContext = m_xContext;
-        this.loadingImage = new Image("Loading...", null, null, null, null, null,
-                null, null, null, null);
+        super(addin, m_xContext, 45, 80, 370);
+        searchClickListener = new WikimediaSearchClickListener(this, addin);
     }
 
     /**
@@ -108,7 +77,7 @@ public class WikimediaDialog {
                     UnoRuntime.queryInterface(XMultiServiceFactory.class, dlgLicenseSelector);
 
             XPropertySet xPSetDialog = createAWTControl(dlgLicenseSelector, "dlgMainForm",
-                    "", new Rectangle(100, 100, 240, 360));//360
+                    "", new Rectangle(100, 100, 240, 400));//360
             xPSetDialog.setPropertyValue("Title", new String("Insert Picture from Wikimedia Commons"));
             xPSetDialog.setPropertyValue("Step", (short) 1);
 
@@ -170,7 +139,7 @@ public class WikimediaDialog {
             Object objSearchButton = xControlCont.getControl(BTN_SEARCH);
             XButton xFinishButton = (XButton) UnoRuntime.queryInterface(
                     XButton.class, objSearchButton);
-            xFinishButton.addActionListener(new SearchClickListener(this, this.addin));
+            xFinishButton.addActionListener(new WikimediaSearchClickListener(this, this.addin));
             xFinishButton.setActionCommand(BTN_SEARCH);
 
             Object oGBResults = msfLicenseSelector.createInstance(
@@ -187,7 +156,7 @@ public class WikimediaDialog {
             xPBModelMPSet.setPropertyValues(
                     new String[]{"Height", "Name", "PositionX", "PositionY", "Width"},
                     new Object[]{new Integer(8), PB_NAME, new Integer(10),
-                    new Integer(350)/*418*/, new Integer(220)});
+                    new Integer(390)/*418*/, new Integer(220)});
 
             // The controlmodel is not really available until inserted to the Dialog container
             getNameContainer().insertByName(PB_NAME, oPBar);
@@ -226,161 +195,16 @@ public class WikimediaDialog {
         }
     }
 
-    private XPropertySet createAWTControl(Object objControl, String ctrlName,
-            String ctrlCaption, Rectangle posSize) throws Exception {
-
-        XPropertySet xpsProperties = (XPropertySet)
-                UnoRuntime.queryInterface(XPropertySet.class, objControl);
-
-        xpsProperties.setPropertyValue("PositionX", new Integer(posSize.x));
-        xpsProperties.setPropertyValue("PositionY", new Integer(posSize.y));
-        xpsProperties.setPropertyValue("Width", new Integer(posSize.width));
-        xpsProperties.setPropertyValue("Height", new Integer(posSize.height));
-        xpsProperties.setPropertyValue("Name", ctrlName);
-        if (ctrlCaption != "") {
-            xpsProperties.setPropertyValue("Label", ctrlCaption);
-        }
-
-        if ((getNameContainer() != null) && (!getNameContainer().hasByName(ctrlName))) {
-            getNameContainer().insertByName(ctrlName, objControl);
-        }
-
-        return xpsProperties;
-    }
-
-    public String[] GetTags() {
-        Object oTags = xControlCont.getControl(TXT_TAGS);
-        XControl txtTags = (XControl) UnoRuntime.queryInterface(XControl.class, oTags);
-        XControlModel xControlModel = txtTags.getModel();
-        XPropertySet xPSet = (XPropertySet) UnoRuntime.queryInterface(
-                XPropertySet.class, xControlModel);
-
-        try {
-
-            String selTags = (String) xPSet.getPropertyValue("Text");
-            if (selTags.trim().equalsIgnoreCase("")) {
-                return new String[0];
-            }
-
-            return selTags.split(" ");
-
-        } catch (Exception ex) {
-            ex.printStackTrace();
-        }
-
-        return new String[0];
-    }
-
-    public void showResults(ArrayList<Image> imgList, int progressValue) {
-
-        this.currentList = imgList;
-        this.currentPositionInList = 0;
-        showNextPage(progressValue);
-    }
-
-    private void showNextPage(int progressValue) {
-        if (currentList == null) {
-            return;
-        }
-
-        enableControl(BTN_PREVIOUS, false);
-
-        double rateProgress = (double) (95 - progressValue) / currentList.size();
-        double currentProgress = progressValue;
-        int currentY = LOCATIONIMAGESY - POSITIONWIDTHHEIGHT - 5;
-        int currentX = 15 - POSITIONWIDTHHEIGHT - 10;
-
-        for (int i = 0; i < SHOWRESULTSPERROW; i++) {
-
-            currentY += POSITIONWIDTHHEIGHT + 20;
-            currentX = 15 - POSITIONWIDTHHEIGHT - 10;
-
-            for (int j = 0; j < SHOWRESULTSPERCOLUMN; j++) {
-
-                currentX += POSITIONWIDTHHEIGHT + 10;
-
-                if (currentList.size() > currentPositionInList) {
-                    createImageControl(currentList.get(currentPositionInList), 
-                            new Rectangle(currentX,currentY, POSITIONWIDTHHEIGHT,
-                            POSITIONWIDTHHEIGHT), String.valueOf(currentPositionInList));
-                } else {
-                    createImageControl(null, new Rectangle(currentX, currentY, 
-                            POSITIONWIDTHHEIGHT,POSITIONWIDTHHEIGHT),
-                            String.valueOf(currentPositionInList));
-                }
-
-                currentPositionInList++;
-                currentProgress += rateProgress;
-                this.setProgressValue((int) currentProgress);
-            }
-        }
-
-        try {
-            Object button = null;
-            boolean isNewCreated = false;
-            if (getNameContainer().hasByName(BTN_NEXT)) {
-                button = getNameContainer().getByName(BTN_NEXT);
-            } else {
-                button = xMultiServiceFactory.createInstance(
-                        "com.sun.star.awt.UnoControlButtonModel");
-                isNewCreated = true;
-            }
-
-            createAWTControl(button, BTN_NEXT, BTN_NEXTLABEL, new Rectangle(150, 330, 40, 15));//395
-
-            if (isNewCreated) {
-                XButton xNextButton = (XButton) UnoRuntime.queryInterface(XButton.class,
-                        xControlCont.getControl(BTN_NEXT));
-                if (xNextButton != null) {
-                    xNextButton.addActionListener(new SearchClickListener(this, this.addin));
-                    xNextButton.setActionCommand(BTN_NEXT);
-                }
-            }
-
-            isNewCreated = false;
-            if (getNameContainer().hasByName(BTN_PREVIOUS)) {
-                button = getNameContainer().getByName(BTN_PREVIOUS);
-            } else {
-                button = xMultiServiceFactory.createInstance(
-                        "com.sun.star.awt.UnoControlButtonModel");
-                isNewCreated = true;
-            }
-
-            createAWTControl(button, BTN_PREVIOUS, BTN_PREVIOUSLABEL, new Rectangle(50, 330, 40, 15)); //395
-
-            if (isNewCreated) {
-                XButton xPrevButton = (XButton) UnoRuntime.queryInterface(XButton.class,
-                        xControlCont.getControl(BTN_PREVIOUS));
-                if (xPrevButton != null) {
-                    xPrevButton.addActionListener(new SearchClickListener(this, this.addin));
-                    xPrevButton.setActionCommand(BTN_PREVIOUS);
-                }
-            }
-
-            if (currentPage <= 1) {
-                enableControl(BTN_PREVIOUS, false);
-            } else {
-                enableControl(BTN_PREVIOUS, true);
-            }
-
-            if (currentList.size() < SHOWRESULTSPERROW * SHOWRESULTSPERCOLUMN) {
-                enableControl(BTN_NEXT, false);
-            } else {
-                enableControl(BTN_NEXT, true);
-            }
-
-        } catch (Exception ex) {
-            ex.printStackTrace();
-        }
-    }
-
-    private void createImageControl(Image img, Rectangle rect, String pos) {
+    protected void createImageControl(Image img, Rectangle rect, String pos) {
 
         if (!isLoadable) {
 
             return;
         }
-        createImageLoad(rect, pos);
+        createImageLoad(rect, pos, "file://" + this.getClass().
+                getProtectionDomain().getCodeSource().
+                getLocation().getPath().
+                replaceFirst("ccooo.jar", "images/wikimedia_commons_loading.png"));
 
         try {
             String userName = "";
@@ -436,7 +260,7 @@ public class WikimediaDialog {
             XControl xImageControl = xControlCont.getControl("ImageControl" + pos);
             XWindow xWindow = (XWindow) UnoRuntime.queryInterface(XWindow.class, xImageControl);
             if (xWindow != null) {
-                xWindow.addMouseListener(new ImageButtonListener(this, this.addin, img));
+                xWindow.addMouseListener(new WikimediaImageButtonListener(this, this.addin, img));
             }
 
             xpsImageControl.setPropertyValue("Graphic", xGraphic);
@@ -536,120 +360,6 @@ public class WikimediaDialog {
 
     }
 
-    public void enableControl(String controlName, boolean enable) {
-        try {
-            if (getNameContainer().hasByName(controlName)) {
-                Object oControl = getNameContainer().getByName(controlName);
-                XPropertySet xModelPSet = (XPropertySet) UnoRuntime.queryInterface(
-                        XPropertySet.class, oControl);
-
-                xModelPSet.setPropertyValue("Enabled", enable);
-            }
-        } catch (Exception ex) {
-            ex.printStackTrace();
-        }
-    }
-
-    public void setProgressValue(int step) {
-
-        if (!getNameContainer().hasByName(PB_NAME)) {
-
-            return;
-        }
-
-        try {
-            Object oPBar = getNameContainer().getByName(PB_NAME);
-            XPropertySet xPBModelPSet = (XPropertySet) UnoRuntime.queryInterface(
-                    XPropertySet.class, oPBar);
-
-            xPBModelPSet.setPropertyValue("ProgressValue", new Integer(step));
-        } catch (Exception ex) {
-            ex.printStackTrace();
-        }
-    }
-
-    // creates a UNO graphic object that can be used to be assigned
-    // to the property "Graphic" of a controlmodel
-    public XGraphic getGraphic(String _sImageUrl) {
-
-        XGraphic xGraphic = null;
-        try {
-
-            // create a GraphicProvider at the global service manager...
-            Object oGraphicProvider = xMultiComponentFactory.createInstanceWithContext(
-                    "com.sun.star.graphic.GraphicProvider", m_xContext);
-            XGraphicProvider xGraphicProvider = (XGraphicProvider)
-                    UnoRuntime.queryInterface(XGraphicProvider.class, oGraphicProvider);
-            // create the graphic object
-            PropertyValue[] aPropertyValues = new PropertyValue[1];
-            PropertyValue aPropertyValue = new PropertyValue();
-            aPropertyValue.Name = "URL";
-            aPropertyValue.Value = _sImageUrl;
-            aPropertyValues[0] = aPropertyValue;
-            /**********************************************/
-            long time = new Date().getTime();
-            xGraphic = xGraphicProvider.queryGraphic(aPropertyValues); /////////// bottleneck 2
-            System.out.println("Flicker adding thumbnails to dialog "
-                    + (new Date().getTime() - time) + _sImageUrl);
-            /**********************************************/
-            return xGraphic;
-        } catch (com.sun.star.uno.Exception ex) {
-            throw new java.lang.RuntimeException("cannot happen...");
-        }
-    }
-
-
-    /**
-     * Canges the mouse pointer.
-     *
-     * @param xContext
-     * @param xWindowPeer
-     * @param nSystemPointer
-     */
-    public void setMousePointer(int nSystemPointer) {
-        if (xWindowPeer == null) {
-            return;
-        }
-
-        try {
-            Object oPointer = xMultiComponentFactory.createInstanceWithContext(
-                    "com.sun.star.awt.Pointer", m_xContext);
-            if (oPointer != null) {
-                XPointer xPointer = (XPointer) UnoRuntime.queryInterface(
-                        XPointer.class, oPointer);
-                xPointer.setType(new Integer(nSystemPointer));
-                xWindowPeer.setPointer(xPointer);
-            }
-        } catch (java.lang.Exception ex) {
-            ex.printStackTrace();
-        }
-    }
-
-    public XNameContainer getNameContainer() {
-        return xNameCont;
-    }
-
-    public Image getSelectedImage() {
-        return selectedImage;
-    }
-
-    public void setSelectedImage(Image selImage) {
-
-        this.selectedImage = selImage;
-    }
-
-    public int getCurrentPage() {
-        return currentPage;
-    }
-
-    public void setCurrentPage(int _currentPage) {
-        this.currentPage = _currentPage;
-    }
-
-    public void close() {
-        this.xDialog.endExecute();
-    }
-
     public void saveSearch() {
 
         try {
@@ -694,7 +404,7 @@ public class WikimediaDialog {
         setMousePointer(SystemPointer.ARROW);
     }
 
-    public String[] getLicense() {
+    public String[] getLicenses() {
 
         boolean commercial = getCheckBoxStatus(CHK_COMMERCIALNAME);
         boolean update = getCheckBoxStatus(CHK_UPDATENAME);
@@ -755,9 +465,15 @@ public class WikimediaDialog {
 
         return true;
     }
-    public void setLoadable(boolean val) {
 
-        this.isLoadable = val;
+    @Override
+    public XPopupMenu executePopupMenu(Image img, Integer positionX, Integer positionY, XWindowPeer xImagePeer) {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    @Override
+    public String getLicense() {
+        throw new UnsupportedOperationException("Not supported yet.");
     }
 } // WikimediaDialog
 
