@@ -37,7 +37,7 @@ import java.util.Date;
  */
 public abstract class InsertImageDialog {
 
-    private int btnPrvNextX;
+    private int btnPrvNextY;
     protected XMultiServiceFactory xMultiServiceFactory = null;
     protected XComponentContext m_xContext = null;
     protected XMultiComponentFactory xMultiComponentFactory = null;
@@ -79,9 +79,10 @@ public abstract class InsertImageDialog {
      * Creates a new instance of ChooserDialog
      */
     public InsertImageDialog(CcOOoAddin addin, XComponentContext m_xContext,
-            int positionWidthHeight, int locationMagesy) {
+            int positionWidthHeight, int locationMagesy,int btnPrvNextY) {
         this.positionWidthHeight=positionWidthHeight;
         this.locationMagesy=locationMagesy;
+        this.btnPrvNextY=btnPrvNextY;
         this.addin = addin;
         this.m_xContext = m_xContext;
         this.loadingImage = new Image("Loading...", null, null, null, null, null,
@@ -164,7 +165,7 @@ public abstract class InsertImageDialog {
                 isNewCreated = true;
             }
 
-            createAWTControl(button, BTN_NEXT, BTN_NEXTLABEL, new Rectangle(150, 330, 40, 15));//395
+            createAWTControl(button, BTN_NEXT, BTN_NEXTLABEL, new Rectangle(150, btnPrvNextY, 40, 15));//395
 
             if (isNewCreated) {
                 XButton xNextButton = (XButton) UnoRuntime.queryInterface(XButton.class,
@@ -184,7 +185,7 @@ public abstract class InsertImageDialog {
                 isNewCreated = true;
             }
 
-            createAWTControl(button, BTN_PREVIOUS, BTN_PREVIOUSLABEL, new Rectangle(50, 330, 40, 15)); //395
+            createAWTControl(button, BTN_PREVIOUS, BTN_PREVIOUSLABEL, new Rectangle(50, btnPrvNextY, 40, 15)); //395
 
             if (isNewCreated) {
                 XButton xPrevButton = (XButton) UnoRuntime.queryInterface(XButton.class,

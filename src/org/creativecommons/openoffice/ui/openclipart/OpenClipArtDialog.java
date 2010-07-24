@@ -42,7 +42,7 @@ public class OpenClipArtDialog extends InsertImageDialog{
      * Creates a new instance of ChooserDialog
      */
     public OpenClipArtDialog(CcOOoAddin addin, XComponentContext m_xContext) {
-        super(addin,m_xContext,45,40);
+        super(addin,m_xContext,45,40,330);
         searchClickListener=new OpenClipArtSearchClickListener(this, this.addin);
     }
 

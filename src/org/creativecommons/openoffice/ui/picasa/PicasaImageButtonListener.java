@@ -20,10 +20,10 @@ import org.creativecommons.openoffice.ui.ImageButtonListener;
  *
  * @author Husleag Mihai
  */
-public class OpenClipArtImageButtonListener extends ImageButtonListener{
+public class PicasaImageButtonListener extends ImageButtonListener{
 
 
-    public OpenClipArtImageButtonListener(PicasaDialog picasaDialog, CcOOoAddin addin, Image img){
+    public PicasaImageButtonListener(PicasaDialog picasaDialog, CcOOoAddin addin, Image img){
 
         super(picasaDialog,addin,img);
 

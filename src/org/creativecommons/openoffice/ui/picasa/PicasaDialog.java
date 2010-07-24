@@ -55,7 +55,8 @@ public class PicasaDialog extends InsertImageDialog{
      * Creates a new instance of ChooserDialog
      */
     public PicasaDialog(CcOOoAddin addin, XComponentContext m_xContext) {
-        super(addin,m_xContext,45,80);
+        super(addin, m_xContext, 45, 80, 370);
+        searchClickListener = new PicasaSearchClickListener(this, addin);
     }
 
     /**
@@ -252,7 +253,7 @@ public class PicasaDialog extends InsertImageDialog{
             XControl xImageControl = xControlCont.getControl("ImageControl" + pos);
             XWindow xWindow = (XWindow) UnoRuntime.queryInterface(XWindow.class, xImageControl);
             if (xWindow != null) {
-                xWindow.addMouseListener(new OpenClipArtImageButtonListener(this, this.addin, img));
+                xWindow.addMouseListener(new PicasaImageButtonListener(this, this.addin, img));
             }
 
             xpsImageControl.setPropertyValue("Graphic", xGraphic);

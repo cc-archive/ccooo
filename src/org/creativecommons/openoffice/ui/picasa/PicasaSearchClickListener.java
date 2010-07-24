@@ -9,27 +9,24 @@ import com.sun.star.awt.ActionEvent;
 import com.sun.star.awt.XActionListener;
 import com.sun.star.lang.EventObject;
 import org.creativecommons.openoffice.CcOOoAddin;
+import org.creativecommons.openoffice.ui.SearchClickListener;
 
 /**
  *
  * @author Husleag Mihai
  */
-public class PicasaSearchClickListener implements XActionListener{
-
-    private PicasaDialog picasaDialog;
-    private CcOOoAddin addin;
+public class PicasaSearchClickListener extends SearchClickListener{
 
     public PicasaSearchClickListener(PicasaDialog picasaDialog, CcOOoAddin addin){
-        this.picasaDialog = picasaDialog;
-        this.addin = addin;
+        super( picasaDialog,addin);
     }
 
     public void actionPerformed(ActionEvent a) {
 
-        if (!picasaDialog.IsInputValid()) {
+        if (!imageDialog.IsInputValid()) {
             return;
         }
-        SearchThread th = new SearchThread(picasaDialog,a.ActionCommand);
+        SearchThread th = new SearchThread((PicasaDialog) imageDialog,a.ActionCommand);
         th.start();
 
     } // actionPerformed
