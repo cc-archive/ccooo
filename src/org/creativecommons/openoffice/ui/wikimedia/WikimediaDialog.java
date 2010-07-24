@@ -55,7 +55,7 @@ public class WikimediaDialog extends InsertImageDialog{
      * Creates a new instance of ChooserDialog
      */
     public WikimediaDialog(CcOOoAddin addin, XComponentContext m_xContext) {
-        super(addin, m_xContext, 45, 80, 370);
+        super(addin, m_xContext, 45, 63, 347);
         searchClickListener = new WikimediaSearchClickListener(this, addin);
     }
 
@@ -77,7 +77,7 @@ public class WikimediaDialog extends InsertImageDialog{
                     UnoRuntime.queryInterface(XMultiServiceFactory.class, dlgLicenseSelector);
 
             XPropertySet xPSetDialog = createAWTControl(dlgLicenseSelector, "dlgMainForm",
-                    "", new Rectangle(100, 100, 240, 400));//360
+                    "", new Rectangle(DIALOGX, DIALOGY, DIALOGWIDTH, DIALOGHEIHT));//360
             xPSetDialog.setPropertyValue("Title", new String("Insert Picture from Wikimedia Commons"));
             xPSetDialog.setPropertyValue("Step", (short) 1);
 
@@ -100,7 +100,7 @@ public class WikimediaDialog extends InsertImageDialog{
             Object chkCommercial = msfLicenseSelector.createInstance(
                     "com.sun.star.awt.UnoControlCheckBoxModel");
             XPropertySet xpsCHKProperties = createAWTControl(chkCommercial, CHK_COMMERCIALNAME, CHK_COMMERCIALLABEL,
-                    new Rectangle(10, 32, 150, 12));
+                    new Rectangle(10, 27, 150, 12));
 
             xpsCHKProperties.setPropertyValue("TriState", Boolean.FALSE);
             xpsCHKProperties.setPropertyValue("State", new Short((short) 1));
@@ -108,14 +108,14 @@ public class WikimediaDialog extends InsertImageDialog{
             Object chkUpdate = msfLicenseSelector.createInstance(
                     "com.sun.star.awt.UnoControlCheckBoxModel");
             xpsCHKProperties = createAWTControl(chkUpdate, CHK_UPDATENAME, CHK_UPDATELABEL,
-                    new Rectangle(10, 49, 150, 12));
+                    new Rectangle(10, 39, 150, 12));
             xpsCHKProperties.setPropertyValue("TriState", Boolean.FALSE);
             xpsCHKProperties.setPropertyValue("State", new Short((short) 1));
 
             Object chkShareAlike = msfLicenseSelector.createInstance(
                     "com.sun.star.awt.UnoControlCheckBoxModel");
             xpsCHKProperties = createAWTControl(chkShareAlike, CHK_SHAREALKENAME, CHK_SHAREALKELABEL,
-                    new Rectangle(10, 66, 150, 12)); //(50, 66, 150, 12));
+                    new Rectangle(10, 51, 150, 12)); //(50, 66, 150, 12));
             xpsCHKProperties.setPropertyValue("TriState", Boolean.FALSE);
             xpsCHKProperties.setPropertyValue("State", new Short((short) 0));
 
@@ -145,7 +145,7 @@ public class WikimediaDialog extends InsertImageDialog{
             Object oGBResults = msfLicenseSelector.createInstance(
                     "com.sun.star.awt.UnoControlGroupBoxModel");
             createAWTControl(oGBResults, GB_RESULTS, "Results",
-                    new Rectangle(10, LOCATIONIMAGESY, 220, 280));//315
+                    new Rectangle(10, locationMagesy, 220, 280));//315
 
             Object oPBar = msfLicenseSelector.createInstance(
                     "com.sun.star.awt.UnoControlProgressBarModel");
@@ -156,7 +156,7 @@ public class WikimediaDialog extends InsertImageDialog{
             xPBModelMPSet.setPropertyValues(
                     new String[]{"Height", "Name", "PositionX", "PositionY", "Width"},
                     new Object[]{new Integer(8), PB_NAME, new Integer(10),
-                    new Integer(390)/*418*/, new Integer(220)});
+                    new Integer(DIALOGHEIHT-8)/*418*/, new Integer(220)});
 
             // The controlmodel is not really available until inserted to the Dialog container
             getNameContainer().insertByName(PB_NAME, oPBar);

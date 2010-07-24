@@ -70,7 +70,10 @@ public abstract class InsertImageDialog {
     public static final String PB_NAME = "progressBar";
     public static final int SHOWRESULTSPERROW = 4;
     public static final int SHOWRESULTSPERCOLUMN = 4;
-
+    public static final int DIALOGX = 100;
+    public static final int DIALOGY = 100;
+    public static final int DIALOGWIDTH = 240;
+    public static final int DIALOGHEIHT = 375;
 
     public int positionWidthHeight;//50
     public int locationMagesy;//100

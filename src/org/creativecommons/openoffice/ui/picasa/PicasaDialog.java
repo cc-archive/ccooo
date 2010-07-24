@@ -55,7 +55,7 @@ public class PicasaDialog extends InsertImageDialog{
      * Creates a new instance of ChooserDialog
      */
     public PicasaDialog(CcOOoAddin addin, XComponentContext m_xContext) {
-        super(addin, m_xContext, 45, 80, 370);
+        super(addin, m_xContext, 45, 63, 347);
         searchClickListener = new PicasaSearchClickListener(this, addin);
     }
 
@@ -77,7 +77,7 @@ public class PicasaDialog extends InsertImageDialog{
                     UnoRuntime.queryInterface(XMultiServiceFactory.class, dlgLicenseSelector);
 
             XPropertySet xPSetDialog = createAWTControl(dlgLicenseSelector, "dlgMainForm",
-                    "", new Rectangle(100, 100, 240, 400));//360
+                    "", new Rectangle(DIALOGX, DIALOGY, DIALOGWIDTH, DIALOGHEIHT));//360
             xPSetDialog.setPropertyValue("Title", new String("Insert Picture from Picasa"));
             xPSetDialog.setPropertyValue("Step", (short) 1);
 
@@ -100,19 +100,19 @@ public class PicasaDialog extends InsertImageDialog{
             Object rdoCommercial = msfLicenseSelector.createInstance(
                     "com.sun.star.awt.UnoControlRadioButtonModel");
             XPropertySet xpsRDOProperties = createAWTControl(rdoCommercial, RDO_COMMERCIALNAME, RDO_COMMERCIALLABEL,
-                    new Rectangle(10, 32, 150, 12));
+                    new Rectangle(10, 27, 150, 12));
             xpsRDOProperties.setPropertyValue("State", new Short((short) 1));
 
             Object rdoUpdate = msfLicenseSelector.createInstance(
                     "com.sun.star.awt.UnoControlRadioButtonModel");
             xpsRDOProperties = createAWTControl(rdoUpdate, RDO_UPDATENAME, RDO_UPDATELABEL,
-                    new Rectangle(10, 49, 150, 12));
+                    new Rectangle(10, 39, 150, 12));
             xpsRDOProperties.setPropertyValue("State", new Short((short) 0));
 
             Object chkCC = msfLicenseSelector.createInstance(
                     "com.sun.star.awt.UnoControlRadioButtonModel");
             xpsRDOProperties = createAWTControl(chkCC, RDO_CCNAME, RDO_CCLABEL,
-                    new Rectangle(10, 66, 150, 12)); //(50, 66, 150, 12));
+                    new Rectangle(10, 51, 190, 12)); //(50, 66, 150, 12));
             xpsRDOProperties.setPropertyValue("State", new Short((short) 0));
 
             Object searchButton = msfLicenseSelector.createInstance(
@@ -150,7 +150,7 @@ public class PicasaDialog extends InsertImageDialog{
             // Set the properties at the model - keep in mind to pass the property names in alphabetical order!
             xPBModelMPSet.setPropertyValues(
                     new String[]{"Height", "Name", "PositionX", "PositionY", "Width"},
-                    new Object[]{new Integer(8), PB_NAME, new Integer(10), new Integer(390)/*418*/, new Integer(220)});
+                    new Object[]{new Integer(8), PB_NAME, new Integer(10), new Integer(DIALOGHEIHT-8)/*418*/, new Integer(220)});
 
             // The controlmodel is not really available until inserted to the Dialog container
             getNameContainer().insertByName(PB_NAME, oPBar);
