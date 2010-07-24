@@ -36,8 +36,8 @@ public class SearchThread extends Thread {
         ArrayList<Image> imgList = null;
         if (buttonName.equalsIgnoreCase(WikimediaDialog.BTN_SEARCH)) {
             wikimediaDialog.setCurrentPage(1);
-            WikimediaConnection.instance.searchPhotos(
-                    wikimediaDialog.GetTags(), wikimediaDialog.getCurrentPage());
+            String[] licenses = wikimediaDialog.getLicense();
+            WikimediaConnection.instance.searchPhotos(wikimediaDialog.GetTags(),licenses);
             imgList = new ArrayList<Image>();
             int currentPage = wikimediaDialog.getCurrentPage();
             int noOfImg = WikimediaDialog.SHOWRESULTSPERCOLUMN * WikimediaDialog.SHOWRESULTSPERROW;

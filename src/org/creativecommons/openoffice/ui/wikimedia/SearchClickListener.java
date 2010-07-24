@@ -25,6 +25,10 @@ public class SearchClickListener implements XActionListener{
     }
     
     public void actionPerformed(ActionEvent a) {
+
+        if (!wikimediaDialog.IsInputValid()) {
+            return;
+        }
         SearchThread th = new SearchThread(wikimediaDialog,a.ActionCommand);
         th.start();
         

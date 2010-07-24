@@ -10,6 +10,7 @@ package org.creativecommons.openoffice.ui.wikimedia;
 import com.sun.star.awt.SystemPointer;
 import java.awt.Rectangle;
 import com.sun.star.awt.XButton;
+import com.sun.star.awt.XCheckBox;
 import com.sun.star.awt.XPointer;
 import com.sun.star.awt.XControl;
 import com.sun.star.awt.XControlContainer;
@@ -58,6 +59,12 @@ public class WikimediaDialog {
     private Image loadingImage = null;
     public static final String LBL_TAGS = "lblTags";
     public static final String TXT_TAGS = "txtTags";
+    public static final String CHK_COMMERCIALNAME = "chkCommercial";
+    public static final String CHK_COMMERCIALLABEL = "Search for works I can use for commercial purposes";
+    public static final String CHK_UPDATENAME = "chkUpdate";
+    public static final String CHK_UPDATELABEL = "Search for works I can modify, adapt, or build upon";
+    public static final String CHK_SHAREALKENAME = "chkShareAlike";
+    public static final String CHK_SHAREALKELABEL = "Include content which requires me to Share-Alike";
     //public static final String LBL_LICENSE = "lblLicense";
     //public static final String LISTBOX_LICENSE = "cmbLicense";    
     public static final String BTN_SEARCH = "btnSearch";
@@ -71,7 +78,7 @@ public class WikimediaDialog {
     public static final int SHOWRESULTSPERROW = 4;
     public static final int SHOWRESULTSPERCOLUMN = 4;
     public static final int POSITIONWIDTHHEIGHT = 45;//50
-    public static final int LOCATIONIMAGESY = 40;//100
+    public static final int LOCATIONIMAGESY = 80;//100
 
     /**
      * Creates a new instance of ChooserDialog
@@ -120,6 +127,28 @@ public class WikimediaDialog {
             Object txtTags = msfLicenseSelector.createInstance(
                     "com.sun.star.awt.UnoControlEditModel");
             createAWTControl(txtTags, TXT_TAGS, "", new Rectangle(30, 10, 150, 12));
+
+            Object chkCommercial = msfLicenseSelector.createInstance(
+                    "com.sun.star.awt.UnoControlCheckBoxModel");
+            XPropertySet xpsCHKProperties = createAWTControl(chkCommercial, CHK_COMMERCIALNAME, CHK_COMMERCIALLABEL,
+                    new Rectangle(10, 32, 150, 12));
+
+            xpsCHKProperties.setPropertyValue("TriState", Boolean.FALSE);
+            xpsCHKProperties.setPropertyValue("State", new Short((short) 1));
+
+            Object chkUpdate = msfLicenseSelector.createInstance(
+                    "com.sun.star.awt.UnoControlCheckBoxModel");
+            xpsCHKProperties = createAWTControl(chkUpdate, CHK_UPDATENAME, CHK_UPDATELABEL,
+                    new Rectangle(10, 49, 150, 12));
+            xpsCHKProperties.setPropertyValue("TriState", Boolean.FALSE);
+            xpsCHKProperties.setPropertyValue("State", new Short((short) 1));
+
+            Object chkShareAlike = msfLicenseSelector.createInstance(
+                    "com.sun.star.awt.UnoControlCheckBoxModel");
+            xpsCHKProperties = createAWTControl(chkShareAlike, CHK_SHAREALKENAME, CHK_SHAREALKELABEL,
+                    new Rectangle(10, 66, 150, 12)); //(50, 66, 150, 12));
+            xpsCHKProperties.setPropertyValue("TriState", Boolean.FALSE);
+            xpsCHKProperties.setPropertyValue("State", new Short((short) 0));
 
             Object searchButton = msfLicenseSelector.createInstance(
                     "com.sun.star.awt.UnoControlButtonModel");
@@ -665,6 +694,67 @@ public class WikimediaDialog {
         setMousePointer(SystemPointer.ARROW);
     }
 
+    public String[] getLicense() {
+
+        boolean commercial = getCheckBoxStatus(CHK_COMMERCIALNAME);
+        boolean update = getCheckBoxStatus(CHK_UPDATENAME);
+        boolean shareAlike = getCheckBoxStatus(CHK_SHAREALKENAME);
+
+        if (commercial && update && shareAlike) {
+            return new String[]{"CC BY", "PD", "CC BY SA", "GFDL", "CC0"};//"4,5"
+        } else if (commercial && update) {
+            return new String[]{"CC BY", "PD", "CC0"};//"4"
+        } else if (update && shareAlike) {
+            return new String[]{"CC BY", "PD", "CC BY SA", "CC BY NC SA", "CC BY NC", "GFDL", "CC0"};//"1,2,4,5"
+        } else if (commercial) {
+            return new String[]{"CC BY", "PD", "CC BY SA", "CC BY ND", "GFDL", "CC0"};//"4,5,6"
+        } else if (update) {
+            return new String[]{"CC BY", "PD", "CC BY NC", "CC0"};//"2,4"
+        }
+        //default atribution license
+        return new String[]{"CC BY", "PD", "CC0"};//"4";
+    }
+
+    public boolean getCheckBoxStatus(String ctrlName) {
+
+        Object oLicense = xControlCont.getControl(ctrlName);
+        XCheckBox checkBox = (XCheckBox) UnoRuntime.queryInterface(XCheckBox.class, oLicense);
+
+        Object value = checkBox.getState();
+        if (value != null) {
+
+            short chkStatus = new Short(value.toString());
+            if (chkStatus == 1) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public boolean IsInputValid() {
+
+        if (this.GetTags().length == 0) {
+            return false;
+        }
+
+        boolean commercial = getCheckBoxStatus(CHK_COMMERCIALNAME);
+        boolean update = getCheckBoxStatus(CHK_UPDATENAME);
+        boolean shareAlike = getCheckBoxStatus(CHK_SHAREALKENAME);
+
+        if (!commercial && !update && !shareAlike) {
+            return false;
+        }
+
+        if (commercial && !update && shareAlike) {
+            return false;
+        }
+
+        if (!commercial && !update && shareAlike) {
+            return false;
+        }
+
+        return true;
+    }
     public void setLoadable(boolean val) {
 
         this.isLoadable = val;
