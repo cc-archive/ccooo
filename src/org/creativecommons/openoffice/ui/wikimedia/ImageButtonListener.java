@@ -63,7 +63,6 @@ public class ImageButtonListener implements XMouseListener{
               {
                   wikimediaDialog.close();
                   wikimediaDialog.setSelectedImage(currentImage);
-                  WikimediaConnection.instance.setImageLisence(currentImage);
                   addin.getProgramWrapper().insertPicture(wikimediaDialog.getSelectedImage());
               }
         }

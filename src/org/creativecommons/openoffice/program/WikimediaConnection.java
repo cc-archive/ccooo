@@ -37,14 +37,15 @@ public class WikimediaConnection {
             tagLine += "+" + tags[i];
         }
         tagLine = tagLine.replaceFirst("\\+", "");
-        String title, imgUrl, imgUrlMainPage, imgUrlThumb;
+        String title, imgUrl, imgUrlMainPage, imgUrlThumb, licenseNumber = " ", licenseURL = " ",
+                    licenseCode = "license info not available";
         int width, height;
         try {
 
             DocumentBuilderFactory docBuilderFactory = DocumentBuilderFactory.newInstance();
             DocumentBuilder docBuilder = docBuilderFactory.newDocumentBuilder();
             Document doc = docBuilder.parse("http://commons.wikimedia.org/w/api.php?action=query&generator=search&gsrsearch=" + tagLine
-                    + "&gsrnamespace=6&gsrlimit=50&gsrprop=timestamp&prop=imageinfo|categories&iiprop=url|size&clcategories=Category:CC&format=xml");//CC-BY
+                    + "&gsrnamespace=6&gsrlimit=50&gsrprop=timestamp&prop=imageinfo|categories&iiprop=url|size&&clshow=hidden&cllimit=500&format=xml");//CC-BY
 
             // normalize text representation
             doc.getDocumentElement().normalize();
@@ -62,7 +63,7 @@ public class WikimediaConnection {
                     imgUrl = imageInfo.getAttributes().getNamedItem("url").getNodeValue();
                     imgUrlMainPage = imageInfo.getAttributes().getNamedItem("descriptionurl").getNodeValue();
                     width = Integer.parseInt(imageInfo.getAttributes().getNamedItem("width").getNodeValue());
-                    height = Integer.parseInt(imageInfo.getAttributes().getNamedItem("height").getNodeValue());
+                    height = Integer.parseInt(imageInfo.getAttributes().getNamedItem("height").getNodeValue());                    
                     imgUrlThumb = imgUrl.replace("/commons/", "/commons/thumb/").concat("/120px-"
                             + title.replaceAll("\\s", "_"));
                     if (title.contains(".svg")) {
@@ -76,20 +77,69 @@ public class WikimediaConnection {
 
                     Image img = new Image(title, null, null, imgUrlThumb, null,
                             null, imgUrlMainPage, null, title, null);
-
+                    
+                    NodeList listOfLicenses = page.getLastChild().getChildNodes();
+                    for (int l = 0; l < listOfLicenses.getLength(); l++) {
+                        String license = listOfLicenses.item(l).getAttributes().
+                                getNamedItem("title").getNodeValue().replace("Category:", "");
+                        if (license.startsWith("PD") || license.startsWith("Public domain")) {
+                            licenseCode = "PD";
+                            licenseURL = "http://creativecommons.org/licenses/publicdomain/";
+                            licenseNumber = " ";
+                            break;
+                        } else if (license.startsWith("CC")) {
+                            Pattern pattern = Pattern.compile("CC[\\-\\w\\.\\d\\s]+\\d");
+                            Matcher matcher = pattern.matcher(license);
+                            if (matcher.find()) {
+                                licenseCode = matcher.group().replaceAll("\\s", "-");
+                                pattern = Pattern.compile("\\d\\.\\d");
+                                matcher = pattern.matcher(licenseCode);
+                                if (matcher.find()) {
+                                    licenseNumber = matcher.group();
+                                    licenseURL = "http://creativecommons.org/licenses/"
+                                            + licenseCode.toLowerCase().replace("cc-", "").replaceAll("\\-\\d\\.\\d", "/" + licenseNumber);
+                                }
+                                img.setLicenseURL(licenseURL);
+                                licenseCode = licenseCode.replace("-", " ").replaceAll("\\d\\.\\d", "");
+                                img.setLicenseCode(licenseCode);
+                            } else if (license.equalsIgnoreCase("CC-Zero")) {
+                                licenseCode = "CC0";
+                                licenseURL = "http://creativecommons.org/publicdomain/zero/1.0/";
+                                licenseNumber = "1.0";
+                            }
+        
+                        } else if (license.startsWith("GFDL")&&(l==listOfLicenses.getLength()-1||licenseURL.equals(" "))) {
+                            licenseCode = "GFDL";
+                            licenseURL = "http://www.gnu.org/licenses/fdl.html";
+                            licenseNumber = " ";
+                        } else if (license.startsWith("LGPL")&&(l==listOfLicenses.getLength()-1||licenseURL.equals(" "))) {
+                            licenseCode = "LGPL";
+                            licenseURL = "http://creativecommons.org/licenses/LGPL/2.1/";//http://www.gnu.org/licenses/lgpl.html
+                            licenseNumber = " ";
+                        } else if (license.startsWith("GPL")&&(l==listOfLicenses.getLength()-1||licenseURL.equals(" "))) {
+                            licenseCode = "GPL";
+                            licenseURL = "http://creativecommons.org/licenses/GPL/2.0/";//http://www.gnu.org/licenses/gpl.html
+                            licenseNumber = " ";
+                        } else if (license.startsWith("Copyrighted free use")&&(l==listOfLicenses.getLength()-1||licenseURL.equals(" "))) {
+                            licenseCode = "Copyrighted free use";
+                            licenseURL = "-";
+                            licenseNumber = " ";
+                        } else if (license.startsWith("FAL")&&(l==listOfLicenses.getLength()-1||licenseURL.equals(" "))) {
+                            licenseCode = "Free Art License";
+                            licenseURL = "http://artlibre.org/licence/lal/en";
+                            licenseNumber = " ";
+                        }  
+                    }
+                    img.setLicenseURL(licenseURL);
+                    img.setLicenseCode(licenseCode);
+                    img.setLicenseNumber(licenseNumber);
                     img.setSelectedImageURL(imgUrl);
-
-                    img.setLicenseCode("License info not available");
-                    img.setLicenseNumber("-");
-                    img.setLicenseURL("-");
                     img.setSelectedImageWidth(width);
                     img.setSelectedImageHeight(height);
                     System.out.println(imgUrlMainPage);
-                    //setImageLisence(img);
+                    System.out.println(licenseCode);
+                    System.out.println(licenseNumber);
                     imgList.add(img);
-
-                    System.out.println(imageInfo.getAttributes().getNamedItem("width").getNodeValue());
-                    System.out.println(imageInfo.getAttributes().getNamedItem("height").getNodeValue());
                 }//end of if clause
             }//end of for loop with s var
 
