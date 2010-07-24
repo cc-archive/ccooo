@@ -19,7 +19,7 @@ import org.creativecommons.license.License;
 import com.aetrion.flickr.people.PeopleInterface;
 import java.io.IOException;
 import java.util.Date;
-import org.creativecommons.openoffice.ui.flickr.PictureFlickrDialog;
+import org.creativecommons.openoffice.ui.flickr.FlickrDialog;
 import org.xml.sax.SAXException;
 
 /**
@@ -53,8 +53,8 @@ public class FlickrConnection {
         PhotosInterface pInterf = flickr.getPhotosInterface();
         PhotoList list = null;
         try {
-            list = pInterf.search(currentSearch, PictureFlickrDialog.SHOWRESULTSPERROW
-                    * PictureFlickrDialog.SHOWRESULTSPERCOLUMN, currentPage);
+            list = pInterf.search(currentSearch, FlickrDialog.SHOWRESULTSPERROW
+                    * FlickrDialog.SHOWRESULTSPERCOLUMN, currentPage);
         } catch (com.aetrion.flickr.FlickrException ex) {
             ex.printStackTrace();
         } catch (java.io.IOException ex) {

@@ -10,30 +10,27 @@ import com.sun.star.awt.XActionListener;
 import com.sun.star.lang.EventObject;
 import org.creativecommons.openoffice.CcOOoAddin;
 import org.creativecommons.openoffice.program.FlickrConnection;
+import org.creativecommons.openoffice.ui.SearchClickListener;
 
 /**
  *
  * @author Husleag Mihai
  */
-public class SearchClickListener implements XActionListener{
+public class FlickrSearchClickListener extends SearchClickListener{
 
-    private PictureFlickrDialog flickrDialog;
-    private CcOOoAddin addin;
-    private FlickrConnection flickrConn;
-    public SearchClickListener(PictureFlickrDialog flickrDialog, CcOOoAddin addin){
+    public FlickrSearchClickListener(FlickrDialog flickrDialog, CcOOoAddin addin){
 
-        this.flickrDialog = flickrDialog;
-        this.addin = addin;
+        super( flickrDialog,addin);
     }
     
     public void actionPerformed(ActionEvent a) {
         
-        if (!flickrDialog.IsInputValid()) {
+        if (!imageDialog.IsInputValid()) {
             
             return;
         }
         
-        SearchThread th = new SearchThread(flickrDialog,a.ActionCommand);
+        SearchThread th = new SearchThread((FlickrDialog) imageDialog,a.ActionCommand);
         th.start();
         
     } // actionPerformed

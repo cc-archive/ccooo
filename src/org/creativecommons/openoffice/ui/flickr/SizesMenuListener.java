@@ -18,10 +18,10 @@ import org.creativecommons.openoffice.program.FlickrConnection;
  */
 public class SizesMenuListener implements XMenuListener {
 
-    private PictureFlickrDialog flickrDialog;
+    private FlickrDialog flickrDialog;
     private CcOOoAddin addin;
             
-    public SizesMenuListener(PictureFlickrDialog _flickrDialog, CcOOoAddin _addin) {
+    public SizesMenuListener(FlickrDialog _flickrDialog, CcOOoAddin _addin) {
         
         this.flickrDialog = _flickrDialog;
         this.addin = _addin;

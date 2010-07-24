@@ -16,10 +16,10 @@ import org.creativecommons.openoffice.program.FlickrConnection;
  */
 public class SearchThread extends Thread {
     
-    private PictureFlickrDialog flickrDialog;
+    private FlickrDialog flickrDialog;
     private String buttonName;
     
-    public SearchThread(PictureFlickrDialog flickrDialog, String btnName) {
+    public SearchThread(FlickrDialog flickrDialog, String btnName) {
         
         this.flickrDialog = flickrDialog;
         this.buttonName = btnName;
@@ -29,19 +29,19 @@ public class SearchThread extends Thread {
     public void run() {
         
         flickrDialog.setMousePointer(SystemPointer.WAIT);
-        flickrDialog.enableControl(PictureFlickrDialog.BTN_NEXT, false);
-        flickrDialog.enableControl(PictureFlickrDialog.BTN_PREVIOUS, false);
-        flickrDialog.enableControl(PictureFlickrDialog.BTN_SEARCH, false);
+        flickrDialog.enableControl(FlickrDialog.BTN_NEXT, false);
+        flickrDialog.enableControl(FlickrDialog.BTN_PREVIOUS, false);
+        flickrDialog.enableControl(FlickrDialog.BTN_SEARCH, false);
         flickrDialog.saveSearch();
         flickrDialog.setProgressValue(0);
         String licenseID = flickrDialog.getLicense();
                 
-        if (buttonName.equalsIgnoreCase(PictureFlickrDialog.BTN_SEARCH)) {
+        if (buttonName.equalsIgnoreCase(FlickrDialog.BTN_SEARCH)) {
             
             flickrDialog.setCurrentPage(1);
         }
             else
-                if (buttonName.equalsIgnoreCase(PictureFlickrDialog.BTN_PREVIOUS)) {
+                if (buttonName.equalsIgnoreCase(FlickrDialog.BTN_PREVIOUS)) {
                 
                     flickrDialog.setCurrentPage(flickrDialog.getCurrentPage() - 1);
                 }
@@ -55,7 +55,7 @@ public class SearchThread extends Thread {
         flickrDialog.setProgressValue(15);
         flickrDialog.showResults(imgList, 15);
         flickrDialog.setProgressValue(100);
-        flickrDialog.enableControl(PictureFlickrDialog.BTN_SEARCH, true);
+        flickrDialog.enableControl(FlickrDialog.BTN_SEARCH, true);
         flickrDialog.setMousePointer(SystemPointer.ARROW);
     }
     

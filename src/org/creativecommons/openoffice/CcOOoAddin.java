@@ -62,7 +62,7 @@ import org.creativecommons.openoffice.program.IVisibleNotice;
 import org.creativecommons.openoffice.program.Impress;
 import org.creativecommons.openoffice.program.Writer;
 import org.creativecommons.openoffice.ui.license.ChooserDialog;
-import org.creativecommons.openoffice.ui.flickr.PictureFlickrDialog;
+import org.creativecommons.openoffice.ui.flickr.FlickrDialog;
 import org.creativecommons.openoffice.ui.openclipart.OpenClipArtDialog;
 import org.creativecommons.openoffice.ui.picasa.PicasaDialog;
 import org.creativecommons.openoffice.ui.wikimedia.WikimediaDialog;
@@ -96,7 +96,7 @@ public final class CcOOoAddin extends WeakBase
     private XComponent xCurrentComponent = null;
     protected XMultiComponentFactory xMultiComponentFactory = null;
     protected XMultiComponentFactory mxRemoteServiceManager = null;
-    private PictureFlickrDialog pictureFlickrDialog = null;
+    private FlickrDialog pictureFlickrDialog = null;
     private OpenClipArtDialog openClipArtDialog = null;
     private WikimediaDialog wikimediaDialog=null;
     private PicasaDialog picasaDialog=null;
@@ -338,7 +338,7 @@ public final class CcOOoAddin extends WeakBase
             this.updateCurrentComponent();
 
             if (pictureFlickrDialog == null) {
-                pictureFlickrDialog = new PictureFlickrDialog(this, this.m_xContext);
+                pictureFlickrDialog = new FlickrDialog(this, this.m_xContext);
                 pictureFlickrDialog.setLoadable(true);
                 pictureFlickrDialog.showDialog(false);
             } else {
