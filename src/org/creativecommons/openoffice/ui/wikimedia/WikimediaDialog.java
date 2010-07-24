@@ -39,7 +39,9 @@ import org.creativecommons.openoffice.ui.SavedSearchThread;
  */
 public class WikimediaDialog extends InsertImageDialog{
 
-    
+    private short savedCommercialStatus;
+    private short savedUpdateStatus;
+    private short savedShareAlikeStatus;
     public static final String CHK_COMMERCIALNAME = "chkCommercial";
     public static final String CHK_COMMERCIALLABEL = "Search for works I can use for commercial purposes";
     public static final String CHK_UPDATENAME = "chkUpdate";
@@ -301,6 +303,24 @@ public class WikimediaDialog extends InsertImageDialog{
             String selTags = (String) xPSet.getPropertyValue("Text");
             this.savedTags = selTags.trim();
 
+            if (getCheckBoxStatus(CHK_COMMERCIALNAME)) {
+                savedCommercialStatus = 1;
+            } else {
+                savedCommercialStatus = 0;
+            }
+
+            if (getCheckBoxStatus(CHK_UPDATENAME)) {
+                savedUpdateStatus = 1;
+            } else {
+                savedUpdateStatus = 0;
+            }
+
+            if (getCheckBoxStatus(CHK_SHAREALKENAME)) {
+                savedShareAlikeStatus = 1;
+            } else {
+                savedShareAlikeStatus = 0;
+            }
+
         } catch (Exception ex) {
             ex.printStackTrace();
         }
@@ -321,7 +341,18 @@ public class WikimediaDialog extends InsertImageDialog{
                     UnoRuntime.queryInterface(XPropertySet.class, xControlModel);
             xPSet.setPropertyValue("Text", this.savedTags);
 
+            Object oLicense = xControlCont.getControl(CHK_COMMERCIALNAME);
+            XCheckBox checkBox = (XCheckBox) UnoRuntime.queryInterface(
+                    XCheckBox.class, oLicense);
+            checkBox.setState(savedCommercialStatus);
 
+            oLicense = xControlCont.getControl(CHK_UPDATENAME);
+            checkBox = (XCheckBox) UnoRuntime.queryInterface(XCheckBox.class, oLicense);
+            checkBox.setState(savedUpdateStatus);
+
+            oLicense = xControlCont.getControl(CHK_SHAREALKENAME);
+            checkBox = (XCheckBox) UnoRuntime.queryInterface(XCheckBox.class, oLicense);
+            checkBox.setState(savedShareAlikeStatus);
         } catch (Exception ex) {
             ex.printStackTrace();
         }
