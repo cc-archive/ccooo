@@ -5,8 +5,6 @@
 package org.creativecommons.openoffice.program;
 
 import com.aetrion.flickr.Flickr;
-import com.aetrion.flickr.FlickrException;
-import com.aetrion.flickr.REST;
 import com.aetrion.flickr.photos.Photo;
 import com.aetrion.flickr.photos.PhotoList;
 import com.aetrion.flickr.photos.PhotosInterface;
@@ -15,12 +13,8 @@ import com.aetrion.flickr.photos.Size;
 import com.aetrion.flickr.photos.licenses.LicensesInterface;
 import com.aetrion.flickr.people.User;
 import java.util.ArrayList;
-import org.creativecommons.license.License;
 import com.aetrion.flickr.people.PeopleInterface;
-import java.io.IOException;
 import java.util.Date;
-import org.creativecommons.openoffice.ui.flickr.FlickrDialog;
-import org.xml.sax.SAXException;
 
 /**
  *
@@ -32,13 +26,15 @@ public class FlickrConnection {
     public String sharedSecret = "e2e9d20a7b2a1cf8"; 	// used for signed calls
     // The above key is a Non-Commercial API key for NiMaL13 flickr user
     public final static FlickrConnection instance = new FlickrConnection();
+    public final static ArrayList<Image> imgList = new ArrayList<Image>();
     private Flickr flickr = new Flickr(apiKEY);
     private SearchParameters currentSearch = null;
 
     protected FlickrConnection() {
     }
 
-    public ArrayList<Image> searchPhotos(String[] tags, String licenseId, int currentPage) {
+    public ArrayList<Image> searchPhotos(String[] tags, String licenseId) {
+        imgList.removeAll(imgList);
         currentSearch = new SearchParameters();
         currentSearch.setSort(SearchParameters.INTERESTINGNESS_DESC);
         currentSearch.setTagMode("all");
@@ -53,8 +49,7 @@ public class FlickrConnection {
         PhotosInterface pInterf = flickr.getPhotosInterface();
         PhotoList list = null;
         try {
-            list = pInterf.search(currentSearch, FlickrDialog.SHOWRESULTSPERROW
-                    * FlickrDialog.SHOWRESULTSPERCOLUMN, currentPage);
+            list = pInterf.search(currentSearch, 100, 1);
         } catch (com.aetrion.flickr.FlickrException ex) {
             ex.printStackTrace();
         } catch (java.io.IOException ex) {
@@ -62,8 +57,6 @@ public class FlickrConnection {
         } catch (org.xml.sax.SAXException ex) {
             ex.printStackTrace();
         }
-
-        ArrayList<Image> imgList = new ArrayList<Image>();
 
         int count = 0;
         for (Object p : list.toArray()) {
@@ -82,9 +75,7 @@ public class FlickrConnection {
                     user.getId(), ph.getId(), ph.getSecret());
 
             imgList.add(img);
-
         }
-
         return imgList;
     }
 

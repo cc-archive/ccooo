@@ -35,23 +35,48 @@ public class SearchThread extends Thread {
         flickrDialog.saveSearch();
         flickrDialog.setProgressValue(0);
         String licenseID = flickrDialog.getLicense();
-                
+        ArrayList<Image> imgList = null;
         if (buttonName.equalsIgnoreCase(FlickrDialog.BTN_SEARCH)) {
-            
             flickrDialog.setCurrentPage(1);
+            imgList = FlickrConnection.instance.searchPhotos(
+                flickrDialog.GetTags(),licenseID);
+            imgList = new ArrayList<Image>();
+            int currentPage = flickrDialog.getCurrentPage();
+            int noOfImg = FlickrDialog.SHOWRESULTSPERCOLUMN * FlickrDialog.SHOWRESULTSPERROW;
+            int limit = currentPage * noOfImg + 1 < FlickrConnection.imgList.size() ?
+                currentPage * noOfImg + 1 : FlickrConnection.imgList.size() - 1;
+            for (int i = 0; i <= limit; i++) {
+                imgList.add(FlickrConnection.imgList.get(i));
+                System.out.println(i);
+            }
+
+        } else if (buttonName.equalsIgnoreCase(FlickrDialog.BTN_PREVIOUS)) {
+
+            flickrDialog.setCurrentPage(flickrDialog.getCurrentPage() - 1);
+            imgList = new ArrayList<Image>();
+            int currentPage = flickrDialog.getCurrentPage();
+            int noOfImg = FlickrDialog.SHOWRESULTSPERCOLUMN * FlickrDialog.SHOWRESULTSPERROW;
+            int start = currentPage-1<0?0:(currentPage-1);
+            int limit = currentPage * noOfImg + 1 < FlickrConnection.imgList.size() ?
+                currentPage * noOfImg + 1 : FlickrConnection.imgList.size() - 1;
+            for (int i = start * noOfImg; i <= limit; i++) {
+                imgList.add(FlickrConnection.imgList.get(i));
+                System.out.println(i);
+            }
+        } else {
+
+            flickrDialog.setCurrentPage(flickrDialog.getCurrentPage() + 1);
+            imgList = new ArrayList<Image>();
+            int currentPage = flickrDialog.getCurrentPage();
+            int noOfImg = FlickrDialog.SHOWRESULTSPERCOLUMN * FlickrDialog.SHOWRESULTSPERROW;
+            int limit = currentPage * noOfImg + 1 < FlickrConnection.imgList.size() ?
+                currentPage * noOfImg + 1 : FlickrConnection.imgList.size() - 1;
+            for (int i = (currentPage - 1) * noOfImg; i <= limit; i++) {
+                imgList.add(FlickrConnection.imgList.get(i));
+                System.out.println(i);
+            }
         }
-            else
-                if (buttonName.equalsIgnoreCase(FlickrDialog.BTN_PREVIOUS)) {
-                
-                    flickrDialog.setCurrentPage(flickrDialog.getCurrentPage() - 1);
-                }
-                else {
-            
-                    flickrDialog.setCurrentPage(flickrDialog.getCurrentPage() + 1);
-                }
-        
-        ArrayList<Image> imgList = FlickrConnection.instance.searchPhotos(
-                flickrDialog.GetTags(),licenseID, flickrDialog.getCurrentPage());
+
         flickrDialog.setProgressValue(15);
         flickrDialog.showResults(imgList, 15);
         flickrDialog.setProgressValue(100);
