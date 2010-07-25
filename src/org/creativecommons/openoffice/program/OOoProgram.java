@@ -157,17 +157,17 @@ public abstract class OOoProgram implements IVisibleNotice {
             XDocumentMetadataAccess xDMA = (XDocumentMetadataAccess)
                     UnoRuntime.queryInterface(XDocumentMetadataAccess.class, this.getComponent());
 
-            XURI xType = URI.create(m_xContext, xDMA.getStringValue());//xDMA.getStringValue()+title
-
             try {
                 xDMA.removeMetadataFile(URI.create(m_xContext, xDMA.getNamespace() + "meta.rdf"));
             } catch (java.lang.Exception eRemove) {
                 //eRemove.printStackTrace();
             }
-
-            XURI xGraphName = xDMA.addMetadataFile("meta.rdf", new XURI[]{xType});
+            
+            XURI xType = URI.create(m_xContext, xDMA.getStringValue());
+            XURI xTypeRights = URI.create(m_xContext, "http://purl.org/dc/elements/1.1/rights");
+            XURI xGraphName = xDMA.addMetadataFile("meta.rdf", new XURI[]{xTypeRights});
             XNamedGraph xGraph = xDMA.getRDFRepository().getGraph(xGraphName);
-
+            
 //            XURI dcElementsURI = URI.create(m_xContext, "http://purl.org/dc/elements/1.1/");
 //            XBlankNode dcElementsNode = BlankNode.create(m_xContext, "dc");
 //            xGraph.addStatement(dcElementsNode, dcElementsURI, dcElementsNode);
@@ -176,16 +176,16 @@ public abstract class OOoProgram implements IVisibleNotice {
 //            XBlankNode dcTermsNode = BlankNode.create(m_xContext, "terms");
 //            xGraph.addStatement(dcTermsURI, dcTermsURI, dcTermsNode);
 
-            XURI nodeRights = URI.create(m_xContext, "http://purl.org/dc/elements/1.1#rights");
+            XURI nodeRights = URI.create(m_xContext, "http://purl.org/dc/elements/1.1/rights");
             XLiteral valRights = Literal.create(m_xContext, "© " + author
                     + " licensed to the public under the " + license.getName() + " license");
             xGraph.addStatement(xType, nodeRights, valRights);
 
-            XURI nodeLicense = URI.create(m_xContext, "http://purl.org/dc/terms#license");
+            XURI nodeLicense = URI.create(m_xContext, "http://purl.org/dc/terms/license");
             XLiteral valLicense = Literal.create(m_xContext, license.getLicenseUri());
             xGraph.addStatement(xType, nodeLicense, valLicense);
 
-            XURI noderightsHolder = URI.create(m_xContext, "http://purl.org/dc/terms#rightsHolder");
+            XURI noderightsHolder = URI.create(m_xContext, "http://purl.org/dc/terms/rightsHolder");
             XLiteral valrightsHolder = Literal.create(m_xContext, author);
             xGraph.addStatement(xType, noderightsHolder, valrightsHolder);
 
