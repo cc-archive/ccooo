@@ -27,7 +27,7 @@ public class OpenClipArtConnection {
     protected OpenClipArtConnection() {
     }
 
-    public ArrayList<Image> searchPhotos(String[] tags, int currentPage) {
+    public ArrayList<Image> searchPhotos(String[] tags) {
 
         imgList.removeAll(imgList);
         String tagLine = "";

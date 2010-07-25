@@ -37,8 +37,7 @@ public class SearchThread extends Thread {
         ArrayList<Image> imgList = null;
         if (buttonName.equalsIgnoreCase(PicasaDialog.BTN_SEARCH)) {
             //PicasaConnection p=PicasaConnection.instance;
-            PicasaConnection.instance.searchPhotos(
-                    picasaDialog.GetTags(), picasaDialog.getCurrentPage(),licenseID);
+            PicasaConnection.instance.searchPhotos(picasaDialog.GetTags(),licenseID);
             picasaDialog.setCurrentPage(1);
             imgList = new ArrayList<Image>();
             int currentPage = picasaDialog.getCurrentPage();
@@ -48,7 +47,6 @@ public class SearchThread extends Thread {
                 currentPage * noOfImg + 1 : PicasaConnection.imgList.size() - 1;
             for (int i = 0; i <= limit; i++) {
                 imgList.add(PicasaConnection.imgList.get(i));
-                System.out.println(i);
             }
         } else if (buttonName.equalsIgnoreCase(PicasaDialog.BTN_PREVIOUS)) {
 
@@ -57,12 +55,11 @@ public class SearchThread extends Thread {
             int currentPage = picasaDialog.getCurrentPage();
             int noOfImg = PicasaDialog.SHOWRESULTSPERCOLUMN
                     * PicasaDialog.SHOWRESULTSPERROW;
-            int start = currentPage - 1 < 0 ? 0 : (currentPage - 1);
-            int limit = currentPage * noOfImg + 1 < PicasaConnection.imgList.size() ?
-                currentPage * noOfImg + 1 : PicasaConnection.imgList.size() - 1;
-            for (int i = start*noOfImg; i <= limit; i++) {
+            int start = currentPage - 1 < 0 ? 0 : (currentPage - 1) * noOfImg;
+            int limit = currentPage * noOfImg + 1 < PicasaConnection.imgList.size()
+                    ? currentPage * noOfImg + 1 : PicasaConnection.imgList.size() - 1;
+            for (int i = start; i <= limit; i++) {
                 imgList.add(PicasaConnection.imgList.get(i));
-                System.out.println(i);
             }
         } else {
 
@@ -75,7 +72,6 @@ public class SearchThread extends Thread {
                 currentPage * noOfImg + 1 : PicasaConnection.imgList.size() - 1;
             for (int i = (currentPage - 1) * noOfImg; i <= limit; i++) {
                 imgList.add(PicasaConnection.imgList.get(i));
-                System.out.println(i);
             }
         }
 

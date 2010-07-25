@@ -37,7 +37,7 @@ public class PicasaConnection {
     protected PicasaConnection() {
     }
 
-    public ArrayList<Image> searchPhotos(String[] tags, int currentPage, String licenseID) {
+    public ArrayList<Image> searchPhotos(String[] tags, String licenseID) {
 
         imgList.removeAll(imgList);
         String tagLine = "";
