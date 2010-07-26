@@ -40,16 +40,16 @@ import org.creativecommons.openoffice.ui.SavedSearchThread;
  */
 public class PicasaDialog extends InsertImageDialog{
 
-    public static final String RDO_COMMERCIALNAME = "rdoCommercial";
-    public static final String RDO_COMMERCIALLABEL = "Search for works I can use for commercial purposes";
-    public static final String RDO_UPDATENAME = "chkUpdate";
-    public static final String RDO_UPDATELABEL = "Search for works I can modify, adapt, or build upon";
-    public static final String RDO_CCNAME = "rdoCC";
-    public static final String RDO_CCLABEL = "Images with Creative Commons Licenses (Including above two)";
+    public static final String CHK_COMMERCIALNAME = "chkCommercial";
+    public static final String CHK_COMMERCIALLABEL = "Search for works I can use for commercial purposes";
+    public static final String CHK_UPDATENAME = "chkUpdate";
+    public static final String CHK_UPDATELABEL = "Search for works I can modify, adapt, or build upon";
+    public static final String CHK_SHAREALKENAME = "chkShareAlike";
+    public static final String CHK_SHAREALKELABEL = "Include content which requires me to Share-Alike";
 
     private short savedCommercialStatus;
     private short savedUpdateStatus;
-    private short savedCCStatus;
+    private short savedShareAlikeStatus;
 
     /**
      * Creates a new instance of ChooserDialog
@@ -97,23 +97,27 @@ public class PicasaDialog extends InsertImageDialog{
                     "com.sun.star.awt.UnoControlEditModel");
             createAWTControl(txtTags, TXT_TAGS, "", new Rectangle(30, 10, 150, 12));
 
-            Object rdoCommercial = msfLicenseSelector.createInstance(
-                    "com.sun.star.awt.UnoControlRadioButtonModel");
-            XPropertySet xpsRDOProperties = createAWTControl(rdoCommercial, RDO_COMMERCIALNAME, RDO_COMMERCIALLABEL,
+            Object chkCommercial = msfLicenseSelector.createInstance(
+                    "com.sun.star.awt.UnoControlCheckBoxModel");
+            XPropertySet xpsCHKProperties = createAWTControl(chkCommercial, CHK_COMMERCIALNAME, CHK_COMMERCIALLABEL,
                     new Rectangle(10, 27, 150, 12));
-            xpsRDOProperties.setPropertyValue("State", new Short((short) 1));
 
-            Object rdoUpdate = msfLicenseSelector.createInstance(
-                    "com.sun.star.awt.UnoControlRadioButtonModel");
-            xpsRDOProperties = createAWTControl(rdoUpdate, RDO_UPDATENAME, RDO_UPDATELABEL,
+            xpsCHKProperties.setPropertyValue("TriState", Boolean.FALSE);
+            xpsCHKProperties.setPropertyValue("State", new Short((short) 1));
+
+            Object chkUpdate = msfLicenseSelector.createInstance(
+                    "com.sun.star.awt.UnoControlCheckBoxModel");
+            xpsCHKProperties = createAWTControl(chkUpdate, CHK_UPDATENAME, CHK_UPDATELABEL,
                     new Rectangle(10, 39, 150, 12));
-            xpsRDOProperties.setPropertyValue("State", new Short((short) 0));
+            xpsCHKProperties.setPropertyValue("TriState", Boolean.FALSE);
+            xpsCHKProperties.setPropertyValue("State", new Short((short) 1));
 
-            Object chkCC = msfLicenseSelector.createInstance(
-                    "com.sun.star.awt.UnoControlRadioButtonModel");
-            xpsRDOProperties = createAWTControl(chkCC, RDO_CCNAME, RDO_CCLABEL,
-                    new Rectangle(10, 51, 190, 12)); //(50, 66, 150, 12));
-            xpsRDOProperties.setPropertyValue("State", new Short((short) 0));
+            Object chkShareAlike = msfLicenseSelector.createInstance(
+                    "com.sun.star.awt.UnoControlCheckBoxModel");
+            xpsCHKProperties = createAWTControl(chkShareAlike, CHK_SHAREALKENAME, CHK_SHAREALKELABEL,
+                    new Rectangle(10, 51, 150, 12)); //(50, 66, 150, 12));
+            xpsCHKProperties.setPropertyValue("TriState", Boolean.FALSE);
+            xpsCHKProperties.setPropertyValue("State", new Short((short) 0));
 
             Object searchButton = msfLicenseSelector.createInstance(
                     "com.sun.star.awt.UnoControlButtonModel");
@@ -295,22 +299,22 @@ public class PicasaDialog extends InsertImageDialog{
             String selTags = (String) xPSet.getPropertyValue("Text");
             this.savedTags = selTags.trim();
 
-            if (getRadioButtonStatus(RDO_COMMERCIALNAME)) {
+            if (getCheckBoxStatus(CHK_COMMERCIALNAME)) {
                 savedCommercialStatus = 1;
             } else {
                 savedCommercialStatus = 0;
             }
 
-            if (getRadioButtonStatus(RDO_UPDATENAME)) {
+            if (getCheckBoxStatus(CHK_UPDATENAME)) {
                 savedUpdateStatus = 1;
             } else {
                 savedUpdateStatus = 0;
             }
 
-            if (getRadioButtonStatus(RDO_CCNAME)) {
-                savedCCStatus = 1;
+            if (getCheckBoxStatus(CHK_SHAREALKENAME)) {
+                savedShareAlikeStatus = 1;
             } else {
-                savedCCStatus = 0;
+                savedShareAlikeStatus = 0;
             }
 
         } catch (Exception ex) {
@@ -321,8 +325,8 @@ public class PicasaDialog extends InsertImageDialog{
     public void startSavedSearch() {
 
         setMousePointer(SystemPointer.WAIT);
-        enableControl(PicasaDialog.BTN_SEARCH, false);
-        enableControl(PicasaDialog.BTN_NEXT, false);
+        enableControl(InsertImageDialog.BTN_SEARCH, false);
+        enableControl(InsertImageDialog.BTN_NEXT, false);
         currentPositionInList = 0;
 
         try {
@@ -333,18 +337,18 @@ public class PicasaDialog extends InsertImageDialog{
                     XPropertySet.class, xControlModel);
             xPSet.setPropertyValue("Text", this.savedTags);
 
-            Object oLicense = xControlCont.getControl(RDO_COMMERCIALNAME);
+            Object oLicense = xControlCont.getControl(CHK_COMMERCIALNAME);
             XCheckBox checkBox = (XCheckBox) UnoRuntime.queryInterface(
                     XCheckBox.class, oLicense);
             checkBox.setState(savedCommercialStatus);
 
-            oLicense = xControlCont.getControl(RDO_UPDATENAME);
+            oLicense = xControlCont.getControl(CHK_UPDATENAME);
             checkBox = (XCheckBox) UnoRuntime.queryInterface(XCheckBox.class, oLicense);
             checkBox.setState(savedUpdateStatus);
 
-            oLicense = xControlCont.getControl(RDO_CCNAME);
+            oLicense = xControlCont.getControl(CHK_SHAREALKENAME);
             checkBox = (XCheckBox) UnoRuntime.queryInterface(XCheckBox.class, oLicense);
-            checkBox.setState(savedCCStatus);
+            checkBox.setState(savedShareAlikeStatus);
 
         } catch (Exception ex) {
             ex.printStackTrace();
@@ -355,6 +359,22 @@ public class PicasaDialog extends InsertImageDialog{
         enableControl(PicasaDialog.BTN_SEARCH, true);
         // enableControl(PicasaDialog.BTN_NEXT, true);
         setMousePointer(SystemPointer.ARROW);
+    }
+
+    public boolean getCheckBoxStatus(String ctrlName) {
+
+        Object oLicense = xControlCont.getControl(ctrlName);
+        XCheckBox checkBox = (XCheckBox) UnoRuntime.queryInterface(XCheckBox.class, oLicense);
+
+        Object value = checkBox.getState();
+        if (value != null) {
+
+            short chkStatus = new Short(value.toString());
+            if (chkStatus == 1) {
+                return true;
+            }
+        }
+        return false;
     }
 
     public boolean getRadioButtonStatus(String ctrlName) {
@@ -371,23 +391,45 @@ public class PicasaDialog extends InsertImageDialog{
 
     public String getLicense() {
 
-        boolean commercial = getRadioButtonStatus(RDO_COMMERCIALNAME);
-        boolean update = getRadioButtonStatus(RDO_UPDATENAME);
-        boolean cc = getRadioButtonStatus(RDO_CCNAME);
+        boolean commercial = getCheckBoxStatus(CHK_COMMERCIALNAME);
+        boolean update = getCheckBoxStatus(CHK_UPDATENAME);
+        boolean shareAlike = getCheckBoxStatus(CHK_SHAREALKENAME);
 
-        if (commercial) {
-            return "commercial";
+        if (commercial && update && shareAlike) {
+            return "gphoto:license/@id='4' or gphoto:license/@id='5'";
+        } else if (commercial && update) {
+            return "gphoto:license/@id='4'";
+        } else if (update && shareAlike) {
+            return "gphoto:license/@id='1' or gphoto:license/@id='2' or gphoto:license/@id='3' or gphoto:license/@id='4' or gphoto:license/@id='5'";
+        } else if (commercial) {
+            return "gphoto:license/@id='4' or gphoto:license/@id='5' or gphoto:license/@id='6'";
         } else if (update) {
-            return "remix";
-        } else if (cc) {
-            return "creative_commons";
+            return "gphoto:license/@id='2' or gphoto:license/@id='4'";
         }
-        return null;
+
+        //default atribution license
+        return "gphoto:license/@id='4'";
     }
 
     public boolean IsInputValid() {
 
-        if (this.GetTags().length == 0||this.getLicense()==null) {
+        if (this.GetTags().length == 0) {
+            return false;
+        }
+
+        boolean commercial = getCheckBoxStatus(CHK_COMMERCIALNAME);
+        boolean update = getCheckBoxStatus(CHK_UPDATENAME);
+        boolean shareAlike = getCheckBoxStatus(CHK_SHAREALKENAME);
+
+        if (!commercial && !update && !shareAlike) {
+            return false;
+        }
+
+        if (commercial && !update && shareAlike) {
+            return false;
+        }
+
+        if (!commercial && !update && shareAlike) {
             return false;
         }
 

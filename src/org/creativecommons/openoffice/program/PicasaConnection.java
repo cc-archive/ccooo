@@ -11,11 +11,9 @@
  */
 package org.creativecommons.openoffice.program;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.net.URL;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -45,54 +43,75 @@ public class PicasaConnection {
             tagLine += "+" + tags[i];
         }
         tagLine = tagLine.replaceFirst("\\+", "");
-        String title = null, imgUrl = null, imgUrlMainPage = null, imgUrlThumb = null, licenseURL = null, userID = null, profile = null;
+        String title = null, imgUrl = null, imgUrlMainPage = null,
+                imgUrlThumb = null, userID = null, userName=null,
+                profile = null, licenseCode = null, licenseURL = null, licenseNumber = null;
         try {
-
+            
             DocumentBuilderFactory docBuilderFactory = DocumentBuilderFactory.newInstance();
             DocumentBuilder docBuilder = docBuilderFactory.newDocumentBuilder();
-            Document doc = docBuilder.parse("http://picasaweb.google.com/data/feed/base/"
-                    + "all?alt=rss&kind=photo&access=public&filter=1&q="
-                    + tagLine + "&imglic="+licenseID+"&thumbsize=144");//CC-BY
+            Document doc = docBuilder.parse("http://picasaweb.google.com/data/feed/api/"
+                    + "all?&kind=photo&access=public&filter=1&q="//,320,640,800
+                    + tagLine + "&imglic=creative_commons&thumbsize=144&max-results=500" +
+                    "&fields=entry["+licenseID+"](title," +
+                    "link[@rel='alternate'](@href),author(uri),gphoto:width," +
+                    "gphoto:height,gphoto:license(@url)," +
+                    "media:group(media:credit,media:thumbnail,media:content(@url)))");
             //&imgmax=94, 110, 128, 200, 220, 288, 320, 400, 512, 576, 640, 720, 800, 912, 1024, 1152, 1280, 1440, 1600
 
             //normalize text representation
             doc.getDocumentElement().normalize();
 
-            NodeList listOfItems = doc.getElementsByTagName("item");
+            NodeList listOfItems = doc.getElementsByTagName("entry");
 
             for (int s = 0; s < listOfItems.getLength(); s++) {
 
-                System.out.println(s);
                 for (int i = 0; i < listOfItems.item(s).getChildNodes().getLength(); i++) {
-                    String value = goToDepth(listOfItems.item(s).getChildNodes().item(i)).getNodeValue();
-                    String node = listOfItems.item(s).getChildNodes().item(i).getNodeName();
-                    if (node.equalsIgnoreCase("title")) {
+                    Node node = listOfItems.item(s).getChildNodes().item(i);
+                    String value = goToDepth(node).getNodeValue();
+                    String nodeName = node.getNodeName();
+                    if (nodeName.equalsIgnoreCase("title")) {
                         title = value;
-                    } else if (node.equalsIgnoreCase("link")) {
-                        imgUrlMainPage = value;
-                    } else if (node.equalsIgnoreCase("author")) {
-                        userID = value.split("\\(")[0].trim();
-                        profile = "http://picasaweb.google.com/" + userID;
-                    } else if (node.equalsIgnoreCase("enclosure")) {
-                        imgUrl = listOfItems.item(s).getChildNodes().item(i).
-                                getAttributes().getNamedItem("url").getNodeValue();
-                    } else if (node.equalsIgnoreCase("media:group")) {
+                    } else if (nodeName.equalsIgnoreCase("link")) {
+                        imgUrlMainPage = node.getAttributes().getNamedItem("href").getNodeValue();
+                    } else if (nodeName.equalsIgnoreCase("author")) {
+                        userID = value.replace("http://picasaweb.google.com/", "");
+                        userName=userID;
+                        profile = value;
+                    } else if (nodeName.equalsIgnoreCase("enclosure")) {
+                        imgUrl = node.getAttributes().getNamedItem("url").getNodeValue();
+                    } else if (nodeName.equalsIgnoreCase("media:group")) {
                         for (int j = 0;
-                                j < listOfItems.item(s).getChildNodes().item(i).
-                                getChildNodes().getLength(); j++) {
+                                j < node.getChildNodes().getLength(); j++) {
 
-                            if (listOfItems.item(s).getChildNodes().item(i).
-                                    getChildNodes().item(j).getNodeName().
+                            if (node.getChildNodes().item(j).getNodeName().
                                     equalsIgnoreCase("media:thumbnail")) {
-
-                                imgUrlThumb = listOfItems.item(s).getChildNodes().item(i).
-                                        getChildNodes().item(j).getAttributes().
+                                imgUrlThumb = node.getChildNodes().item(j).getAttributes().
                                         getNamedItem("url").getNodeValue();
+                            } else if (node.getChildNodes().item(j).getNodeName().
+                                    equalsIgnoreCase("media:content")) {
+                                imgUrl = node.getChildNodes().item(j).getAttributes().getNamedItem("url").getNodeValue();
+                            } else if (node.getChildNodes().item(j).getNodeName().
+                                    equalsIgnoreCase("media:credit")) {
+                                userName = node.getChildNodes().item(j).getFirstChild().getNodeValue();
                             }
                         }
-                    } else if (node.equalsIgnoreCase("guid")) {
-                        licenseURL = value.split("\\?")[0];
-                        System.out.println(licenseURL);
+                    } else if (nodeName.equalsIgnoreCase("gphoto:license")) {
+                        if (value.equals("ATTRIBUTION")) {
+                            licenseCode = "cc by";
+                        } else if (value.equals("ATTRIBUTION_SHARE_ALIKE")) {
+                            licenseCode = "cc by sa";
+                        } else if (value.equals("ATTRIBUTION_NO_DERIVATIVES")) {
+                            licenseCode = "cc by nd";
+                        } else if (value.equals("ATTRIBUTION_NON_COMMERCIAL")) {
+                            licenseCode = "cc by nc";
+                        } else if (value.equals("ATTRIBUTION_NON_COMMERCIAL_SHARE_ALIKE")) {
+                            licenseCode = "cc by nc sa";
+                        } else if (value.equals("ATTRIBUTION_NON_COMMERCIAL_NO_DERIVATIVES")) {
+                            licenseCode = "cc by nc nd";
+                        }
+                        licenseURL = node.getAttributes().getNamedItem("url").getNodeValue();
+                        licenseNumber = licenseURL.split("/")[licenseURL.split("/").length - 1];
                     }
                 }
 
@@ -100,9 +119,9 @@ public class PicasaConnection {
                     Image img = new Image(title, null, null, imgUrlThumb, profile,
                             null, imgUrlMainPage, userID, title, null);
                     img.setSelectedImageURL(imgUrl);
-                    img.setUserName(userID);
-                    img.setLicenseCode("-");
-                    img.setLicenseNumber("-");
+                    img.setUserName(userName);
+                    img.setLicenseCode(licenseCode);
+                    img.setLicenseNumber(licenseNumber);
                     img.setLicenseURL(licenseURL);
                     imgList.add(img);
                 }
@@ -128,62 +147,6 @@ public class PicasaConnection {
             return goToDepth(node.getFirstChild());
         } else {
             return node;
-        }
-    }
-
-    public void setImageLisence(Image image) {
-        try {
-            DocumentBuilderFactory docBuilderFactory = DocumentBuilderFactory.newInstance();
-            DocumentBuilder docBuilder = docBuilderFactory.newDocumentBuilder();
-            Document doc = docBuilder.parse(image.getLicenseURL());
-            doc.getDocumentElement().normalize();
-            NodeList listOfLinks = doc.getElementsByTagName("link");
-            for (int i = 0; i < listOfLinks.getLength(); i++) {
-                if (listOfLinks.item(i).getAttributes().getNamedItem("rel").
-                        getNodeValue().equalsIgnoreCase("http://schemas.google.com/photos/2007#canonical")) {
-                    URL url = new URL(listOfLinks.item(i).getAttributes().
-                            getNamedItem("href").getNodeValue());
-                    BufferedReader in =
-                            new BufferedReader(new InputStreamReader(url.openStream()));
-                    //System.out.println("Modi before reading " + (new Date().getTime() - time));
-                    String inputLine = "";
-                    while ((inputLine = in.readLine()) != null) {
-                        if (inputLine.contains("ATTRIBUTION")) {
-                            if (inputLine.contains("ATTRIBUTION_SHARE_ALIKE")) {
-                                image.setLicenseCode("cc-by-sa");
-                                image.setLicenseURL("http://creativecommons.org/licenses/by-sa/3.0/");
-
-                            } else if (inputLine.contains("ATTRIBUTION_NO_DERIVATIVES")) {
-                                image.setLicenseCode("cc-by-nd");
-                                image.setLicenseURL("http://creativecommons.org/licenses/by-nd/3.0/");
-
-                            } else if (inputLine.contains("ATTRIBUTION_NON_COMMERCIAL")) {
-                                image.setLicenseCode("cc-by-nc");
-                                image.setLicenseURL("http://creativecommons.org/licenses/by-nc/3.0/");
-
-                            } else if (inputLine.contains("ATTRIBUTION_NON_COMMERCIAL_SHARE_ALIKE")) {
-                                image.setLicenseCode("cc-by-nc-sa");
-                                image.setLicenseURL("http://creativecommons.org/licenses/by-nc-sa/3.0/");
-
-                            } else if (inputLine.contains("ATTRIBUTION_NON_COMMERCIAL_NO_DERIVATIVES")) {
-                                image.setLicenseCode("cc-by-nc-nd");
-                                image.setLicenseURL("http://creativecommons.org/licenses/by-nc-nd/3.0/");
-
-                            } else {
-                                image.setLicenseCode("cc-by");
-                                image.setLicenseURL("http://creativecommons.org/licenses/by/3.0");
-                            }
-                            image.setLicenseNumber("3.0");
-                        }
-                    }
-                }
-            }
-        } catch (SAXException ex) {
-            Logger.getLogger(PicasaConnection.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (IOException ex) {
-            Logger.getLogger(PicasaConnection.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (ParserConfigurationException ex) {
-            Logger.getLogger(PicasaConnection.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 }

@@ -43,7 +43,6 @@ public class PicasaImageButtonListener extends ImageButtonListener{
         } else if (_mouseEvent.Buttons == MouseButton.LEFT && _mouseEvent.ClickCount == 2) {
             imageDialog.close();
             imageDialog.setSelectedImage(currentImage);
-            PicasaConnection.instance.setImageLisence(currentImage);
             addin.getProgramWrapper().insertPicture(imageDialog.getSelectedImage());
         }
     }
