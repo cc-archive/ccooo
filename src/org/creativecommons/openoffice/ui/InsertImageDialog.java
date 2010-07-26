@@ -7,8 +7,10 @@
  */
 package org.creativecommons.openoffice.ui;
 
+import com.sun.star.awt.SystemPointer;
 import java.awt.Rectangle;
 import com.sun.star.awt.XButton;
+import com.sun.star.awt.XCheckBox;
 import com.sun.star.awt.XPointer;
 import com.sun.star.awt.XControl;
 import com.sun.star.awt.XControlContainer;
@@ -57,9 +59,7 @@ public abstract class InsertImageDialog {
     protected Image loadingImage = null;
     protected SearchClickListener searchClickListener = null;
     public static final String LBL_TAGS = "lblTags";
-    public static final String TXT_TAGS = "txtTags";
-    //public static final String LBL_LICENSE = "lblLicense";
-    //public static final String LISTBOX_LICENSE = "cmbLicense";    
+    public static final String TXT_TAGS = "txtTags";    
     public static final String BTN_SEARCH = "btnSearch";
     public static final String searchButtonLabel = "Search";
     public static final String GB_RESULTS = "gbResults";
@@ -68,6 +68,12 @@ public abstract class InsertImageDialog {
     public static final String BTN_PREVIOUS = "btnPrevious";
     public static final String BTN_PREVIOUSLABEL = "Previous";
     public static final String PB_NAME = "progressBar";
+    public static final String CHK_COMMERCIALNAME = "chkCommercial";
+    public static final String CHK_COMMERCIALLABEL = "Search for works I can use for commercial purposes";
+    public static final String CHK_UPDATENAME = "chkUpdate";
+    public static final String CHK_UPDATELABEL = "Search for works I can modify, adapt, or build upon";
+    public static final String CHK_SHAREALKENAME = "chkShareAlike";
+    public static final String CHK_SHAREALKELABEL = "Include content which requires me to Share-Alike";
     public static final int SHOWRESULTSPERROW = 4;
     public static final int SHOWRESULTSPERCOLUMN = 4;
     public static final int DIALOGX = 100;
@@ -75,6 +81,9 @@ public abstract class InsertImageDialog {
     public static final int DIALOGWIDTH = 240;
     public static final int DIALOGHEIHT = 375;
 
+    private short savedCommercialStatus;
+    private short savedUpdateStatus;
+    private short savedShareAlikeStatus;
     public int positionWidthHeight;//50
     public int locationMagesy;//100
 
@@ -406,6 +415,78 @@ public abstract class InsertImageDialog {
         }
     }
 
+    public void saveSearch() {
+
+        try {
+
+            Object oTags = xControlCont.getControl(TXT_TAGS);
+            XControl txtTags = (XControl) UnoRuntime.queryInterface(XControl.class, oTags);
+            XControlModel xControlModel = txtTags.getModel();
+            XPropertySet xPSet = (XPropertySet) UnoRuntime.queryInterface(XPropertySet.class, xControlModel);
+            String selTags = (String) xPSet.getPropertyValue("Text");
+            this.savedTags = selTags.trim();
+
+            if (getCheckBoxStatus(CHK_COMMERCIALNAME)) {
+                savedCommercialStatus = 1;
+            } else {
+                savedCommercialStatus = 0;
+            }
+
+            if (getCheckBoxStatus(CHK_UPDATENAME)) {
+                savedUpdateStatus = 1;
+            } else {
+                savedUpdateStatus = 0;
+            }
+
+            if (getCheckBoxStatus(CHK_SHAREALKENAME)) {
+                savedShareAlikeStatus = 1;
+            } else {
+                savedShareAlikeStatus = 0;
+            }
+
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+    }
+
+    public void startSavedSearch() {
+
+        setMousePointer(SystemPointer.WAIT);
+        enableControl(InsertImageDialog.BTN_SEARCH, false);
+        enableControl(InsertImageDialog.BTN_NEXT, false);
+        currentPositionInList = 0;
+
+        try {
+            Object oTags = xControlCont.getControl(TXT_TAGS);
+            XControl txtTags = (XControl) UnoRuntime.queryInterface(XControl.class, oTags);
+            XControlModel xControlModel = txtTags.getModel();
+            XPropertySet xPSet = (XPropertySet)
+                    UnoRuntime.queryInterface(XPropertySet.class, xControlModel);
+            xPSet.setPropertyValue("Text", this.savedTags);
+
+            Object oLicense = xControlCont.getControl(CHK_COMMERCIALNAME);
+            XCheckBox checkBox = (XCheckBox) UnoRuntime.queryInterface(
+                    XCheckBox.class, oLicense);
+            checkBox.setState(savedCommercialStatus);
+
+            oLicense = xControlCont.getControl(CHK_UPDATENAME);
+            checkBox = (XCheckBox) UnoRuntime.queryInterface(XCheckBox.class, oLicense);
+            checkBox.setState(savedUpdateStatus);
+
+            oLicense = xControlCont.getControl(CHK_SHAREALKENAME);
+            checkBox = (XCheckBox) UnoRuntime.queryInterface(XCheckBox.class, oLicense);
+            checkBox.setState(savedShareAlikeStatus);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+
+        showResults(currentList, 0);
+        setProgressValue(100);
+        enableControl(InsertImageDialog.BTN_SEARCH, true);
+        // enableControl(WikimediaDialog.BTN_NEXT, true);
+        setMousePointer(SystemPointer.ARROW);
+    }
+
     public abstract String getLicense();
 
     public XNameContainer getNameContainer() {
@@ -433,11 +514,46 @@ public abstract class InsertImageDialog {
         this.xDialog.endExecute();
     }
 
-    public abstract boolean IsInputValid();
+    public boolean IsInputValid() {
 
-    public abstract void saveSearch();
+        if (this.GetTags().length == 0) {
+            return false;
+        }
 
-    public abstract void startSavedSearch();
+        boolean commercial = getCheckBoxStatus(CHK_COMMERCIALNAME);
+        boolean update = getCheckBoxStatus(CHK_UPDATENAME);
+        boolean shareAlike = getCheckBoxStatus(CHK_SHAREALKENAME);
+
+        if (!commercial && !update && !shareAlike) {
+            return false;
+        }
+
+        if (commercial && !update && shareAlike) {
+            return false;
+        }
+
+        if (!commercial && !update && shareAlike) {
+            return false;
+        }
+
+        return true;
+    }
+
+    public boolean getCheckBoxStatus(String ctrlName) {
+
+        Object oLicense = xControlCont.getControl(ctrlName);
+        XCheckBox checkBox = (XCheckBox) UnoRuntime.queryInterface(XCheckBox.class, oLicense);
+
+        Object value = checkBox.getState();
+        if (value != null) {
+
+            short chkStatus = new Short(value.toString());
+            if (chkStatus == 1) {
+                return true;
+            }
+        }
+        return false;
+    }
 
     public void setLoadable(boolean val) {
         this.isLoadable = val;

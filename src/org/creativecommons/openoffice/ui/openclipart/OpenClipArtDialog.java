@@ -252,6 +252,7 @@ public class OpenClipArtDialog extends InsertImageDialog{
 
     }
 
+    @Override
     public void saveSearch() {
 
         try {
@@ -269,6 +270,7 @@ public class OpenClipArtDialog extends InsertImageDialog{
         }
     }
 
+    @Override
     public void startSavedSearch() {
 
         setMousePointer(SystemPointer.WAIT);
@@ -300,6 +302,7 @@ public class OpenClipArtDialog extends InsertImageDialog{
         return null;
     }
 
+    @Override
     public boolean IsInputValid() {
         if (this.GetTags().length == 0) {
             return false;
