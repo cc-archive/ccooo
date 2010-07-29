@@ -1,12 +1,12 @@
 <?xml version='1.0' encoding='UTF-8'?>
 
-<oor:component-data xmlns:oor="http://openoffice.org/2001/registry" 
+<oor:component-data xmlns:oor="http://openoffice.org/2001/registry"
                     xmlns:xs="http://www.w3.org/2001/XMLSchema"
                     oor:name="Addons"
                     oor:package="org.openoffice.Office">
     <node oor:name="AddonUI">
         <node oor:name="OfficeMenuBarMerging">
-            <node oor:name="org.openoffice.test.testcomponent" oor:op="replace">
+            <node oor:name="org.creativecommons.openoffice.ccooo" oor:op="replace">
                 <node oor:name="S1" oor:op="replace">
                     <prop oor:name="MergePoint">
                         <!--<value>.uno:InsertMenu\.uno:InsertDoc</value>-->
@@ -51,7 +51,7 @@
                                         <value>com.sun.star.drawing.DrawingDocument,com.sun.star.presentation.PresentationDocument,com.sun.star.sheet.SpreadsheetDocument,com.sun.star.text.TextDocument</value>
                                     </prop>
                                     <prop oor:name="Title" oor:type="xs:string">
-                                        <value>Insert Sharing &amp; Reuse Permissions Statement</value>
+                                        <value/>
                                         <value xml:lang="en">Insert Sharing &amp; Reuse Permissions Statement</value>
                                     </prop>
                                 </node>
@@ -69,7 +69,7 @@
                                         <value>com.sun.star.drawing.DrawingDocument,com.sun.star.presentation.PresentationDocument,com.sun.star.sheet.SpreadsheetDocument,com.sun.star.text.TextDocument</value>
                                     </prop>
                                     <prop oor:name="Title" oor:type="xs:string">
-                                        <value>Set Sharing &amp; Reuse Permissions</value>
+                                        <value/>
                                         <value xml:lang="en">Set Sharing &amp; Reuse Permissions</value>
                                     </prop>
                                 </node>
@@ -79,7 +79,7 @@
                     </node>
                 </node>
             </node>
-            <node oor:name="org.openoffice.test.testcomponent1" oor:op="replace">
+            <node oor:name="org.creativecommons.openoffice.ccooo.InsertPictureFlickr" oor:op="replace">
                 <node oor:name="S1" oor:op="replace">
                     <prop oor:name="MergePoint">
                         <value>.uno:InsertMenu\.uno:GraphicMenu\.uno:InsertGraphic</value>
@@ -105,14 +105,14 @@
                                 <value>com.sun.star.drawing.DrawingDocument,com.sun.star.presentation.PresentationDocument,com.sun.star.sheet.SpreadsheetDocument,com.sun.star.text.TextDocument</value>
                             </prop>
                             <prop oor:name="Title" oor:type="xs:string">
-                                <value>From Flickr ... </value>
+                                <value/>
                                 <value xml:lang="en">From Flickr ... </value>
                             </prop>
                         </node>
                     </node>
                 </node>
             </node>
-            <node oor:name="org.openoffice.test.testcomponent2" oor:op="replace">
+            <node oor:name="org.creativecommons.openoffice.ccooo.InsertOpenClipArt" oor:op="replace">
                 <node oor:name="S1" oor:op="replace">
                     <prop oor:name="MergePoint">
                         <value>.uno:InsertMenu\.uno:GraphicMenu\.uno:InsertGraphic</value>
@@ -138,14 +138,14 @@
                                 <value>com.sun.star.drawing.DrawingDocument,com.sun.star.presentation.PresentationDocument,com.sun.star.sheet.SpreadsheetDocument,com.sun.star.text.TextDocument</value>
                             </prop>
                             <prop oor:name="Title" oor:type="xs:string">
-                                <value>From Open Clip Art ... </value>
+                                <value/>
                                 <value xml:lang="en">From Open Clip Art ... </value>
                             </prop>
                         </node>
                     </node>
                 </node>
             </node>
-            <node oor:name="org.openoffice.test.testcomponent3" oor:op="replace">
+            <node oor:name="org.creativecommons.openoffice.ccooo.InsertWikimediaCommons" oor:op="replace">
                 <node oor:name="S1" oor:op="replace">
                     <prop oor:name="MergePoint">
                         <value>.uno:InsertMenu\.uno:GraphicMenu\.uno:InsertGraphic</value>
@@ -171,14 +171,14 @@
                                 <value>com.sun.star.drawing.DrawingDocument,com.sun.star.presentation.PresentationDocument,com.sun.star.sheet.SpreadsheetDocument,com.sun.star.text.TextDocument</value>
                             </prop>
                             <prop oor:name="Title" oor:type="xs:string">
-                                <value>From Open Clip Art ... </value>
+                                <value/>
                                 <value xml:lang="en">From Wikimedia Commons ... </value>
                             </prop>
                         </node>
                     </node>
                 </node>
             </node>
-            <node oor:name="org.openoffice.test.testcomponent4" oor:op="replace">
+            <node oor:name="org.creativecommons.openoffice.ccooo.InsertPicasa" oor:op="replace">
                 <node oor:name="S1" oor:op="replace">
                     <prop oor:name="MergePoint">
                         <value>.uno:InsertMenu\.uno:GraphicMenu\.uno:InsertGraphic</value>
@@ -204,7 +204,7 @@
                                 <value>com.sun.star.drawing.DrawingDocument,com.sun.star.presentation.PresentationDocument,com.sun.star.sheet.SpreadsheetDocument,com.sun.star.text.TextDocument</value>
                             </prop>
                             <prop oor:name="Title" oor:type="xs:string">
-                                <value>From Open Clip Art ... </value>
+                                <value/>
                                 <value xml:lang="en">From Picasa ... </value>
                             </prop>
                         </node>

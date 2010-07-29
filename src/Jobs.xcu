@@ -15,12 +15,12 @@
         </node>
     </node>
     <node oor:name="Events">
-    <node oor:name="OnLoad" oor:op="replace">
+    <node oor:name="OnLoad" oor:op="fuse">
     <node oor:name="JobList">
         <node oor:name="org.creativecommons.openoffice" oor:op="replace"/>
         </node>
     </node>
-    <node oor:name="OnNew" oor:op="replace">
+    <node oor:name="OnNew" oor:op="fuse">
         <node oor:name="JobList">
             <node oor:name="org.creativecommons.openoffice" oor:op="replace"/>
             </node>
