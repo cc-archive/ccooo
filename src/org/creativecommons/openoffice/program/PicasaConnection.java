@@ -1,7 +1,9 @@
 /*
  * PicasaConnection.java
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
+ *
+ * Copyright 2010, Creative Commons
+ * licensed under the GNU LGPL License; see licenses/LICENSE for details
+ * 
  */
 /**
  *

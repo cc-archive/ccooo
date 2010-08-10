@@ -19,7 +19,7 @@ import org.creativecommons.openoffice.ui.ImageButtonListener;
 
 /**
  *
- * @author Husleag Mihai
+ * @author akila
  */
 public class WikimediaImageButtonListener extends ImageButtonListener {
 

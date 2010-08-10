@@ -1,6 +1,9 @@
 /*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
+ * FlickrConnection.java
+ *
+ * Copyright 2007, Creative Commons
+ * licensed under the GNU LGPL License; see licenses/LICENSE for details
+ * 
  */
 package org.creativecommons.openoffice.program;
 
