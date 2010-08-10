@@ -5,9 +5,7 @@
 package org.creativecommons.openoffice.program;
 
 import com.sun.star.graphic.XGraphic;
-import java.util.Collection;
 import java.util.Date;
-import com.aetrion.flickr.photos.Size;
 import java.util.Collection;
 
 /**

@@ -10,7 +10,6 @@ package org.creativecommons.openoffice.ui.license;
 
 import com.sun.star.awt.ActionEvent;
 import com.sun.star.awt.XActionListener;
-import com.sun.star.beans.XPropertySet;
 import com.sun.star.lang.EventObject;
 
 

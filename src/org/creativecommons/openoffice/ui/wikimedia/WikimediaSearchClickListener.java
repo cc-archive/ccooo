@@ -1,19 +1,20 @@
 /*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
+ * WikimediaSearchClickListener.java
+ * 
+ * Copyright 2010, Creative Commons
+ * licensed under the GNU LGPL License; see licenses/LICENSE for details
  */
 
 package org.creativecommons.openoffice.ui.wikimedia;
 
 import com.sun.star.awt.ActionEvent;
-import com.sun.star.awt.XActionListener;
 import com.sun.star.lang.EventObject;
 import org.creativecommons.openoffice.CcOOoAddin;
 import org.creativecommons.openoffice.ui.SearchClickListener;
 
 /**
  *
- * @author Husleag Mihai
+ * @author akila
  */
 public class WikimediaSearchClickListener extends SearchClickListener{
 

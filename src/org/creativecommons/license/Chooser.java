@@ -146,6 +146,7 @@ public class Chooser {
 
     } // selectLicense
 
+    //Query for CC0 and PD
     private String makePDLicenseQuery() {
 
         // Create the basic query

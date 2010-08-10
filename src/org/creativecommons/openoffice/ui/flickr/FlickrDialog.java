@@ -1,5 +1,5 @@
 /*
- * ChooserDialog.java
+ * FlickrDialog.java
  *
  * Copyright 2007, Creative Commons
  * licensed under the GNU LGPL License; see licenses/LICENSE for details

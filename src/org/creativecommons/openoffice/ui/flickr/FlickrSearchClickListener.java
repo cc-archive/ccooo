@@ -1,4 +1,5 @@
 /*
+ * FlickrSearchClickListener.java
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
@@ -6,10 +7,8 @@
 package org.creativecommons.openoffice.ui.flickr;
 
 import com.sun.star.awt.ActionEvent;
-import com.sun.star.awt.XActionListener;
 import com.sun.star.lang.EventObject;
 import org.creativecommons.openoffice.CcOOoAddin;
-import org.creativecommons.openoffice.program.FlickrConnection;
 import org.creativecommons.openoffice.ui.SearchClickListener;
 
 /**

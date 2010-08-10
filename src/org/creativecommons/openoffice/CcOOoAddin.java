@@ -12,11 +12,8 @@
  *- Put CC logo on the interface
  *- Put "more info" option like ms office addin on the dialog
  *- CC option embeded in the ooo "File" menu instead?
- *- Insert creative commmons RDF in doc metadata?
  *- Exception handling (including timeout)
  *- Set the tab index of the dialog components
- *- Automaticaly choose between drop downs and combo-boxes based on the number of available options.
- *- Progress bar where necessary
  *- Internationalization
  *- put the addin version in the metadata
  */
@@ -72,8 +69,9 @@ import static org.creativecommons.openoffice.util.Util.setLocale;
  *  The Creative Commons OpenOffice.org AddIn core class.
  *
  * @author Cassio A. Melo
+ * @author Akila Wajirasena
  * @author Creative Commons
- * @version 0.3.0
+ * @version 0.7.0
  */
 public final class CcOOoAddin extends WeakBase
         implements com.sun.star.lang.XServiceInfo,

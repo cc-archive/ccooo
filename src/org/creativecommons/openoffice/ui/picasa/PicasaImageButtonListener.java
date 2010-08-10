@@ -1,4 +1,5 @@
 /*
+ * PicasaImageButtonListener.java
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
@@ -13,12 +14,11 @@ import com.sun.star.uno.UnoRuntime;
 import org.creativecommons.openoffice.CcOOoAddin;
 import org.creativecommons.openoffice.program.Image;
 import com.sun.star.awt.MouseButton;
-import org.creativecommons.openoffice.program.PicasaConnection;
 import org.creativecommons.openoffice.ui.ImageButtonListener;
 
 /**
  *
- * @author Husleag Mihai
+ * @author akila
  */
 public class PicasaImageButtonListener extends ImageButtonListener{
 

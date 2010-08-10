@@ -1,4 +1,5 @@
 /*
+ * OpenClipArtImageButtonListener.java
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
@@ -17,7 +18,7 @@ import org.creativecommons.openoffice.ui.ImageButtonListener;
 
 /**
  *
- * @author Husleag Mihai
+ * @author akila
  */
 public class OpenClipArtImageButtonListener extends ImageButtonListener{
 

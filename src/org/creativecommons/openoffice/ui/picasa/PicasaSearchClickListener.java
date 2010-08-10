@@ -1,4 +1,5 @@
 /*
+ * PicasaSearchClickListener.java
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
@@ -6,7 +7,6 @@
 package org.creativecommons.openoffice.ui.picasa;
 
 import com.sun.star.awt.ActionEvent;
-import com.sun.star.awt.XActionListener;
 import com.sun.star.lang.EventObject;
 import org.creativecommons.openoffice.CcOOoAddin;
 import org.creativecommons.openoffice.ui.SearchClickListener;

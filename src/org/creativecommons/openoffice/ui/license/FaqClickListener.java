@@ -1,7 +1,7 @@
 /*
- * FinishClickListener.java
+ * FaqClickListener.java
  *
- * Copyright 2007, Creative Commons
+ * Copyright 2010, Creative Commons
  * licensed under the GNU LGPL License; see licenses/LICENSE for details
  *
  */
@@ -16,7 +16,10 @@ import com.sun.star.system.XSystemShellExecute;
 import com.sun.star.uno.UnoRuntime;
 import com.sun.star.uno.XComponentContext;
 
-
+/**
+ *
+ * @author akila
+ */
 
 class FaqClickListener implements XActionListener {
 

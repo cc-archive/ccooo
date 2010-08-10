@@ -1,7 +1,7 @@
 /*
- * ChooserDialog.java
+ * WikimediaDialog.java
  *
- * Copyright 2007, Creative Commons
+ * Copyright 2010, Creative Commons
  * licensed under the GNU LGPL License; see licenses/LICENSE for details
  *
  */
@@ -33,7 +33,7 @@ import org.creativecommons.openoffice.ui.SavedSearchThread;
 
 /**
  *
- * @author Husleag Mihai
+ * @author akila
  */
 public class WikimediaDialog extends InsertImageDialog{
     

@@ -1,4 +1,5 @@
 /*
+ * OpenClipArtSearchClickListener.java
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
@@ -12,7 +13,7 @@ import org.creativecommons.openoffice.ui.SearchClickListener;
 
 /**
  *
- * @author Husleag Mihai
+ * @author akila
  */
 public class OpenClipArtSearchClickListener extends SearchClickListener{
 

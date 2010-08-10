@@ -9,8 +9,6 @@
 package org.creativecommons.openoffice.program;
 
 import com.sun.star.lang.IndexOutOfBoundsException;
-import com.sun.star.text.ControlCharacter;
-import com.sun.star.text.XText;
 import com.sun.star.awt.Point;
 import com.sun.star.awt.Size;
 import com.sun.star.beans.UnknownPropertyException;

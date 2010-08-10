@@ -14,7 +14,6 @@ import com.sun.star.beans.XPropertySet;
 import com.sun.star.container.XNameContainer;
 import com.sun.star.drawing.FillStyle;
 import com.sun.star.drawing.LineStyle;
-import com.sun.star.drawing.TextFitToSizeType;
 import com.sun.star.drawing.XDrawPage;
 import com.sun.star.drawing.XDrawView;
 import com.sun.star.drawing.XShape;

@@ -8,7 +8,6 @@
 
 package org.creativecommons.openoffice.program;
 
-import com.sun.star.graphic.XGraphic;
 import com.sun.star.awt.Size;
 import com.sun.star.beans.PropertyVetoException;
 import com.sun.star.beans.UnknownPropertyException;

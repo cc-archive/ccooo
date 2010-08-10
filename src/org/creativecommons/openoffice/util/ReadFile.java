@@ -1,6 +1,8 @@
 /*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
+ * ReadFile.java
+ *
+ * Copyright 2010, Creative Commons
+ * licensed under the GNU LGPL License; see licenses/LICENSE for details
  */
 package org.creativecommons.openoffice.util;
 

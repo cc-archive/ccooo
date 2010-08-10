@@ -1,7 +1,7 @@
 /*
- * ChooserDialog.java
+ * InsertImageDialog.java
  *
- * Copyright 2007, Creative Commons
+ * Copyright 2010, Creative Commons
  * licensed under the GNU LGPL License; see licenses/LICENSE for details
  *
  */
@@ -35,7 +35,7 @@ import java.util.Date;
 
 /**
  *
- * @author Husleag Mihai
+ * @author akila
  */
 public abstract class InsertImageDialog {
 

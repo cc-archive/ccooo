@@ -1,7 +1,7 @@
 /*
- * AllowRemixListener.java
+ * AcceptListener.java
  *
- * Copyright 2007, Creative Commons
+ * Copyright 2010, Creative Commons
  * licensed under the GNU LGPL License; see licenses/LICENSE for details
  *
  */
