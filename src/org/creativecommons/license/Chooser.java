@@ -168,5 +168,5 @@ public class Chooser {
         queryString += "FILTER(" + filter + ")      }";
 
         return queryString;
-    } // makeLicenseQuery
+    } // makePDLicenseQuery
 } // Chooser
