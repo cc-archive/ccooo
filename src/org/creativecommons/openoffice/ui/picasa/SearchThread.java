@@ -40,14 +40,14 @@ public class SearchThread extends Thread {
         ArrayList<Image> imgList = null;
         if (buttonName.equalsIgnoreCase(PicasaDialog.BTN_SEARCH)) {
             //PicasaConnection p=PicasaConnection.instance;
-            PicasaConnection.instance.searchPhotos(picasaDialog.GetTags(),licenseID);
+            PicasaConnection.instance.searchPhotos(picasaDialog.GetTags(), licenseID);
             picasaDialog.setCurrentPage(1);
             imgList = new ArrayList<Image>();
             int currentPage = picasaDialog.getCurrentPage();
             int noOfImg = PicasaDialog.SHOWRESULTSPERCOLUMN
                     * PicasaDialog.SHOWRESULTSPERROW;
-            int limit = currentPage * noOfImg + 1 < PicasaConnection.imgList.size() ?
-                currentPage * noOfImg + 1 : PicasaConnection.imgList.size() - 1;
+            int limit = currentPage * noOfImg + 1 < PicasaConnection.imgList.size()
+                    ? currentPage * noOfImg + 1 : PicasaConnection.imgList.size() - 1;
             for (int i = 0; i <= limit; i++) {
                 imgList.add(PicasaConnection.imgList.get(i));
             }
@@ -67,12 +67,12 @@ public class SearchThread extends Thread {
         } else {
 
             picasaDialog.setCurrentPage(picasaDialog.getCurrentPage() + 1);
-            imgList=new ArrayList<Image>();
+            imgList = new ArrayList<Image>();
             int currentPage = picasaDialog.getCurrentPage();
             int noOfImg = PicasaDialog.SHOWRESULTSPERCOLUMN
                     * PicasaDialog.SHOWRESULTSPERROW;
-            int limit = currentPage * noOfImg + 1 < PicasaConnection.imgList.size() ?
-                currentPage * noOfImg + 1 : PicasaConnection.imgList.size() - 1;
+            int limit = currentPage * noOfImg + 1 < PicasaConnection.imgList.size()
+                    ? currentPage * noOfImg + 1 : PicasaConnection.imgList.size() - 1;
             for (int i = (currentPage - 1) * noOfImg; i <= limit; i++) {
                 imgList.add(PicasaConnection.imgList.get(i));
             }

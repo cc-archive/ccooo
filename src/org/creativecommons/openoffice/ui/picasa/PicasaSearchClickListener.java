@@ -5,7 +5,6 @@
  * licensed under the GNU LGPL License; see licenses/LICENSE for details
  *
  */
-
 package org.creativecommons.openoffice.ui.picasa;
 
 import com.sun.star.awt.ActionEvent;
@@ -17,10 +16,10 @@ import org.creativecommons.openoffice.ui.SearchClickListener;
  *
  * @author Husleag Mihai
  */
-public class PicasaSearchClickListener extends SearchClickListener{
+public class PicasaSearchClickListener extends SearchClickListener {
 
-    public PicasaSearchClickListener(PicasaDialog picasaDialog, CcOOoAddin addin){
-        super( picasaDialog,addin);
+    public PicasaSearchClickListener(PicasaDialog picasaDialog, CcOOoAddin addin) {
+        super(picasaDialog, addin);
     }
 
     public void actionPerformed(ActionEvent a) {
@@ -28,12 +27,11 @@ public class PicasaSearchClickListener extends SearchClickListener{
         if (!imageDialog.IsInputValid()) {
             return;
         }
-        SearchThread th = new SearchThread((PicasaDialog) imageDialog,a.ActionCommand);
+        SearchThread th = new SearchThread((PicasaDialog) imageDialog, a.ActionCommand);
         th.start();
 
     } // actionPerformed
 
     public void disposing(EventObject e) {
     }
-
 }

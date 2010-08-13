@@ -31,7 +31,6 @@ import org.creativecommons.openoffice.program.Image;
 import com.sun.star.awt.XWindowPeer;
 import com.sun.star.graphic.XGraphicProvider;
 import com.sun.star.beans.PropertyValue;
-import java.util.Date;
 
 /**
  *
@@ -59,7 +58,7 @@ public abstract class InsertImageDialog {
     protected Image loadingImage = null;
     protected SearchClickListener searchClickListener = null;
     public static final String LBL_TAGS = "lblTags";
-    public static final String TXT_TAGS = "txtTags";    
+    public static final String TXT_TAGS = "txtTags";
     public static final String BTN_SEARCH = "btnSearch";
     public static final String searchButtonLabel = "Search";
     public static final String GB_RESULTS = "gbResults";
@@ -80,7 +79,6 @@ public abstract class InsertImageDialog {
     public static final int DIALOGY = 100;
     public static final int DIALOGWIDTH = 240;
     public static final int DIALOGHEIHT = 375;
-
     private short savedCommercialStatus;
     private short savedUpdateStatus;
     private short savedShareAlikeStatus;
@@ -91,10 +89,10 @@ public abstract class InsertImageDialog {
      * Creates a new instance of ChooserDialog
      */
     public InsertImageDialog(CcOOoAddin addin, XComponentContext m_xContext,
-            int positionWidthHeight, int locationMagesy,int btnPrvNextY) {
-        this.positionWidthHeight=positionWidthHeight;
-        this.locationMagesy=locationMagesy;
-        this.btnPrvNextY=btnPrvNextY;
+            int positionWidthHeight, int locationMagesy, int btnPrvNextY) {
+        this.positionWidthHeight = positionWidthHeight;
+        this.locationMagesy = locationMagesy;
+        this.btnPrvNextY = btnPrvNextY;
         this.addin = addin;
         this.m_xContext = m_xContext;
         this.loadingImage = new Image("Loading...", null, null, null, null, null,
@@ -152,11 +150,11 @@ public abstract class InsertImageDialog {
 
                 if (currentList.size() > currentPositionInList) {
                     createImageControl(currentList.get(currentPositionInList),
-                            new Rectangle(currentX,currentY, positionWidthHeight,
-                            positionWidthHeight),String.valueOf(currentPositionInList));
+                            new Rectangle(currentX, currentY, positionWidthHeight,
+                            positionWidthHeight), String.valueOf(currentPositionInList));
                 } else {
                     createImageControl(null, new Rectangle(currentX, currentY,
-                            positionWidthHeight,positionWidthHeight),
+                            positionWidthHeight, positionWidthHeight),
                             String.valueOf(currentPositionInList));
                 }
 
@@ -187,7 +185,7 @@ public abstract class InsertImageDialog {
                     xNextButton.setActionCommand(BTN_NEXT);
                 }
             }
-            
+
             isNewCreated = false;
             if (getNameContainer().hasByName(BTN_PREVIOUS)) {
                 button = getNameContainer().getByName(BTN_PREVIOUS);
@@ -321,7 +319,7 @@ public abstract class InsertImageDialog {
         this.currentList = imgList;
         this.currentPositionInList = 0;
         showNextPage(progressValue);
-    }   
+    }
 
     public void enableControl(String controlName, boolean enable) {
         try {
@@ -355,7 +353,6 @@ public abstract class InsertImageDialog {
         }
     }
 
-    //TO DO
     public abstract XPopupMenu executePopupMenu(Image img, Integer positionX, Integer positionY,
             XWindowPeer xImagePeer);
 
@@ -378,16 +375,15 @@ public abstract class InsertImageDialog {
             aPropertyValue.Value = _sImageUrl;
             aPropertyValues[0] = aPropertyValue;
             /**********************************************/
-            long time = new Date().getTime();
-            xGraphic = xGraphicProvider.queryGraphic(aPropertyValues); /////////// bottleneck 2
-            System.out.println("Flicker adding thumbnails to dialog " + (new Date().getTime() - time) + _sImageUrl);
+            //long time = new Date().getTime();
+            xGraphic = xGraphicProvider.queryGraphic(aPropertyValues); /////////// dealy
+            //System.out.println("Adding thumbnails to dialog " + (new Date().getTime() - time) + _sImageUrl);
             /**********************************************/
             return xGraphic;
         } catch (com.sun.star.uno.Exception ex) {
             throw new java.lang.RuntimeException("cannot happen...");
         }
-    }    
-
+    }
 
     /**
      * Canges the mouse pointer.

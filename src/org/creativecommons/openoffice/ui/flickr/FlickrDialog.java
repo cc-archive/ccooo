@@ -40,7 +40,7 @@ import org.creativecommons.openoffice.ui.SavedSearchThread;
  *
  * @author Husleag Mihai
  */
-public class FlickrDialog extends InsertImageDialog{
+public class FlickrDialog extends InsertImageDialog {
 
     /**
      * Creates a new instance of ChooserDialog
@@ -64,8 +64,7 @@ public class FlickrDialog extends InsertImageDialog{
             // create the dialog model and set the properties
             Object dlgLicenseSelector = xMultiComponentFactory.createInstanceWithContext(
                     "com.sun.star.awt.UnoControlDialogModel", m_xContext);
-            XMultiServiceFactory msfLicenseSelector = (XMultiServiceFactory)
-                    UnoRuntime.queryInterface(XMultiServiceFactory.class, dlgLicenseSelector);
+            XMultiServiceFactory msfLicenseSelector = (XMultiServiceFactory) UnoRuntime.queryInterface(XMultiServiceFactory.class, dlgLicenseSelector);
 
             XPropertySet xPSetDialog = createAWTControl(dlgLicenseSelector, "dlgMainForm",
                     "", new Rectangle(DIALOGX, DIALOGY, DIALOGWIDTH, DIALOGHEIHT));//360
@@ -79,7 +78,7 @@ public class FlickrDialog extends InsertImageDialog{
             // get the service manager from the dialog model
             this.xMultiServiceFactory = (XMultiServiceFactory) UnoRuntime.queryInterface(
                     XMultiServiceFactory.class, dlgLicenseSelector);
-            
+
             //create dialog components
             Object lblTags = msfLicenseSelector.createInstance(
                     "com.sun.star.awt.UnoControlFixedTextModel");
@@ -114,7 +113,7 @@ public class FlickrDialog extends InsertImageDialog{
             Object searchButton = msfLicenseSelector.createInstance(
                     "com.sun.star.awt.UnoControlButtonModel");
             XPropertySet xPSetFinishButton = createAWTControl(searchButton, BTN_SEARCH,
-                    searchButtonLabel,new Rectangle(190, 10, 40, 15)); //(140, 85, 40, 15));
+                    searchButtonLabel, new Rectangle(190, 10, 40, 15)); //(140, 85, 40, 15));
             xPSetFinishButton.setPropertyValue("DefaultButton", new Boolean("true"));
 
             // create the dialog control and set the model
@@ -133,23 +132,22 @@ public class FlickrDialog extends InsertImageDialog{
             xFinishButton.addActionListener(new FlickrSearchClickListener(this, this.addin));
             xFinishButton.setActionCommand(BTN_SEARCH);
 
-   
+
             //this.flickrLicenses = FlickrConnection.instance.getLicenses(); //this method takes about 2-3 seconds
             setLicenses(); //adding licenses locally
-            
+
             Object oGBResults = msfLicenseSelector.createInstance("com.sun.star.awt.UnoControlGroupBoxModel");
             createAWTControl(oGBResults, GB_RESULTS, "Results", new Rectangle(
                     10, locationMagesy, 220, 280));//315
 
             Object oPBar = msfLicenseSelector.createInstance(
                     "com.sun.star.awt.UnoControlProgressBarModel");
-            XMultiPropertySet xPBModelMPSet = (XMultiPropertySet)
-                    UnoRuntime.queryInterface(XMultiPropertySet.class, oPBar);
+            XMultiPropertySet xPBModelMPSet = (XMultiPropertySet) UnoRuntime.queryInterface(XMultiPropertySet.class, oPBar);
             // Set the properties at the model - keep in mind to pass the property
             //names in alphabetical order!
             xPBModelMPSet.setPropertyValues(
                     new String[]{"Height", "Name", "PositionX", "PositionY", "Width"},
-                    new Object[]{new Integer(8), PB_NAME, new Integer(10), new Integer(DIALOGHEIHT-8)/*418*/, new Integer(220)});
+                    new Object[]{new Integer(8), PB_NAME, new Integer(10), new Integer(DIALOGHEIHT - 8)/*418*/, new Integer(220)});
 
             // The controlmodel is not really available until inserted to the Dialog container
             getNameContainer().insertByName(PB_NAME, oPBar);
@@ -185,7 +183,7 @@ public class FlickrDialog extends InsertImageDialog{
         }
     }
 
-    protected  void createImageControl(Image img, Rectangle rect, String pos) {
+    protected void createImageControl(Image img, Rectangle rect, String pos) {
 
         if (!isLoadable) {
 
@@ -219,7 +217,7 @@ public class FlickrDialog extends InsertImageDialog{
                     img.setGraphic(xGraphic);
                 }
             }
-            
+
             Object oICModel = null;
             if (getNameContainer().hasByName("ImageControl" + pos)) {
                 XControl xImageControl = xControlCont.getControl("ImageControl" + pos);
@@ -322,45 +320,45 @@ public class FlickrDialog extends InsertImageDialog{
     }
 
     @SuppressWarnings("unchecked")
-    private void setLicenses(){
-        flickrLicenses=new ArrayList<License>();
-        License license=new License();
+    private void setLicenses() {
+        flickrLicenses = new ArrayList<License>();
+        License license = new License();
         license.setId("4");
         license.setName("Attribution License");
         license.setUrl("http://creativecommons.org/licenses/by/2.0/");
         flickrLicenses.add(license);
 
-        license=new License();
+        license = new License();
         license.setId("6");
         license.setName("Attribution-NoDerivs License");
         license.setUrl("http://creativecommons.org/licenses/by-nd/2.0/");
         flickrLicenses.add(license);
 
-        license=new License();
+        license = new License();
         license.setId("3");
         license.setName("Attribution-NonCommercial-NoDerivs License");
         license.setUrl("http://creativecommons.org/licenses/by-nc-nd/2.0/");
         flickrLicenses.add(license);
 
-        license=new License();
+        license = new License();
         license.setId("2");
         license.setName("Attribution-NonCommercial License");
         license.setUrl("http://creativecommons.org/licenses/by-nc/2.0/");
         flickrLicenses.add(license);
 
-        license=new License();
+        license = new License();
         license.setId("1");
         license.setName("Attribution-NonCommercial-ShareAlike License");
         license.setUrl("http://creativecommons.org/licenses/by-nc-sa/2.0/");
         flickrLicenses.add(license);
 
-        license=new License();
+        license = new License();
         license.setId("5");
         license.setName("Attribution-ShareAlike License");
         license.setUrl("http://creativecommons.org/licenses/by-sa/2.0/");
         flickrLicenses.add(license);
 
-        license=new License();
+        license = new License();
         license.setId("7");
         license.setName("No known copyright restrictions");
         license.setUrl("http://flickr.com/commons/usage/");
@@ -434,6 +432,5 @@ public class FlickrDialog extends InsertImageDialog{
 
         //default atribution license
         return "4";
-    } 
-
+    }
 } // FlickrDialog

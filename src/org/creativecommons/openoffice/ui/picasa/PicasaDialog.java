@@ -35,7 +35,7 @@ import org.creativecommons.openoffice.ui.SavedSearchThread;
  *
  * @author akila
  */
-public class PicasaDialog extends InsertImageDialog{
+public class PicasaDialog extends InsertImageDialog {
 
     /**
      * Creates a new instance of ChooserDialog
@@ -140,7 +140,7 @@ public class PicasaDialog extends InsertImageDialog{
             // Set the properties at the model - keep in mind to pass the property names in alphabetical order!
             xPBModelMPSet.setPropertyValues(
                     new String[]{"Height", "Name", "PositionX", "PositionY", "Width"},
-                    new Object[]{new Integer(8), PB_NAME, new Integer(10), new Integer(DIALOGHEIHT-8)/*418*/, new Integer(220)});
+                    new Object[]{new Integer(8), PB_NAME, new Integer(10), new Integer(DIALOGHEIHT - 8)/*418*/, new Integer(220)});
 
             // The controlmodel is not really available until inserted to the Dialog container
             getNameContainer().insertByName(PB_NAME, oPBar);
@@ -184,10 +184,10 @@ public class PicasaDialog extends InsertImageDialog{
 
             return;
         }
-        createImageLoad(rect, pos,"file://" + this.getClass().
-                        getProtectionDomain().getCodeSource().
-                        getLocation().getPath().
-                        replaceFirst("ccooo.jar", "images/Picasa_Loading.png"));
+        createImageLoad(rect, pos, "file://" + this.getClass().
+                getProtectionDomain().getCodeSource().
+                getLocation().getPath().
+                replaceFirst("ccooo.jar", "images/Picasa_Loading.png"));
 
         try {
             String userName = "";
@@ -299,6 +299,5 @@ public class PicasaDialog extends InsertImageDialog{
     public XPopupMenu executePopupMenu(Image img, Integer positionX, Integer positionY, XWindowPeer xImagePeer) {
         throw new UnsupportedOperationException("Not supported yet.");
     }
-
 } // PicasaDialog
 

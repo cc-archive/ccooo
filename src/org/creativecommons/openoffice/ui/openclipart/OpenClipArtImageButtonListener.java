@@ -5,7 +5,6 @@
  * licensed under the GNU LGPL License; see licenses/LICENSE for details
  * 
  */
-
 package org.creativecommons.openoffice.ui.openclipart;
 
 import com.sun.star.awt.MouseEvent;
@@ -22,11 +21,12 @@ import org.creativecommons.openoffice.ui.ImageButtonListener;
  *
  * @author akila
  */
-public class OpenClipArtImageButtonListener extends ImageButtonListener{
+public class OpenClipArtImageButtonListener extends ImageButtonListener {
 
-    public OpenClipArtImageButtonListener(OpenClipArtDialog openClipArtDialog, CcOOoAddin addin, Image img){
+    public OpenClipArtImageButtonListener(OpenClipArtDialog openClipArtDialog,
+            CcOOoAddin addin, Image img) {
 
-        super(openClipArtDialog, addin,img);
+        super(openClipArtDialog, addin, img);
         this.addin = addin;
         this.currentImage = img;
     }

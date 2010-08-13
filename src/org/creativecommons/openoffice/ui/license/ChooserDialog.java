@@ -73,7 +73,6 @@ public class ChooserDialog {
     private List<Jurisdiction> jurisdictionList = null;
     private IJurisdiction selectedJurisdiction = null;
     private boolean cancelled = true;
-
     // TODO put these labels in a properties file
     public static final String BTN_OK = "finishbt";
     public static final String finishButtonLabel = "OK";
@@ -281,17 +280,17 @@ public class ChooserDialog {
 
         xControl.createPeer(xToolkit, null);
 
-        setInfoImage(new Rectangle(55, 58, 9, 10), RDO_ALLOW_COMERCIAL_YES,_("license.help.commercial"),1);
+        setInfoImage(new Rectangle(55, 58, 9, 10), RDO_ALLOW_COMERCIAL_YES, _("license.help.commercial"), 1);
 //                "The licensor permits others to copy, distribute,"
 //                + "\ndisplay and perform the work,"
 //                + "\nas well as make derivative works based on it.", 1);
 
-        setInfoImage(new Rectangle(55, 73, 9, 10), RDO_ALLOW_COMERCIAL_NO,_("license.help.noncommercial"),1);
+        setInfoImage(new Rectangle(55, 73, 9, 10), RDO_ALLOW_COMERCIAL_NO, _("license.help.noncommercial"), 1);
 //                "The licensor permits others to copy, "
 //                + "\ndistribute, display, and perform the work "
 //                + "\nfor non-commercial purposes only", 1);
 
-        setInfoImage(new Rectangle(55, 103, 9, 10), RDO_ALLOW_MODIFICATIONS_YES,_("license.help.derivatives"),1);
+        setInfoImage(new Rectangle(55, 103, 9, 10), RDO_ALLOW_MODIFICATIONS_YES, _("license.help.derivatives"), 1);
 //                "The licensor permits others to copy, "
 //                + "\ndistribute, display and perform the work, "
 //                + "\nas well as make derivative works based on it.", 1);
@@ -301,7 +300,7 @@ public class ChooserDialog {
                 + "\nonly under the same license or one compatible "
                 + "\nwith the one that governs the licensor's work.", 1);
 
-        setInfoImage(new Rectangle(55, 133, 9, 10), RDO_ALLOW_MODIFICATIONS_NO, _("char.nd_description"),1);
+        setInfoImage(new Rectangle(55, 133, 9, 10), RDO_ALLOW_MODIFICATIONS_NO, _("char.nd_description"), 1);
 //                "The licensor permits others to copy, "
 //                + "\ndistribute and transmit only unaltered copies of the "
 //                + "\nwork — not derivative works based on it.", 1);
@@ -406,19 +405,19 @@ public class ChooserDialog {
 
         Object hrLine = xMultiServiceFactory.createInstance(
                 "com.sun.star.awt.UnoControlFixedLineModel");
-        XPropertySet xpshrLine=createAWTControl(hrLine, "hrLine",
+        XPropertySet xpshrLine = createAWTControl(hrLine, "hrLine",
                 null, new Rectangle(5, 165, 200, 5), 1);
         xpshrLine.setPropertyValue("Orientation", 0);
 
         Object lblInstructions = xMultiServiceFactory.createInstance(
                 "com.sun.star.awt.UnoControlFixedTextModel");
-        XPropertySet xpsLblInstructions=createAWTControl(lblInstructions, LBL_INSTRUCTIONS_CC,
-                "With a Creative Commons license, you keep your copyright but allow " +
-                "people to copy and distribute your work provided they give you credit  " +
-                "— and only on the conditions you specify here. " +
-                "\n\nIf you want to offer your work with no conditions or you" +
-                " want to certify a work as public domain, choose one of the " +
-                "public domain tools.(CC0 & Public Domain)", new Rectangle(10, 175, 195, 80), 1);
+        XPropertySet xpsLblInstructions = createAWTControl(lblInstructions, LBL_INSTRUCTIONS_CC,
+                "With a Creative Commons license, you keep your copyright but allow "
+                + "people to copy and distribute your work provided they give you credit  "
+                + "— and only on the conditions you specify here. "
+                + "\n\nIf you want to offer your work with no conditions or you"
+                + " want to certify a work as public domain, choose one of the "
+                + "public domain tools.(CC0 & Public Domain)", new Rectangle(10, 175, 195, 80), 1);
         xpsLblInstructions.setPropertyValue("MultiLine", true);
         FontDescriptor fontDes = (FontDescriptor) xpsLblInstructions.getPropertyValue("FontDescriptor");
         fontDes.Weight = 75;
@@ -431,8 +430,8 @@ public class ChooserDialog {
         Object lblWarning = xMultiServiceFactory.createInstance(
                 "com.sun.star.awt.UnoControlFixedTextModel");
         XPropertySet xpsLblWarning = createAWTControl(lblWarning, LBL_INSTRUCTIONS_CC0,
-//                "Are you certain you wish to waive all rights to your work? "
-//                + "Once these rights are waived, you cannot reclaim them."
+                //                "Are you certain you wish to waive all rights to your work? "
+                //                + "Once these rights are waived, you cannot reclaim them."
                 _("license.zero.confirm_waiver_1")
                 + "\n\nIn particular, if you are an artist or author who depends "
                 + "upon copyright for your income, "
@@ -449,9 +448,9 @@ public class ChooserDialog {
         Object chkWaive = xMultiServiceFactory.createInstance(
                 "com.sun.star.awt.UnoControlCheckBoxModel");
         XPropertySet xpsChkWaive = createAWTControl(chkWaive, CHK_WAIVE,
-//                "I hereby waive all copyright and related or neighboring rights "
-//                + "together with all associated claims and causes of action with "
-//                + "respect to this work to the extent possible under the law.",
+                //                "I hereby waive all copyright and related or neighboring rights "
+                //                + "together with all associated claims and causes of action with "
+                //                + "respect to this work to the extent possible under the law.",
                 _("license.zero.confirm_waiver"),
                 new Rectangle(10, 110, 190, 30), 2);
         xpsChkWaive.setPropertyValue("MultiLine", true);
@@ -525,8 +524,8 @@ public class ChooserDialog {
         Object chkYes = xMultiServiceFactory.createInstance(
                 "com.sun.star.awt.UnoControlCheckBoxModel");
         XPropertySet xpsChkYes = createAWTControl(chkYes, CHK_YES_PD,
-//                "I have read and understand the terms and intended legal effect of "
-//                + "this tool, and hereby voluntarily elect to apply it to this work.",
+                //                "I have read and understand the terms and intended legal effect of "
+                //                + "this tool, and hereby voluntarily elect to apply it to this work.",
                 _("license.zero.confirm_reading"),
                 new Rectangle(10, 210, 190, 30), 3);
         xpsChkYes.setPropertyValue("MultiLine", true);
@@ -639,7 +638,7 @@ public class ChooserDialog {
             XPropertySet xPSetList = (XPropertySet) UnoRuntime.queryInterface(XPropertySet.class,
                     this.getNameContainer().getByName(controlName));
             xPSetList.setPropertyValue("State", (b ? new Short((short) 1) : new Short((short) 0))); // b.booleanValue());
-        }  catch (Exception ex) {
+        } catch (Exception ex) {
             Logger.getLogger(ChooserDialog.class.getName()).log(Level.SEVERE, null, ex);
         }
 
@@ -651,7 +650,7 @@ public class ChooserDialog {
                     this.getNameContainer().getByName(rdoName));
             return (((Short) xPSetList.getPropertyValue("State")).intValue() == 1);
 
-        }  catch (Exception ex) {
+        } catch (Exception ex) {
             ex.printStackTrace();
             return null;
         }
@@ -693,7 +692,7 @@ public class ChooserDialog {
                     getNameContainer().getByName(CHK_YES_PD))).setPropertyValue("State", (short) 0);
 
             xPSetDialog.setPropertyValue("Step", type);
-        }  catch (Exception ex) {
+        } catch (Exception ex) {
             Logger.getLogger(ChooserDialog.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
@@ -707,11 +706,11 @@ public class ChooserDialog {
     }
 
     public void setSelectedTerritory(int selecion) {
-        if(selecion>0){
-            selectedTerritory=trritories[selecion-1];
+        if (selecion > 0) {
+            selectedTerritory = trritories[selecion - 1];
             System.out.println(selectedTerritory);
-        }else{
-            selectedTerritory=null;
+        } else {
+            selectedTerritory = null;
         }
     }
 

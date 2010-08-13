@@ -44,8 +44,8 @@ public class SearchThread extends Thread {
             int currentPage = openClipArtDialog.getCurrentPage();
             int noOfImg = OpenClipArtDialog.SHOWRESULTSPERCOLUMN
                     * OpenClipArtDialog.SHOWRESULTSPERROW;
-            int limit = currentPage * noOfImg + 1 < OpenClipArtConnection.imgList.size() ?
-                currentPage * noOfImg + 1 : OpenClipArtConnection.imgList.size() - 1;
+            int limit = currentPage * noOfImg + 1 < OpenClipArtConnection.imgList.size()
+                    ? currentPage * noOfImg + 1 : OpenClipArtConnection.imgList.size() - 1;
             for (int i = 0; i <= limit; i++) {
                 imgList.add(OpenClipArtConnection.imgList.get(i));
             }
@@ -65,12 +65,12 @@ public class SearchThread extends Thread {
         } else {
 
             openClipArtDialog.setCurrentPage(openClipArtDialog.getCurrentPage() + 1);
-            imgList=new ArrayList<Image>();
+            imgList = new ArrayList<Image>();
             int currentPage = openClipArtDialog.getCurrentPage();
             int noOfImg = OpenClipArtDialog.SHOWRESULTSPERCOLUMN
                     * OpenClipArtDialog.SHOWRESULTSPERROW;
-            int limit = currentPage * noOfImg + 1 < OpenClipArtConnection.imgList.size() ?
-                currentPage * noOfImg + 1 : OpenClipArtConnection.imgList.size() - 1;
+            int limit = currentPage * noOfImg + 1 < OpenClipArtConnection.imgList.size()
+                    ? currentPage * noOfImg + 1 : OpenClipArtConnection.imgList.size() - 1;
             for (int i = (currentPage - 1) * noOfImg; i <= limit; i++) {
                 imgList.add(OpenClipArtConnection.imgList.get(i));
             }

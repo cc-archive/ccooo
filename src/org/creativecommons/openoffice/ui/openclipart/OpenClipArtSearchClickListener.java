@@ -5,7 +5,6 @@
  * licensed under the GNU LGPL License; see licenses/LICENSE for details.
  * 
  */
-
 package org.creativecommons.openoffice.ui.openclipart;
 
 import com.sun.star.awt.ActionEvent;
@@ -17,24 +16,23 @@ import org.creativecommons.openoffice.ui.SearchClickListener;
  *
  * @author akila
  */
-public class OpenClipArtSearchClickListener extends SearchClickListener{
+public class OpenClipArtSearchClickListener extends SearchClickListener {
 
-    public OpenClipArtSearchClickListener(OpenClipArtDialog openClipArtDialog, CcOOoAddin addin){
-        super( openClipArtDialog,addin);
+    public OpenClipArtSearchClickListener(OpenClipArtDialog openClipArtDialog, CcOOoAddin addin) {
+        super(openClipArtDialog, addin);
     }
-    
+
     @Override
     public void actionPerformed(ActionEvent a) {
         if (!imageDialog.IsInputValid()) {
             return;
         }
-        SearchThread th = new SearchThread((OpenClipArtDialog) imageDialog,a.ActionCommand);
+        SearchThread th = new SearchThread((OpenClipArtDialog) imageDialog, a.ActionCommand);
         th.start();
-        
+
     } // actionPerformed
-    
+
     @Override
     public void disposing(EventObject e) {
     }
-    
 }

@@ -5,7 +5,6 @@
  * licensed under the GNU LGPL License; see licenses/LICENSE for details
  * 
  */
-
 package org.creativecommons.openoffice.ui.wikimedia;
 
 import com.sun.star.awt.ActionEvent;
@@ -17,23 +16,22 @@ import org.creativecommons.openoffice.ui.SearchClickListener;
  *
  * @author akila
  */
-public class WikimediaSearchClickListener extends SearchClickListener{
+public class WikimediaSearchClickListener extends SearchClickListener {
 
-    public WikimediaSearchClickListener(WikimediaDialog wikimediaDialog, CcOOoAddin addin){
-        super( wikimediaDialog,addin);
+    public WikimediaSearchClickListener(WikimediaDialog wikimediaDialog, CcOOoAddin addin) {
+        super(wikimediaDialog, addin);
     }
-    
+
     public void actionPerformed(ActionEvent a) {
 
         if (!imageDialog.IsInputValid()) {
             return;
         }
-        SearchThread th = new SearchThread((WikimediaDialog) imageDialog,a.ActionCommand);
+        SearchThread th = new SearchThread((WikimediaDialog) imageDialog, a.ActionCommand);
         th.start();
-        
+
     } // actionPerformed
-    
+
     public void disposing(EventObject e) {
     }
-    
 }

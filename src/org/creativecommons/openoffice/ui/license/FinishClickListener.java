@@ -5,7 +5,6 @@
  * licensed under the GNU LGPL License; see licenses/LICENSE for details
  *
  */
-
 package org.creativecommons.openoffice.ui.license;
 
 import com.sun.star.awt.ActionEvent;
@@ -21,21 +20,21 @@ class FinishClickListener implements XActionListener {
 
     private ChooserDialog chooserDialog;
     private CcOOoAddin addin;
-    
-    public FinishClickListener(ChooserDialog chooserDialog, CcOOoAddin addin){
+
+    public FinishClickListener(ChooserDialog chooserDialog, CcOOoAddin addin) {
 
         this.chooserDialog = chooserDialog;
         this.addin = addin;
-        
+
     } // OnFinishClick - public constructor
-        
+
     public void actionPerformed(ActionEvent a) {
-               
+
         this.chooserDialog.setCancelled(false);
         this.chooserDialog.close();
-        
+
     } // actionPerformed
-    
+
     public void disposing(EventObject e) {
     }
 } // OnFinishClick

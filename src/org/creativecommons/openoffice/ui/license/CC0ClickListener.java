@@ -16,10 +16,11 @@ import com.sun.star.lang.EventObject;
  * @author akila
  */
 public class CC0ClickListener implements XActionListener {
-    
+
     private ChooserDialog dialog;
+
     public CC0ClickListener(ChooserDialog dialog) {
-        this.dialog=dialog;
+        this.dialog = dialog;
     }
 
     public void actionPerformed(ActionEvent arg0) {

@@ -18,8 +18,9 @@ import com.sun.star.lang.EventObject;
 public class CCClickListener implements XActionListener {
 
     private ChooserDialog dialog;
+
     public CCClickListener(ChooserDialog dialog) {
-        this.dialog=dialog;
+        this.dialog = dialog;
     }
 
     public void actionPerformed(ActionEvent arg0) {

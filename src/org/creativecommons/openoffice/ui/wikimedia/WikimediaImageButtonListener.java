@@ -4,7 +4,6 @@
  * Copyright 2010, Creative Commons
  * licensed under the GNU LGPL License; see licenses/LICENSE for details
  */
-
 package org.creativecommons.openoffice.ui.wikimedia;
 
 import com.sun.star.awt.MouseEvent;

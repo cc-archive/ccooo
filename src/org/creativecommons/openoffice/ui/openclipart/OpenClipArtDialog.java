@@ -36,14 +36,14 @@ import org.creativecommons.openoffice.ui.SavedSearchThread;
  *
  * @author akila
  */
-public class OpenClipArtDialog extends InsertImageDialog{
+public class OpenClipArtDialog extends InsertImageDialog {
 
     /**
      * Creates a new instance of ChooserDialog
      */
     public OpenClipArtDialog(CcOOoAddin addin, XComponentContext m_xContext) {
-        super(addin,m_xContext,45,40,330);
-        searchClickListener=new OpenClipArtSearchClickListener(this, this.addin);
+        super(addin, m_xContext, 45, 40, 330);
+        searchClickListener = new OpenClipArtSearchClickListener(this, this.addin);
     }
 
     /**
@@ -164,9 +164,9 @@ public class OpenClipArtDialog extends InsertImageDialog{
             return;
         }
         createImageLoad(rect, pos, "file://" + this.getClass().
-                        getProtectionDomain().getCodeSource().
-                        getLocation().getPath().
-                        replaceFirst("ccooo.jar", "images/openclipartloading.png"));
+                getProtectionDomain().getCodeSource().
+                getLocation().getPath().
+                replaceFirst("ccooo.jar", "images/openclipartloading.png"));
 
         try {
             String userName = "";
@@ -315,3 +315,4 @@ public class OpenClipArtDialog extends InsertImageDialog{
         throw new UnsupportedOperationException("Not supported yet.");
     }
 } // OpenClipArtDialog
+

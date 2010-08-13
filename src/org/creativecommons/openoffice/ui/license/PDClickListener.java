@@ -18,8 +18,9 @@ import com.sun.star.lang.EventObject;
 public class PDClickListener implements XActionListener {
 
     private ChooserDialog dialog;
+
     public PDClickListener(ChooserDialog dialog) {
-        this.dialog=dialog;
+        this.dialog = dialog;
     }
 
     public void actionPerformed(ActionEvent arg0) {

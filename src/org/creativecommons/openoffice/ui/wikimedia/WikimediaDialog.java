@@ -35,8 +35,8 @@ import org.creativecommons.openoffice.ui.SavedSearchThread;
  *
  * @author akila
  */
-public class WikimediaDialog extends InsertImageDialog{
-    
+public class WikimediaDialog extends InsertImageDialog {
+
     /**
      * Creates a new instance of ChooserDialog
      */
@@ -108,7 +108,7 @@ public class WikimediaDialog extends InsertImageDialog{
             Object searchButton = msfLicenseSelector.createInstance(
                     "com.sun.star.awt.UnoControlButtonModel");
             XPropertySet xPSetFinishButton = createAWTControl(searchButton,
-                    BTN_SEARCH, searchButtonLabel,new Rectangle(190, 10, 40, 15)); //(140, 85, 40, 15));
+                    BTN_SEARCH, searchButtonLabel, new Rectangle(190, 10, 40, 15)); //(140, 85, 40, 15));
             xPSetFinishButton.setPropertyValue("DefaultButton", new Boolean("true"));
 
             // create the dialog control and set the model
@@ -142,7 +142,7 @@ public class WikimediaDialog extends InsertImageDialog{
             xPBModelMPSet.setPropertyValues(
                     new String[]{"Height", "Name", "PositionX", "PositionY", "Width"},
                     new Object[]{new Integer(8), PB_NAME, new Integer(10),
-                    new Integer(DIALOGHEIHT-8)/*418*/, new Integer(220)});
+                        new Integer(DIALOGHEIHT - 8)/*418*/, new Integer(220)});
 
             // The controlmodel is not really available until inserted to the Dialog container
             getNameContainer().insertByName(PB_NAME, oPBar);
@@ -260,7 +260,7 @@ public class WikimediaDialog extends InsertImageDialog{
             }
 
             XPropertySet xpsProperties = createAWTControl(lblUser, "ImageLabelUser" + pos,
-                    userName,new Rectangle(rect.x, rect.y + rect.height + 3, positionWidthHeight, 15)); //50
+                    userName, new Rectangle(rect.x, rect.y + rect.height + 3, positionWidthHeight, 15)); //50
             if (img != null) {
                 xpsProperties.setPropertyValue("URL", img.getImgUrlMainPage());
             } else {

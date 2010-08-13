@@ -5,7 +5,6 @@
  * licensed under the GNU LGPL License; see licenses/LICENSE for details
  *
  */
-
 package org.creativecommons.openoffice.ui.picasa;
 
 import com.sun.star.awt.MouseEvent;
@@ -22,12 +21,11 @@ import org.creativecommons.openoffice.ui.ImageButtonListener;
  *
  * @author akila
  */
-public class PicasaImageButtonListener extends ImageButtonListener{
+public class PicasaImageButtonListener extends ImageButtonListener {
 
+    public PicasaImageButtonListener(PicasaDialog picasaDialog, CcOOoAddin addin, Image img) {
 
-    public PicasaImageButtonListener(PicasaDialog picasaDialog, CcOOoAddin addin, Image img){
-
-        super(picasaDialog,addin,img);
+        super(picasaDialog, addin, img);
 
     }
 

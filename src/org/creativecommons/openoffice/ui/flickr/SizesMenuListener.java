@@ -5,7 +5,6 @@
  * licensed under the GNU LGPL License; see licenses/LICENSE for details
  * 
  */
-
 package org.creativecommons.openoffice.ui.flickr;
 
 import com.sun.star.lang.EventObject;
@@ -23,21 +22,19 @@ public class SizesMenuListener implements XMenuListener {
 
     private FlickrDialog flickrDialog;
     private CcOOoAddin addin;
-            
+
     public SizesMenuListener(FlickrDialog _flickrDialog, CcOOoAddin _addin) {
-        
+
         this.flickrDialog = _flickrDialog;
         this.addin = _addin;
     }
-    
+
     public void highlight(MenuEvent me) {
-        
     }
-    
+
     public void select(MenuEvent me) {
-        
-        switch(me.MenuId)
-        {
+
+        switch (me.MenuId) {
             case (short) Size.THUMB:
             case (short) Size.SQUARE:
             case (short) Size.SMALL:
@@ -58,17 +55,17 @@ public class SizesMenuListener implements XMenuListener {
                 flickrDialog.getSelectedImage().setLicenseCode(
                         flickrDialog.getLicenseCode(
                         flickrDialog.getSelectedImage().getLicenseURL()));
-                  addin.getProgramWrapper().insertPicture(flickrDialog.getSelectedImage());
+                addin.getProgramWrapper().insertPicture(flickrDialog.getSelectedImage());
                 break;
         }
     }
-    
-    public void activate(MenuEvent me) {       
+
+    public void activate(MenuEvent me) {
     }
-    
-    public void deactivate(MenuEvent me) {       
-    }  
-    
-    public void disposing(EventObject e) {        
-    }  
+
+    public void deactivate(MenuEvent me) {
+    }
+
+    public void disposing(EventObject e) {
+    }
 }

@@ -25,8 +25,9 @@ import com.sun.star.uno.UnoRuntime;
 public class AcceptWaiveListener implements XItemListener {
 
     private ChooserDialog dialog;
+
     public AcceptWaiveListener(ChooserDialog dialog) {
-        this.dialog=dialog;
+        this.dialog = dialog;
     }
 
     @Override
