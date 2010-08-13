@@ -20,11 +20,6 @@ import com.hp.hpl.jena.rdf.model.ResIterator;
 import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.rdf.model.StmtIterator;
 import com.hp.hpl.jena.vocabulary.RDF;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FilenameFilter;
-import java.io.IOException;
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
@@ -40,11 +35,9 @@ public class Store {
     private Model model;
 
     public static Store get() {
-        long time = new Date().getTime();
         if (Store._instance == null) {
             Store._instance = new Store();
         }
-        System.out.println("Store.get "+(new Date().getTime()-time));
         return Store._instance;
     }
 
@@ -56,17 +49,9 @@ public class Store {
         this.model = ModelFactory.createMemModelMaker().createFreshModel();
         model.getReader("RDF/XML").setProperty("WARN_REDEFINITION_OF_ID", "EM_IGNORE");
         // Load the RDF definitions
-        long time = new Date().getTime();
         this.model.read(this.getClass().getResource("/org/creativecommons/license/rdf/schema.rdf").toString());
-        System.out.println("Store sch "+(new Date().getTime()-time)+this.getClass().getResource("/org/creativecommons/license/rdf/schema.rdf").toString());
-
-        time = new Date().getTime();
         this.model.read(this.getClass().getResource("/org/creativecommons/license/rdf/index.rdf").toString());
-        System.out.println("Store index "+(new Date().getTime()-time));
-
-        time = new Date().getTime();
         this.model.read(this.getClass().getResource("/org/creativecommons/license/rdf/jurisdictions.rdf").toString());
-        System.out.println("Store jur "+(new Date().getTime()-time));
     } // private Store()
 
     protected Model getModel() {
@@ -75,7 +60,6 @@ public class Store {
 
     @SuppressWarnings("unchecked")
     public List<Jurisdiction> jurisdictions() {
-        long time = new Date().getTime();
         ArrayList<Jurisdiction> result = new ArrayList<Jurisdiction>();
 
         ResIterator jurisdiction_iterator = this.getModel().listSubjectsWithProperty(
@@ -85,7 +69,6 @@ public class Store {
             result.add(new Jurisdiction(jurisdiction_iterator.nextResource().getURI()));
         }
         Collections.sort(result);
-        System.out.println("jurisdictions " + (new Date().getTime() - time));
         return result;
 
     } // public List jurisdictions

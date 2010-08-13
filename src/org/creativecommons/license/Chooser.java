@@ -122,7 +122,7 @@ public class Chooser {
 
         // execute a simple query
         String queryString = makePDLicenseQuery();
-        
+
         // Execute the query and obtain results
         QueryExecution query = this.licenseStore.query(queryString);
         ResultSet results = query.execSelect();
@@ -134,8 +134,7 @@ public class Chooser {
             if (tab == 2 && uri.contains("publicdomain") && uri.contains("zero")) {
                 // Important - free up resources used running the query
                 query.close();
-                System.out.println(new License(uri,territory).getTerritory()+"terrr");
-                return new License(uri,territory);
+                return new License(uri, territory);
             } else if (tab == 3 && uri.contains("publicdomain") && !uri.contains("zero")) {
                 // Important - free up resources used running the query
                 query.close();
@@ -170,3 +169,4 @@ public class Chooser {
         return queryString;
     } // makePDLicenseQuery
 } // Chooser
+
