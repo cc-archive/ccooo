@@ -34,6 +34,7 @@ import org.creativecommons.openoffice.Constants;
 /**
  *
  * @author nathan
+ * @author akila
  */
 public abstract class OOoProgram implements IVisibleNotice {
 
@@ -109,10 +110,6 @@ public abstract class OOoProgram implements IVisibleNotice {
                         com.sun.star.beans.PropertyAttribute.MAYBEVOID, "");
                 docPropertyContainer.addProperty(Constants.LICENSE_NAME,
                         com.sun.star.beans.PropertyAttribute.MAYBEVOID, "");
-                if (license.getTerritory() != null) {
-                    docPropertyContainer.addProperty(Constants.TERRITORY,
-                            com.sun.star.beans.PropertyAttribute.REMOVEABLE, "");
-                }
             } catch (com.sun.star.lang.IllegalArgumentException ex) {
                 ex.printStackTrace();
             } catch (PropertyExistException ex) {
@@ -126,6 +123,10 @@ public abstract class OOoProgram implements IVisibleNotice {
             docProperties.setPropertyValue(Constants.LICENSE_URI, license.getLicenseUri());
             docProperties.setPropertyValue(Constants.LICENSE_NAME, license.getName());
             if (license.getTerritory() != null) {
+                 if (!docProperties.getPropertySetInfo().hasPropertyByName(Constants.TERRITORY)) {
+                    docPropertyContainer.addProperty(Constants.TERRITORY,
+                            com.sun.star.beans.PropertyAttribute.REMOVEABLE, "");
+                }
                 docProperties.setPropertyValue(Constants.TERRITORY, license.getTerritory());
             } else if(docProperties.getPropertySetInfo().hasPropertyByName(Constants.TERRITORY)){
                 try {
@@ -135,6 +136,10 @@ public abstract class OOoProgram implements IVisibleNotice {
                 }
             }
 
+        } catch (PropertyExistException ex) {
+            Logger.getLogger(OOoProgram.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (IllegalTypeException ex) {
+            Logger.getLogger(OOoProgram.class.getName()).log(Level.SEVERE, null, ex);
         } catch (com.sun.star.lang.IllegalArgumentException ex) {
             Logger.getLogger(OOoProgram.class.getName()).log(Level.SEVERE, null, ex);
         } catch (UnknownPropertyException ex) {
@@ -145,6 +150,7 @@ public abstract class OOoProgram implements IVisibleNotice {
             Logger.getLogger(OOoProgram.class.getName()).log(Level.SEVERE, null, ex);
         }
 
+        //TODO: add territory and title to RDF
         try {
             String author = null, title = null;
             try {
