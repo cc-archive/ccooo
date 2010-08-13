@@ -106,7 +106,7 @@ public class FlickrConnection {
         try {
             /***************************/
             long time = new Date().getTime();
-            userInfo = people.getInfo(userID); //////////bottleneck
+            userInfo = people.getInfo(userID); //////////dealy
             System.out.println("Flicker  getUserName" + (new Date().getTime() - time));
             /****************************/
             return userInfo.getUsername();

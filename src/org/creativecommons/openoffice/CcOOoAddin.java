@@ -54,7 +54,6 @@ import org.creativecommons.license.StoreThread;
 import org.creativecommons.openoffice.program.Calc;
 import org.creativecommons.openoffice.program.Draw;
 import org.creativecommons.openoffice.program.IVisibleNotice;
-import org.creativecommons.openoffice.program.Impress;
 import org.creativecommons.openoffice.program.Writer;
 import org.creativecommons.openoffice.ui.license.ChooserDialog;
 import org.creativecommons.openoffice.ui.flickr.FlickrDialog;
@@ -170,7 +169,7 @@ public final class CcOOoAddin extends WeakBase
             return new Writer(this.getCurrentComponent(), m_xContext);
 
         } else if (xServiceInfo.supportsService("com.sun.star.presentation.PresentationDocument")) {
-            return new Impress(this.getCurrentComponent(), m_xContext);
+            return new Draw(this.getCurrentComponent(), m_xContext);
 
         } else if (xServiceInfo.supportsService("com.sun.star.drawing.DrawingDocument")) {
             return new Draw(this.getCurrentComponent(), m_xContext);

@@ -50,7 +50,8 @@ public abstract class OOoProgram implements IVisibleNotice {
     public License getDocumentLicense() {
 
         // Return the License for the active document, if it exists       
-        XDocumentInfoSupplier xDocumentInfoSupplier = (XDocumentInfoSupplier) UnoRuntime.queryInterface(XDocumentInfoSupplier.class, this.component);
+        XDocumentInfoSupplier xDocumentInfoSupplier = (XDocumentInfoSupplier)
+                UnoRuntime.queryInterface(XDocumentInfoSupplier.class, this.component);
 
         XDocumentInfo docInfo = xDocumentInfoSupplier.getDocumentInfo();
         XPropertySet docProperties = (XPropertySet) UnoRuntime.queryInterface(
@@ -94,12 +95,15 @@ public abstract class OOoProgram implements IVisibleNotice {
 
     public void setDocumentLicense(License license) {
 
-        XDocumentInfoSupplier xDocumentInfoSupplier = (XDocumentInfoSupplier) UnoRuntime.queryInterface(XDocumentInfoSupplier.class, this.component);
+        XDocumentInfoSupplier xDocumentInfoSupplier = 
+                (XDocumentInfoSupplier) UnoRuntime.queryInterface(
+                XDocumentInfoSupplier.class, this.component);
 
         XDocumentInfo docInfo = xDocumentInfoSupplier.getDocumentInfo();
         XPropertySet docProperties = (XPropertySet) UnoRuntime.queryInterface(
                 XPropertySet.class, docInfo);
-        XPropertyContainer docPropertyContainer = (XPropertyContainer) UnoRuntime.queryInterface(XPropertyContainer.class,
+        XPropertyContainer docPropertyContainer =
+                (XPropertyContainer) UnoRuntime.queryInterface(XPropertyContainer.class,
                 docInfo);
         if (!docProperties.getPropertySetInfo().hasPropertyByName(Constants.LICENSE_URI)) {
 

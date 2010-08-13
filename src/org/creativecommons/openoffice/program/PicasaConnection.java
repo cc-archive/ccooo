@@ -8,7 +8,6 @@
 /**
  *
  * TODO:
- * Support for selecting images based on license
  * Get different sizes of images
  *
  */

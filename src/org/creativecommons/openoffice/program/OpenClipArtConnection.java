@@ -61,6 +61,8 @@ public class OpenClipArtConnection {
                 imgUrl = listOfURLs.item(s).getAttributes().getNamedItem("url").getNodeValue();
                 licenseURL = goToDepth(listOfLicenses.item(s)).getNodeValue();
                 imgUrlThumb = listOfThumbs.item(s).getAttributes().getNamedItem("url").getNodeValue();
+                
+                //if image is svg convert to png
                 if (imgUrl.contains(".svg")) {
                     imgUrl=imgUrlThumb.replace("/90px/", "/400px/");
                     imgUrlThumb = imgUrlThumb.replace("/90px/", "/120px/"); 

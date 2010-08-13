@@ -66,7 +66,7 @@ public class Image {
     }
 
     public void setImgUrlMainPage(String url) {
-        this.imgUrlMainPage=url;
+        this.imgUrlMainPage = url;
     }
 
     public String getImgUrlMainPage() {
@@ -119,9 +119,9 @@ public class Image {
         return selectedImageURL;
     }
 
-    public void setSelectedImageWidth(int width){
-        
-        selectedImageWidth=width;
+    public void setSelectedImageWidth(int width) {
+
+        selectedImageWidth = width;
     }
 
     public Integer getSelectedImageWidth() {
@@ -129,9 +129,9 @@ public class Image {
         return selectedImageWidth;
     }
 
-    public void setSelectedImageHeight(int height){
+    public void setSelectedImageHeight(int height) {
 
-        selectedImageHeigth=height;
+        selectedImageHeigth = height;
     }
 
     public Integer getSelectedImageHeigth() {

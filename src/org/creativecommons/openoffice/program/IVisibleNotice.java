@@ -20,12 +20,12 @@ public interface IVisibleNotice {
 
     /**
      * Create and insert an auto-text containing the license
-     * 
-     * @param licenseName The License Name.
-     * @param licenseURL The License URL.
-     * @param licenseImgURL The license "button" URL.
      */
     public void insertVisibleNotice();
+    
+    /**
+     * Update visible notices to current license
+     */
     public void updateVisibleNotice();
     
     public void setDocumentLicense(License license);

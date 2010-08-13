@@ -40,14 +40,13 @@ import org.creativecommons.openoffice.util.ShapeHelper;
 /**
  *
  * @author Cassio
+ * @author akila
  */
 public class Draw extends OOoProgram {
 
     private int pageWidth;
     private int pageHeight;
-    private int pageBorderTop;
     private int pageBorderBottom;
-    private int pageBorderLeft;
     private int pageBorderRight;
 
     public Draw(XComponent component, XComponentContext m_xContext) {
@@ -151,11 +150,11 @@ public class Draw extends OOoProgram {
             xShapePropSet.setPropertyValue("FillStyle", FillStyle.NONE);
             xShapePropSet.setPropertyValue("Name", "ccoo:picture");
 
-            // first paragraph
+            // first paragraph - Licence data
             xTextPropSet = ShapeHelper.addPortion(xRectangle, caption, false);
             xTextPropSet.setPropertyValue("CharColor", new Integer(0x000000));
 
-            // first shape
+            // second shape
             caption = img.getTitle() + " ( " + img.getImgUrlMainPage() + " )";
             xRectangle = ShapeHelper.createShape(this.getComponent(),
                     new Point(0, xGraphicShape.getPosition().Y
@@ -169,10 +168,8 @@ public class Draw extends OOoProgram {
             xShapePropSet.setPropertyValue("TextLeftDistance", new Long(0));
             xShapePropSet.setPropertyValue("LineStyle", LineStyle.NONE);
             xShapePropSet.setPropertyValue("FillStyle", FillStyle.NONE);
-//            xShapePropSet.setPropertyValue("MoveProtect", false);
-//            xShapePropSet.setPropertyValue("SizeProtect", false);
 
-            //second one
+            //second paragraph - Image data
             xTextPropSet = ShapeHelper.addPortion(xRectangle, caption, false);
             xTextPropSet.setPropertyValue("CharColor", new Integer(0x000000));
 
@@ -201,16 +198,12 @@ public class Draw extends OOoProgram {
         License license = this.getDocumentLicense();
 
         try {
-            //XDrawPage xPage = PageHelper.getDrawPageByIndex( xDrawDoc, 0 );
-            // xPage = PageHelper.getMasterPageByIndex(xDrawDoc, 0);
-            //xPage = PageHelper.getDrawPageByIndex(this.getComponent(), 0);
 
-            com.sun.star.beans.XPropertySet xPageProps = (com.sun.star.beans.XPropertySet) UnoRuntime.queryInterface(com.sun.star.beans.XPropertySet.class, xPage);
+            com.sun.star.beans.XPropertySet xPageProps = (com.sun.star.beans.XPropertySet)
+                    UnoRuntime.queryInterface(com.sun.star.beans.XPropertySet.class, xPage);
             pageWidth = AnyConverter.toInt(xPageProps.getPropertyValue("Width"));
             pageHeight = AnyConverter.toInt(xPageProps.getPropertyValue("Height"));
-            pageBorderTop = AnyConverter.toInt(xPageProps.getPropertyValue("BorderTop"));
             pageBorderBottom = AnyConverter.toInt(xPageProps.getPropertyValue("BorderBottom"));
-            pageBorderLeft = AnyConverter.toInt(xPageProps.getPropertyValue("BorderLeft"));
             pageBorderRight = AnyConverter.toInt(xPageProps.getPropertyValue("BorderRight"));
 
             XShapes xShapes = (XShapes) UnoRuntime.queryInterface(XShapes.class, xPage);
@@ -235,7 +228,6 @@ public class Draw extends OOoProgram {
             xShapePropSet.setPropertyValue("TextAutoGrowWidth", true);
             xShapePropSet.setPropertyValue("LineStyle", LineStyle.NONE);
             xShapePropSet.setPropertyValue("FillStyle", FillStyle.NONE);
-            //xShapePropSet.setPropertyValue("TextFitToSize", TextFitToSizeType.PROPORTIONAL);
             xShapePropSet.setPropertyValue("Name", "ccoo:licenseText");
 
             // first paragraph
@@ -243,7 +235,6 @@ public class Draw extends OOoProgram {
                     ShapeHelper.addPortion(xRectangle, license.getName(), false);
             xTextPropSet.setPropertyValue("CharColor", new Integer(0x000000));
             xTextPropSet.setPropertyValue("CharColor", new Integer(0x000000));
-            //xTextPropSet.setPropertyValue( "CharWeight", new Float(com.sun.star.awt.FontWeight.BOLD) );
 
             // insert the graphic
             this.embedGraphic(license.getImageUrl(), xPage);

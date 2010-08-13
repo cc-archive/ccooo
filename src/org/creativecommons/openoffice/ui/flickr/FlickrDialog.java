@@ -79,7 +79,8 @@ public class FlickrDialog extends InsertImageDialog{
             // get the service manager from the dialog model
             this.xMultiServiceFactory = (XMultiServiceFactory) UnoRuntime.queryInterface(
                     XMultiServiceFactory.class, dlgLicenseSelector);
-
+            
+            //create dialog components
             Object lblTags = msfLicenseSelector.createInstance(
                     "com.sun.star.awt.UnoControlFixedTextModel");
             createAWTControl(lblTags, LBL_TAGS, "Tags", new Rectangle(10, 10, 50, 12));
@@ -200,7 +201,7 @@ public class FlickrDialog extends InsertImageDialog{
             if (img != null) {
                 if (img.getUserName().equalsIgnoreCase("")) {
                     /**********************/
-                    img.setUserName(FlickrConnection.instance.getUserName(img.getUserID())); //bottleneck2
+                    img.setUserName(FlickrConnection.instance.getUserName(img.getUserID())); //dealy
                     /************************/
                 }
 
