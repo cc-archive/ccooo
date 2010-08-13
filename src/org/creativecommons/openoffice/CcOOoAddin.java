@@ -9,7 +9,6 @@
  *
  *TODO:
  *- Put the original size of the image (without restriction)
- *- Put CC logo on the interface
  *- Put "more info" option like ms office addin on the dialog
  *- CC option embeded in the ooo "File" menu instead?
  *- Exception handling (including timeout)
@@ -23,7 +22,6 @@ import com.sun.star.awt.MessageBoxButtons;
 import com.sun.star.awt.Rectangle;
 import com.sun.star.awt.WindowDescriptor;
 import com.sun.star.awt.XMessageBox;
-import com.sun.star.document.XEventBroadcaster;
 import com.sun.star.frame.XDesktop;
 import com.sun.star.lang.XComponent;
 import com.sun.star.lang.XMultiComponentFactory;
@@ -96,8 +94,8 @@ public final class CcOOoAddin extends WeakBase
     protected XMultiComponentFactory mxRemoteServiceManager = null;
     private FlickrDialog pictureFlickrDialog = null;
     private OpenClipArtDialog openClipArtDialog = null;
-    private WikimediaDialog wikimediaDialog=null;
-    private PicasaDialog picasaDialog=null;
+    private WikimediaDialog wikimediaDialog = null;
+    private PicasaDialog picasaDialog = null;
 
     /**
      * Constructs a new instance
@@ -112,27 +110,27 @@ public final class CcOOoAddin extends WeakBase
             // get the service manager from the component context
             this.xMultiComponentFactory = this.m_xContext.getServiceManager();
 
-        //set the locale for UI
+            //set the locale for UI
 
-         Object oProvider =
-            xMultiComponentFactory.createInstanceWithContext("com.sun.star.configuration.ConfigurationProvider", m_xContext);
-         XMultiServiceFactory xConfigurationServiceFactory =
-            (XMultiServiceFactory)UnoRuntime.queryInterface(XMultiServiceFactory.class, oProvider);
+            Object oProvider =
+                    xMultiComponentFactory.createInstanceWithContext("com.sun.star.configuration.ConfigurationProvider", m_xContext);
+            XMultiServiceFactory xConfigurationServiceFactory =
+                    (XMultiServiceFactory) UnoRuntime.queryInterface(XMultiServiceFactory.class, oProvider);
 
-         PropertyValue[] lArgs    = new PropertyValue[1];
-         lArgs[0] = new PropertyValue();
-         lArgs[0].Name  = "nodepath";
-         lArgs[0].Value = "/org.openoffice.Setup/L10N";
+            PropertyValue[] lArgs = new PropertyValue[1];
+            lArgs[0] = new PropertyValue();
+            lArgs[0].Name = "nodepath";
+            lArgs[0].Value = "/org.openoffice.Setup/L10N";
 
-         Object configAccess =  xConfigurationServiceFactory.createInstanceWithArguments(
-            "com.sun.star.configuration.ConfigurationAccess",lArgs);
+            Object configAccess = xConfigurationServiceFactory.createInstanceWithArguments(
+                    "com.sun.star.configuration.ConfigurationAccess", lArgs);
 
-         XNameAccess xNameAccess = (XNameAccess)UnoRuntime.queryInterface(XNameAccess.class, configAccess);
-         setLocale(new Locale(xNameAccess.getByName("ooLocale").toString()));
+            XNameAccess xNameAccess = (XNameAccess) UnoRuntime.queryInterface(XNameAccess.class, configAccess);
+            setLocale(new Locale(xNameAccess.getByName("ooLocale").toString()));
 
-      } catch (Exception ex) {
-          ex.printStackTrace();
-      }
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
     }
 
     // Generated method stubs
@@ -166,16 +164,16 @@ public final class CcOOoAddin extends WeakBase
                 XServiceInfo.class, this.getCurrentComponent());
 
         if (xServiceInfo.supportsService("com.sun.star.sheet.SpreadsheetDocument")) {
-            return new Calc(this.getCurrentComponent(),m_xContext);
+            return new Calc(this.getCurrentComponent(), m_xContext);
 
         } else if (xServiceInfo.supportsService("com.sun.star.text.TextDocument")) {
-            return new Writer(this.getCurrentComponent(),m_xContext);
+            return new Writer(this.getCurrentComponent(), m_xContext);
 
         } else if (xServiceInfo.supportsService("com.sun.star.presentation.PresentationDocument")) {
-            return new Impress(this.getCurrentComponent(),m_xContext);
+            return new Impress(this.getCurrentComponent(), m_xContext);
 
         } else if (xServiceInfo.supportsService("com.sun.star.drawing.DrawingDocument")) {
-            return new Draw(this.getCurrentComponent(),m_xContext);
+            return new Draw(this.getCurrentComponent(), m_xContext);
         }
 
         return null;
@@ -235,11 +233,8 @@ public final class CcOOoAddin extends WeakBase
     public void initialize(Object[] object)
             throws com.sun.star.uno.Exception {
         if (object.length > 0) {
-
-
             m_xFrame = (com.sun.star.frame.XFrame) UnoRuntime.queryInterface(
                     com.sun.star.frame.XFrame.class, object[0]);
-            this.AddOnLoadDocumentListener();
         }
     }
 
@@ -268,15 +263,12 @@ public final class CcOOoAddin extends WeakBase
                 insertStatement();
             } // if insert statement
             else if (aURL.Path.compareTo("InsertPictureFlickr") == 0) {
-                insertPictureFlickr();
-            }
-            else if (aURL.Path.compareTo("InsertOpenClipArt") == 0) {
+                insertFlickrImage();
+            } else if (aURL.Path.compareTo("InsertOpenClipArt") == 0) {
                 insertOpenClipArt();
-            }
-            else if (aURL.Path.compareTo("InsertWikimediaCommons") == 0) {
+            } else if (aURL.Path.compareTo("InsertWikimediaCommons") == 0) {
                 insertWikimediaImage();
-            }
-            else if (aURL.Path.compareTo("InsertPicasa") == 0) {
+            } else if (aURL.Path.compareTo("InsertPicasa") == 0) {
                 insertPicasaImage();
             }
         } // if CcOOoAddin protocol
@@ -324,7 +316,7 @@ public final class CcOOoAddin extends WeakBase
 
     } // insertVisibleNotice
 
-    public void insertPictureFlickr() {
+    public void insertFlickrImage() {
 
         try {
 
@@ -350,9 +342,7 @@ public final class CcOOoAddin extends WeakBase
 
             pictureFlickrDialog.setLoadable(false);
         }
-
-
-    } // insertPicture
+    } // insertFlickrImage
 
     public void insertOpenClipArt() {
 
@@ -382,7 +372,7 @@ public final class CcOOoAddin extends WeakBase
         }
 
 
-    } // insertPicture
+    } // insertOpenClipArt
 
     public void insertWikimediaImage() {
 
@@ -410,9 +400,8 @@ public final class CcOOoAddin extends WeakBase
 
             wikimediaDialog.setLoadable(false);
         }
+    } // insertWikimediaImage
 
-
-    } // insertPicture
     public void insertPicasaImage() {
 
         try {
@@ -439,9 +428,7 @@ public final class CcOOoAddin extends WeakBase
 
             picasaDialog.setLoadable(false);
         }
-
-
-    } // insertPicture
+    } // insertPicasaImage
 
     /**
      * Creates an infobox with the title and text given
@@ -551,59 +538,6 @@ public final class CcOOoAddin extends WeakBase
 
     }
 
-    /**
-     * Add a listener to the openoffice to be triggered when OnLoad events occur
-     *
-     */
-    private void AddOnLoadDocumentListener() {
-        Object xGlobalBroadCaster;
-
-        try {
-            xGlobalBroadCaster = mxRemoteServiceManager.createInstanceWithContext(
-                    "com.sun.star.frame.GlobalEventBroadcaster", m_xContext);
-
-            XEventBroadcaster xEventBroad = (XEventBroadcaster) UnoRuntime.queryInterface(
-                    XEventBroadcaster.class, xGlobalBroadCaster);
-
-            xEventBroad.addEventListener(new com.sun.star.document.XEventListener() {
-
-                public void notifyEvent(com.sun.star.document.EventObject oEvent) {
-
-
-                    // Is there any other way more efficient, without having to check this?
-                    // for all events in ooo this check happen...
-                    // would be nice if it had an OnLoadListener interface, wouldn't it?
-                    if (oEvent.EventName.equalsIgnoreCase("OnLoad")) {
-                        //createInfoBox("title","MSG");
-                        /*
-                        Map licenseProps = retrieveLicenseMetadata();
-                        if (!licenseProps.isEmpty()) {
-                        String body ="This work is licensed under a Creative Commons License. \n\n";
-                        Set list = licenseProps.entrySet();
-                        Iterator it = list.iterator();
-
-                        while (it.hasNext()) {
-                        Entry temp = (Entry) it.next();
-                        body += temp.getKey()+": "+temp.getValue()+"\n";
-                        //System.out.println(temp.getKey() + " -> "+temp.getValue());
-                        }
-
-                        // createInfoBox("Creative Commons Licensed Document",body);
-                        }
-                         */
-                    }
-                }
-
-                public void disposing(com.sun.star.lang.EventObject e) {
-                    System.out.println("On Dispose");
-                }
-            });
-
-        } catch (Exception ex) {
-            ex.printStackTrace();
-        }
-
-    }
     public Object execute(NamedValue[] args) throws IllegalArgumentException,
             com.sun.star.uno.Exception {
         NamedValue[] lEnvironment = null;
@@ -652,8 +586,13 @@ public final class CcOOoAddin extends WeakBase
             throw new com.sun.star.lang.IllegalArgumentException("\"" + sEnvType + "\" isn't a valid value for EnvType");
         }
         //where to start the thread??
-        StoreThread th = new StoreThread();   //running as a therad will stop the
-        th.start();                         //unresponsive 2 second period when loading document
+        //running as a therad will stop the
+        //unresponsive 2 second period when loading document
+        StoreThread th = new StoreThread();
+        th.setPriority(Thread.MIN_PRIORITY);
+        th.start();
+
+        //Display license information when opening CC licensed documents
         try {
             if (sEventName != null && sEventName.equalsIgnoreCase("onload")) {
                 this.updateCurrentComponent();
