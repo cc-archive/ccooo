@@ -1,6 +1,16 @@
 ccOpenOfficeOrg Add-In
 ----------------------
 
+0.0.7
+August 16 2010
+
+* Support for Draw.
+* Support for adding CC0 and Public Domain notices and metadata.
+* Help tips on license selection.
+* Incorporating with Flickr Image Re-Use Plugin.
+* Inserting images from Picasa, Wikimedia and OpenClipArt.
+* Internationalization.
+* RDF metadata.
 
 0.0.3
 July 24 2007
