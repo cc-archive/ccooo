@@ -8,8 +8,8 @@
         </simple-license>
     </registration>
     <icon>
-        <default xlink:href="images/200px-Cc.logo.circle.svg.jpg"/>
-        <high-contrast xlink:href="images/200px-Cc.logo.circle.svg.jpg"/>
+        <default xlink:href="images/CC_small.png"/>
+        <high-contrast xlink:href="images/CC_small.png"/>
     </icon>
     <publisher>
         <name lang="en" xlink:href="http://creativecommons.org/">Creative Commons</name>
@@ -17,5 +17,8 @@
     <display-name>
         <name lang="en">Creative Commons OpenOffice plug-in</name>
     </display-name>
+    <extension-description>
+        <src lang="en" xlink:href="description/DESCRIPTION"/>
+    </extension-description>
 </description>
 <!--Created with OpenOffice.org API plug-in for NetBeans Version 2.0.6-->

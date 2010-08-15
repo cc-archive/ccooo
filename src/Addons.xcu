@@ -219,7 +219,7 @@
                 </prop>
                 <node oor:name="UserDefinedImages">
                     <prop oor:name="ImageSmallURL">
-                        <value>%origin%/images/20px-Cc.logo.circle.svg.png</value>
+                        <value>%origin%/images/CC_16.png</value>
                     </prop>
                     <prop oor:name="ImageBigURL">
                         <value/>
@@ -238,7 +238,7 @@
                 </prop>
                 <node oor:name="UserDefinedImages">
                     <prop oor:name="ImageSmallURL">
-                        <value>%origin%/images/20px-Cc.logo.circle.svg.png</value>
+                        <value>%origin%/images/CC_16.png</value>
                     </prop>
                     <prop oor:name="ImageBigURL">
                         <value/>
@@ -257,7 +257,7 @@
                 </prop>
                 <node oor:name="UserDefinedImages">
                     <prop oor:name="ImageSmallURL">
-                        <value>%origin%/images/20px-Cc.logo.circle.svg.png</value>
+                        <value>%origin%/images/CC_16.png</value>
                     </prop>
                     <prop oor:name="ImageBigURL">
                         <value/>
