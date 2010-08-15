@@ -13,7 +13,7 @@ ccooo Add-In may be installed from the Extension Manager in OpenOffice.Org envir
 Please report any problems or suggestions to the authors, Cassio Melo <cassio.ufpe@gmail.com> and Fran�ois D�chelle <francois@dechelle.net>.
 
 0.7.0
-July 18 2010
+August 16 2010
 How to add localized strings
 ----------------------------
 * Get the .po files from code.creativecommons.org/svnroot/i18n/trunk/i18n/
@@ -30,3 +30,9 @@ How to extract new strings (Update .po files)
 This can be configured to run automatically when compiling the project.
 Uncomment line 75-82 of the build.xml to run the make_bundle.sh and make_pot.sh
 when compiling.
+
+Installation
+------------
+* Ubuntu users will need to install the plugin using terminal.
+* To install use /usr/lib/openoffice/program/unopkg gui -f ccooo.oxt
+* This version will not work in Mac OS X Snow Leopard (version 10.6).
