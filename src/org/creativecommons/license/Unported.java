@@ -14,14 +14,23 @@ package org.creativecommons.license;
  */
 public class Unported implements IJurisdiction {
     
-    /** Creates a new instance of Unported */
+    /** 
+     * Creates a new instance of Unported
+     */
     public Unported() {
     }
-
+    /**
+     * Returen the title for "en" locale
+     * @return Title
+     */
     public String getTitle() {
         return this.getTitle("en");
     }
-
+    /**
+     * Returen the title for a given locale
+     * @param lang Locale
+     * @return Title
+     */
     public String getTitle(String lang) {
         return "Unported";
     }

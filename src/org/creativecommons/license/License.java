@@ -24,25 +24,35 @@ public class License {
     private Store licenseStore;
 
     /**
-     * Creates a new instance of License
+     * Creates a new instance of License.
      */
     public License(String license_uri) {
 
         this.license_uri = license_uri;
         this.licenseStore = Store.get();
     }
-
+    /**
+     * Creates a new instance of License with a territory (for PD).
+     * @param license_uri
+     * @param territory
+     */
     public License(String license_uri, String territory) {
 
         this.license_uri = license_uri;
         this.territory = territory;
         this.licenseStore = Store.get();
     }
-
+    /**
+     *
+     * @return license_uri
+     */
     public String getLicenseUri() {
         return this.license_uri;
     }
-
+    /**
+     * Get the license for "en" locale.
+     * @return License name
+     */
     public String getName() {
         try {
             return this.licenseStore.literal(this.license_uri, DC.title, "en").getString() + " "
@@ -58,14 +68,21 @@ public class License {
             }
         }
     }
-
+    /**
+     * Get the lisense name for a given locale.
+     * @param locale Locale
+     * @return License name
+     */
     public String getName(String locale) {
 
         return this.licenseStore.literal(this.license_uri, DC.title, locale).getString() + " "
                 + this.licenseStore.literal(this.license_uri, DCTerms.hasVersion, "").getString() + " "
                 + this.getJurisdiction().getTitle();
     }
-
+    /**
+     * Get the jurisdiction.
+     * @return Jurisdiction of the license.
+     */
     public IJurisdiction getJurisdiction() {
 
         Resource jurisdiction = this.licenseStore.object(this.license_uri, CC.jurisdiction);
@@ -82,7 +99,7 @@ public class License {
      * Return the URL of the icon for this license if available; if unavailable,
      * return null.
      *
-     * @return the URL for the license image
+     * @return The URL for the license image
      *
      */
     public String getImageUrl() {
@@ -99,7 +116,7 @@ public class License {
      * Attribution 3.0 license (http://creativecommons.org/licenses/by/3.0/) is
      * "by".  Note this is based on a Creative Commons-specific standard.
      *
-     * @return license code for the selected License.
+     * @return License code for the selected License.
      */
     private String getCode() {
 
@@ -116,11 +133,18 @@ public class License {
 
         return null;
     }
-
+    /**
+     *
+     * @return Territory
+     */
     public String getTerritory() {
         return this.territory;
     }
-
+    /**
+     *
+     * @return License version
+     * @throws NullPointerException
+     */
     public String getVersion() throws NullPointerException {
         return this.licenseStore.literal(this.license_uri, DCTerms.hasVersion, "").getString();
     }

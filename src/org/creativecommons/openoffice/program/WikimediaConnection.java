@@ -174,6 +174,11 @@ public class WikimediaConnection {
         return imgList;
     }
 
+    /**
+     * Go to depth of a node
+     * @param node
+     * @return Depth node
+     */
     private Node goToDepth(Node node) {
         if (node.hasChildNodes()) {
             return goToDepth(node.getFirstChild());

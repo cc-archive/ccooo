@@ -9,7 +9,7 @@
 package org.creativecommons.license;
 
 /**
- *
+ * Interface for Jurisdictions.
  * @author nathan
  */
 public interface IJurisdiction extends Comparable {

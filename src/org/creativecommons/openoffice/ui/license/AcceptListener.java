@@ -19,30 +19,32 @@ import com.sun.star.lang.WrappedTargetException;
 import com.sun.star.uno.UnoRuntime;
 
 /**
- *
+ * Enable OK button after accepting the deed.
  * @author akila
  */
 public class AcceptListener implements XItemListener {
 
-    private ChooserDialog dialog;
+    private LicenseChooserDialog dialog;
 
-    public AcceptListener(ChooserDialog dialog) {
+    public AcceptListener(LicenseChooserDialog dialog) {
         this.dialog = dialog;
     }
 
     @Override
     public void itemStateChanged(ItemEvent event) {
 
-        XCheckBox allow_Remixing = ((XCheckBox) UnoRuntime.queryInterface(XCheckBox.class, event.Source));
+        XCheckBox accept = ((XCheckBox) UnoRuntime.queryInterface(XCheckBox.class, event.Source));
         try {
 
-            if (allow_Remixing.getState() == (short) 0) {
-                // if remixing is not allowed, you can't require Share-Alike
+            //enable disable dialog controls accoring to the state
+            if (accept.getState() == (short) 0) {
                 ((XPropertySet) UnoRuntime.queryInterface(XPropertySet.class,
-                        this.dialog.getNameContainer().getByName(ChooserDialog.BTN_OK))).setPropertyValue("Enabled", Boolean.FALSE);
+                        this.dialog.getNameContainer().getByName(
+                        LicenseChooserDialog.BTN_OK))).setPropertyValue("Enabled", Boolean.FALSE);
             } else {
                 ((XPropertySet) UnoRuntime.queryInterface(XPropertySet.class,
-                        this.dialog.getNameContainer().getByName(ChooserDialog.BTN_OK))).setPropertyValue("Enabled", Boolean.TRUE);
+                        this.dialog.getNameContainer().getByName(
+                        LicenseChooserDialog.BTN_OK))).setPropertyValue("Enabled", Boolean.TRUE);
             }
 
         } catch (com.sun.star.lang.IllegalArgumentException ex) {

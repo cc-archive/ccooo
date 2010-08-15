@@ -12,14 +12,14 @@ import com.sun.star.awt.XActionListener;
 import com.sun.star.lang.EventObject;
 
 /**
- *
+ * Show Creative Commons tab.
  * @author akila
  */
 public class CCClickListener implements XActionListener {
 
-    private ChooserDialog dialog;
+    private LicenseChooserDialog dialog;
 
-    public CCClickListener(ChooserDialog dialog) {
+    public CCClickListener(LicenseChooserDialog dialog) {
         this.dialog = dialog;
     }
 

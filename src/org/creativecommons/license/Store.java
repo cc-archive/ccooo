@@ -57,7 +57,10 @@ public class Store {
     protected Model getModel() {
         return model;
     }
-
+    /**
+     * Get the jurisdictions
+     * @return Jurisdictions list
+     */
     @SuppressWarnings("unchecked")
     public List<Jurisdiction> jurisdictions() {
         ArrayList<Jurisdiction> result = new ArrayList<Jurisdiction>();
@@ -73,6 +76,11 @@ public class Store {
 
     } // public List jurisdictions
 
+    /**
+     * Query the RDF
+     * @param queryString
+     * @return result
+     */
     public QueryExecution query(String queryString) {
 
         Query query = QueryFactory.create(queryString);
@@ -103,7 +111,12 @@ public class Store {
     public Literal literal(String subject, Property predicate, String lang) {
         return literal(this.model.getResource(subject), predicate, lang);
     }
-
+    /**
+     * Get the object of the RDF triple
+     * @param subject
+     * @param predicate
+     * @return objcet
+     */
     public Resource object(String subject, Property predicate) {
 
         RDFNode current;

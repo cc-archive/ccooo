@@ -13,7 +13,7 @@ import org.creativecommons.openoffice.CcOOoAddin;
 import org.creativecommons.openoffice.ui.SearchClickListener;
 
 /**
- *
+ * Start a search when click on the search button.
  * @author akila
  */
 public class OpenClipArtSearchClickListener extends SearchClickListener {

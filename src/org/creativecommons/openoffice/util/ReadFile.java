@@ -14,11 +14,15 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- *
+ * Read a text file and return the output.
  * @author akila
  */
 public class ReadFile {
-
+    /**
+     * Read a text file and return the output.
+     * @param is Input stream
+     * @return text
+     */
     public static String read(InputStream is) {
         try {
             InputStreamReader isr = new InputStreamReader(is);

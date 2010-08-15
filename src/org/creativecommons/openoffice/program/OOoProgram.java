@@ -41,7 +41,9 @@ public abstract class OOoProgram implements IVisibleNotice {
     protected XComponent component;
     protected XComponentContext m_xContext;
 
-    /** Creates a new instance of OOoProgram */
+    /** 
+     * Creates a new instance of OOoProgram
+     */
     public OOoProgram(XComponent component, XComponentContext m_xContext) {
         this.component = component;
         this.m_xContext = m_xContext;
@@ -82,17 +84,15 @@ public abstract class OOoProgram implements IVisibleNotice {
 
     } // getDocumentLicense
 
-    public abstract boolean hasVisibleNotice();
-
     /**
      * Create and insert an auto-text containing the license
-     *
-     * @param licenseName The License Name.
-     * @param licenseURL The License URL.
-     * @param licenseImgURL The license "button" URL.
      */
     public abstract void insertVisibleNotice();
 
+    /**
+     * Set the license meta data.
+     * @param license
+     */
     public void setDocumentLicense(License license) {
 
         XDocumentInfoSupplier xDocumentInfoSupplier = 
@@ -154,6 +154,7 @@ public abstract class OOoProgram implements IVisibleNotice {
             Logger.getLogger(OOoProgram.class.getName()).log(Level.SEVERE, null, ex);
         }
 
+        //RDF metadata
         //TODO: add territory and title to RDF
         try {
             String author = null, title = null;

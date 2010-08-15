@@ -17,7 +17,7 @@ import com.sun.star.awt.XMouseListener;
 import com.sun.star.awt.MouseButton;
 
 /**
- *
+ * Listens to events on images
  * @author akila
  */
 public abstract class ImageButtonListener implements XMouseListener {

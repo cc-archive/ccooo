@@ -12,14 +12,14 @@ import com.sun.star.awt.XActionListener;
 import com.sun.star.lang.EventObject;
 
 /**
- *
+ * Show CC0 tab.
  * @author akila
  */
 public class CC0ClickListener implements XActionListener {
 
-    private ChooserDialog dialog;
+    private LicenseChooserDialog dialog;
 
-    public CC0ClickListener(ChooserDialog dialog) {
+    public CC0ClickListener(LicenseChooserDialog dialog) {
         this.dialog = dialog;
     }
 

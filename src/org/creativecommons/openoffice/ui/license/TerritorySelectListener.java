@@ -11,20 +11,19 @@ import com.sun.star.awt.ItemEvent;
 import com.sun.star.awt.XItemListener;
 
 /**
- *
+ * Get the user selected territory.
  * @author akila
  */
 public class TerritorySelectListener implements XItemListener {
 
-    private ChooserDialog dialog;
+    private LicenseChooserDialog dialog;
 
-    public TerritorySelectListener(ChooserDialog dialog) {
+    public TerritorySelectListener(LicenseChooserDialog dialog) {
         this.dialog = dialog;
     }
 
     public void itemStateChanged(ItemEvent event) {
         this.dialog.setSelectedTerritory(event.Selected);
-        //this.dialog;
     }
 
     public void disposing(com.sun.star.lang.EventObject arg0) {

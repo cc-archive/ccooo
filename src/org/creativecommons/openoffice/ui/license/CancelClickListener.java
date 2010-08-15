@@ -13,9 +13,9 @@ import com.sun.star.lang.EventObject;
 
 class CancelClickListener implements XActionListener {
 
-    private final ChooserDialog chooserDialog;
+    private final LicenseChooserDialog chooserDialog;
 
-    public CancelClickListener(ChooserDialog chooserDialog) {
+    public CancelClickListener(LicenseChooserDialog chooserDialog) {
         this.chooserDialog = chooserDialog;
     }
 

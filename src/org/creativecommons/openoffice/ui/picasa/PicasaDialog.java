@@ -38,7 +38,7 @@ import org.creativecommons.openoffice.ui.SavedSearchThread;
 public class PicasaDialog extends InsertImageDialog {
 
     /**
-     * Creates a new instance of ChooserDialog
+     * Creates a new instance of PicasaDialog
      */
     public PicasaDialog(CcOOoAddin addin, XComponentContext m_xContext) {
         super(addin, m_xContext, 45, 63, 347);
@@ -178,6 +178,9 @@ public class PicasaDialog extends InsertImageDialog {
         }
     }
 
+    /**
+     * Add AWT control components for images.
+     */
     protected void createImageControl(Image img, Rectangle rect, String pos) {
 
         if (!isLoadable) {
@@ -295,6 +298,14 @@ public class PicasaDialog extends InsertImageDialog {
         return "gphoto:license/@id='4'";
     }
 
+    /**
+     * Show popup menu.
+     * @param img
+     * @param positionX
+     * @param positionY
+     * @param xImagePeer
+     * @return
+     */
     @Override
     public XPopupMenu executePopupMenu(Image img, Integer positionX, Integer positionY, XWindowPeer xImagePeer) {
         throw new UnsupportedOperationException("Not supported yet.");

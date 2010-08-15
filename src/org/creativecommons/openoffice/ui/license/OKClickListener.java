@@ -1,5 +1,5 @@
 /*
- * FinishClickListener.java
+ * OKClickListener.java
  *
  * Copyright 2007, Creative Commons
  * licensed under the GNU LGPL License; see licenses/LICENSE for details
@@ -10,23 +10,19 @@ package org.creativecommons.openoffice.ui.license;
 import com.sun.star.awt.ActionEvent;
 import com.sun.star.awt.XActionListener;
 import com.sun.star.lang.EventObject;
-import org.creativecommons.openoffice.CcOOoAddin;
 
 /**
  *
  * @author Husleag Mihai
  */
-class FinishClickListener implements XActionListener {
+class OKClickListener implements XActionListener {
 
-    private ChooserDialog chooserDialog;
-    private CcOOoAddin addin;
+    private LicenseChooserDialog chooserDialog;
 
-    public FinishClickListener(ChooserDialog chooserDialog, CcOOoAddin addin) {
+    public OKClickListener(LicenseChooserDialog chooserDialog) {
 
         this.chooserDialog = chooserDialog;
-        this.addin = addin;
-
-    } // OnFinishClick - public constructor
+    }
 
     public void actionPerformed(ActionEvent a) {
 

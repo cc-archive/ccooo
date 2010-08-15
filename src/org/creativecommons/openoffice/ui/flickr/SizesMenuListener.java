@@ -15,7 +15,7 @@ import org.creativecommons.openoffice.CcOOoAddin;
 import org.creativecommons.openoffice.program.FlickrConnection;
 
 /**
- *
+ * Listens to sizes menu events
  * @author Husleag Mihai
  */
 public class SizesMenuListener implements XMenuListener {

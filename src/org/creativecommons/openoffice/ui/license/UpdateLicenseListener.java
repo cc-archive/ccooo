@@ -12,16 +12,18 @@ import com.sun.star.awt.XItemListener;
 import com.sun.star.lang.EventObject;
 
 /**
- *
+ * Update the selected license lable.
  * @author nathan
  */
 public class UpdateLicenseListener
         implements XItemListener {
 
-    private ChooserDialog dialog;
+    private LicenseChooserDialog dialog;
 
-    /** Creates a new instance of UpdateLicenseListener */
-    public UpdateLicenseListener(ChooserDialog dialog) {
+    /** 
+     * Creates a new instance of UpdateLicenseListener
+     */
+    public UpdateLicenseListener(LicenseChooserDialog dialog) {
 
         this.setDialog(dialog);
     }
@@ -34,11 +36,11 @@ public class UpdateLicenseListener
     public void disposing(EventObject event) {
     }
 
-    public ChooserDialog getDialog() {
+    public LicenseChooserDialog getDialog() {
         return dialog;
     }
 
-    protected void setDialog(ChooserDialog dialog) {
+    protected void setDialog(LicenseChooserDialog dialog) {
         this.dialog = dialog;
     }
 }

@@ -55,7 +55,7 @@ import org.creativecommons.openoffice.program.Calc;
 import org.creativecommons.openoffice.program.Draw;
 import org.creativecommons.openoffice.program.IVisibleNotice;
 import org.creativecommons.openoffice.program.Writer;
-import org.creativecommons.openoffice.ui.license.ChooserDialog;
+import org.creativecommons.openoffice.ui.license.LicenseChooserDialog;
 import org.creativecommons.openoffice.ui.flickr.FlickrDialog;
 import org.creativecommons.openoffice.ui.openclipart.OpenClipArtDialog;
 import org.creativecommons.openoffice.ui.picasa.PicasaDialog;
@@ -66,7 +66,7 @@ import static org.creativecommons.openoffice.util.Util.setLocale;
  *  The Creative Commons OpenOffice.org AddIn core class.
  *
  * @author Cassio A. Melo
- * @author Akila Wajirasena
+ * @author Akila Wajirasena <akila.wajirasena@gmail.com>
  * @author Creative Commons
  * @version 0.7.0
  */
@@ -285,7 +285,7 @@ public final class CcOOoAddin extends WeakBase
             this.updateCurrentComponent();
 
             // Create the dialog for license selection
-            ChooserDialog dialog = new ChooserDialog(this, this.m_xContext);
+            LicenseChooserDialog dialog = new LicenseChooserDialog(this, this.m_xContext);
             dialog.showDialog();
 
             if (!dialog.isCancelled()) {
@@ -511,9 +511,6 @@ public final class CcOOoAddin extends WeakBase
     /**
      * Updates the Desktop current component in case of opening, creating or swapping
      * to other document
-     *
-     * @return XComponent Returns the current component of Desktop object
-     *
      */
     public void updateCurrentComponent() {
 
@@ -584,7 +581,7 @@ public final class CcOOoAddin extends WeakBase
         if ((sEnvType == null) || !sEnvType.equals("DOCUMENTEVENT")) {
             throw new com.sun.star.lang.IllegalArgumentException("\"" + sEnvType + "\" isn't a valid value for EnvType");
         }
-        //where to start the thread??
+        //where to start the thread?
         //running as a therad will stop the
         //unresponsive 2 second period when loading document
         StoreThread th = new StoreThread();

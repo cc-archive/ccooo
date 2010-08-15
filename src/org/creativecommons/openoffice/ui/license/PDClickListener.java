@@ -12,14 +12,14 @@ import com.sun.star.awt.XActionListener;
 import com.sun.star.lang.EventObject;
 
 /**
- *
+ * Show Public Domain tab
  * @author akila
  */
 public class PDClickListener implements XActionListener {
 
-    private ChooserDialog dialog;
+    private LicenseChooserDialog dialog;
 
-    public PDClickListener(ChooserDialog dialog) {
+    public PDClickListener(LicenseChooserDialog dialog) {
         this.dialog = dialog;
     }
 

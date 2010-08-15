@@ -19,42 +19,42 @@ import com.sun.star.lang.WrappedTargetException;
 import com.sun.star.uno.UnoRuntime;
 
 /**
- *
+ * Enable CC0 deed and territory etc. after accepting to waive.
  * @author akila
  */
 public class AcceptWaiveListener implements XItemListener {
 
-    private ChooserDialog dialog;
+    private LicenseChooserDialog dialog;
 
-    public AcceptWaiveListener(ChooserDialog dialog) {
+    public AcceptWaiveListener(LicenseChooserDialog dialog) {
         this.dialog = dialog;
     }
 
     @Override
     public void itemStateChanged(ItemEvent event) {
 
-        XCheckBox allow_Remixing = ((XCheckBox) UnoRuntime.queryInterface(XCheckBox.class, event.Source));
+        XCheckBox waive = ((XCheckBox) UnoRuntime.queryInterface(XCheckBox.class, event.Source));
         try {
 
-            if (allow_Remixing.getState() == (short) 0) {
-                // if remixing is not allowed, you can't require Share-Alike
+            //enable disable dialog controls accoring to the state
+            if (waive.getState() == (short) 0) {
                 ((XPropertySet) UnoRuntime.queryInterface(XPropertySet.class,
-                        this.dialog.getNameContainer().getByName(ChooserDialog.CHK_YES_CC0))).setPropertyValue("Enabled", Boolean.FALSE);
+                        this.dialog.getNameContainer().getByName(LicenseChooserDialog.CHK_YES_CC0))).setPropertyValue("Enabled", Boolean.FALSE);
                 ((XPropertySet) UnoRuntime.queryInterface(XPropertySet.class,
-                        this.dialog.getNameContainer().getByName(ChooserDialog.CHK_YES_CC0))).setPropertyValue("State", (short) 0);
+                        this.dialog.getNameContainer().getByName(LicenseChooserDialog.CHK_YES_CC0))).setPropertyValue("State", (short) 0);
                 ((XPropertySet) UnoRuntime.queryInterface(XPropertySet.class,
-                        this.dialog.getNameContainer().getByName(ChooserDialog.TXT_LEGAL_CODE_CC0))).setPropertyValue("Enabled", Boolean.FALSE);
+                        this.dialog.getNameContainer().getByName(LicenseChooserDialog.TXT_LEGAL_CODE_CC0))).setPropertyValue("Enabled", Boolean.FALSE);
                 ((XPropertySet) UnoRuntime.queryInterface(XPropertySet.class,
-                        this.dialog.getNameContainer().getByName(ChooserDialog.CMB_TERRITORY))).setPropertyValue("Enabled", Boolean.FALSE);
+                        this.dialog.getNameContainer().getByName(LicenseChooserDialog.CMB_TERRITORY))).setPropertyValue("Enabled", Boolean.FALSE);
                 ((XPropertySet) UnoRuntime.queryInterface(XPropertySet.class,
-                        this.dialog.getNameContainer().getByName(ChooserDialog.BTN_OK))).setPropertyValue("Enabled", Boolean.FALSE);
+                        this.dialog.getNameContainer().getByName(LicenseChooserDialog.BTN_OK))).setPropertyValue("Enabled", Boolean.FALSE);
             } else {
                 ((XPropertySet) UnoRuntime.queryInterface(XPropertySet.class,
-                        this.dialog.getNameContainer().getByName(ChooserDialog.CHK_YES_CC0))).setPropertyValue("Enabled", Boolean.TRUE);
+                        this.dialog.getNameContainer().getByName(LicenseChooserDialog.CHK_YES_CC0))).setPropertyValue("Enabled", Boolean.TRUE);
                 ((XPropertySet) UnoRuntime.queryInterface(XPropertySet.class,
-                        this.dialog.getNameContainer().getByName(ChooserDialog.TXT_LEGAL_CODE_CC0))).setPropertyValue("Enabled", Boolean.TRUE);
+                        this.dialog.getNameContainer().getByName(LicenseChooserDialog.TXT_LEGAL_CODE_CC0))).setPropertyValue("Enabled", Boolean.TRUE);
                 ((XPropertySet) UnoRuntime.queryInterface(XPropertySet.class,
-                        this.dialog.getNameContainer().getByName(ChooserDialog.CMB_TERRITORY))).setPropertyValue("Enabled", Boolean.TRUE);
+                        this.dialog.getNameContainer().getByName(LicenseChooserDialog.CMB_TERRITORY))).setPropertyValue("Enabled", Boolean.TRUE);
             }
 
         } catch (com.sun.star.lang.IllegalArgumentException ex) {

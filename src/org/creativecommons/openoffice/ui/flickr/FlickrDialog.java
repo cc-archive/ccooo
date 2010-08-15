@@ -43,7 +43,7 @@ import org.creativecommons.openoffice.ui.SavedSearchThread;
 public class FlickrDialog extends InsertImageDialog {
 
     /**
-     * Creates a new instance of ChooserDialog
+     * Creates a new instance of FlickrDialog
      */
     public FlickrDialog(CcOOoAddin addin, XComponentContext m_xContext) {
         super(addin, m_xContext, 45, 63, 347);
@@ -183,6 +183,9 @@ public class FlickrDialog extends InsertImageDialog {
         }
     }
 
+    /**
+     * Add AWT control components for images.
+     */
     protected void createImageControl(Image img, Rectangle rect, String pos) {
 
         if (!isLoadable) {
@@ -283,6 +286,14 @@ public class FlickrDialog extends InsertImageDialog {
 
     }
 
+    /**
+     * Show popup menu.
+     * @param img
+     * @param positionX
+     * @param positionY
+     * @param xImagePeer
+     * @return
+     */
     public XPopupMenu executePopupMenu(Image img, Integer positionX, Integer positionY,
             XWindowPeer xImagePeer) {
 
@@ -319,6 +330,9 @@ public class FlickrDialog extends InsertImageDialog {
         return xPopupMenu;
     }
 
+    /**
+     * Set licenses manually.
+     */
     @SuppressWarnings("unchecked")
     private void setLicenses() {
         flickrLicenses = new ArrayList<License>();

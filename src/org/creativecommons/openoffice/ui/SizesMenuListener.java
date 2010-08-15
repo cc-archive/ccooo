@@ -11,21 +11,18 @@ package org.creativecommons.openoffice.ui;
 import com.sun.star.lang.EventObject;
 import com.sun.star.awt.XMenuListener;
 import com.sun.star.awt.MenuEvent;
-import org.creativecommons.openoffice.CcOOoAddin;
 
 /**
- *
+ * Listens to sizes menu events
  * @author akila
  */
 public class SizesMenuListener implements XMenuListener {
 
-    private InsertImageDialog flickrDialog;
-    private CcOOoAddin addin;
+    private InsertImageDialog imageDialog;
             
-    public SizesMenuListener(InsertImageDialog _flickrDialog, CcOOoAddin _addin) {
+    public SizesMenuListener(InsertImageDialog imageDialog) {
         
-        this.flickrDialog = _flickrDialog;
-        this.addin = _addin;
+        this.imageDialog = imageDialog;
     }
     
     public void highlight(MenuEvent me) {

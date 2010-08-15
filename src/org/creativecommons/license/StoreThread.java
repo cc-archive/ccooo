@@ -7,7 +7,7 @@
 package org.creativecommons.license;
 
 /**
- *
+ * Creates a thread to load the license store.
  * @author akila
  */
 public class StoreThread extends Thread {

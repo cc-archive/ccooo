@@ -54,6 +54,9 @@ public class Calc extends OOoProgram {
         super(component,m_xContext);
     }
 
+    /*
+     * Insert pictures from the internet.
+     */
     public void insertPicture(Image img) {
 
         XDrawPage xPage = null;
@@ -188,6 +191,9 @@ public class Calc extends OOoProgram {
         return false;
     }
 
+    /**
+     * Create and insert an auto-text containing the license
+     */
     public void insertVisibleNotice(){
         XSpreadsheet xSpreadsheet=null;
         XModel xDocModel = (XModel) UnoRuntime.queryInterface(XModel.class, this.getComponent());
@@ -197,6 +203,11 @@ public class Calc extends OOoProgram {
         xSpreadsheet = view.getActiveSheet();
         insertVisibleNotice(xSpreadsheet);
     }
+
+    /**
+     * Create and insert an auto-text containing the license for the given spread sheet.
+     * @param xSpreadsheet Spread sheet to insert the text
+     */
     public void insertVisibleNotice(XSpreadsheet xSpreadsheet) {
 
         XDrawPage xPage;
@@ -246,7 +257,12 @@ public class Calc extends OOoProgram {
         }
     }
 
-    public void embedGraphic(String imgURL, XSpreadsheet xSpreadsheet) {
+    /**
+     * Insert the license image.
+     * @param imgURL URL to the license image
+     * @param xSpreadsheet Spread sheet to insert the image
+     */
+    private void embedGraphic(String imgURL, XSpreadsheet xSpreadsheet) {
         XDrawPage xPage = null;
 
         XNameContainer xBitmapContainer = null;
@@ -311,7 +327,7 @@ public class Calc extends OOoProgram {
         }
     }
 
-    public Point getAbsoluteCellPosition(XSpreadsheet spreadsheet, int x, int y)
+    private Point getAbsoluteCellPosition(XSpreadsheet spreadsheet, int x, int y)
             throws RuntimeException {
         Point p = null;
         try {
@@ -338,6 +354,9 @@ public class Calc extends OOoProgram {
         return xSheetCellAddressable.getRangeAddress();
     }
 
+    /**
+     * Update visible notices to current license.
+     */
     public void updateVisibleNotice() {
         ArrayList<XSpreadsheet> drawPages = new ArrayList<XSpreadsheet>();
         ArrayList<XShape> shapes = new ArrayList<XShape>();
@@ -346,6 +365,8 @@ public class Calc extends OOoProgram {
                 XSpreadsheetDocument.class,
                 this.getComponent());
         String[] sheetNames = xSheetDoc.getSheets().getElementNames();
+
+        //search for vivible notices and remove them
         try {
             for (int i = 0; i < sheetNames.length; i++) {
 
@@ -385,6 +406,8 @@ public class Calc extends OOoProgram {
         } catch (NoSuchElementException ex) {
             Logger.getLogger(Calc.class.getName()).log(Level.SEVERE, null, ex);
         }
+
+        //add new visible notices
         for (int i = 0; i < drawPages.size(); i++) {
             insertVisibleNotice(drawPages.get(i));
         }

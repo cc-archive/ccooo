@@ -39,7 +39,7 @@ import org.creativecommons.openoffice.ui.SavedSearchThread;
 public class OpenClipArtDialog extends InsertImageDialog {
 
     /**
-     * Creates a new instance of ChooserDialog
+     * Creates a new instance of OpenClipArtDialog
      */
     public OpenClipArtDialog(CcOOoAddin addin, XComponentContext m_xContext) {
         super(addin, m_xContext, 45, 40, 330);
@@ -157,6 +157,9 @@ public class OpenClipArtDialog extends InsertImageDialog {
         }
     }
 
+    /**
+     * Add AWT control components for images.
+     */
     protected void createImageControl(Image img, Rectangle rect, String pos) {
 
         if (!isLoadable) {
@@ -310,6 +313,14 @@ public class OpenClipArtDialog extends InsertImageDialog {
         return true;
     }
 
+    /**
+     * Show popup menu.
+     * @param img
+     * @param positionX
+     * @param positionY
+     * @param xImagePeer
+     * @return
+     */
     @Override
     public XPopupMenu executePopupMenu(Image img, Integer positionX, Integer positionY, XWindowPeer xImagePeer) {
         throw new UnsupportedOperationException("Not supported yet.");

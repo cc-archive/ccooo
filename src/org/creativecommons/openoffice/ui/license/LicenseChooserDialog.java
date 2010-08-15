@@ -1,5 +1,5 @@
 /*
- * ChooserDialog.java
+ * LicenseChooserDialog.java
  *
  * Copyright 2007, Creative Commons
  * licensed under the GNU LGPL License; see licenses/LICENSE for details
@@ -35,7 +35,6 @@ import com.sun.star.uno.Exception;
 import com.sun.star.uno.UnoRuntime;
 import com.sun.star.uno.XComponentContext;
 import java.awt.Rectangle;
-import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import java.util.logging.Level;
@@ -57,7 +56,7 @@ import static org.creativecommons.openoffice.util.Util._;
  * @author Creative Commons
  * @version 0.7
  */
-public class ChooserDialog {
+public class LicenseChooserDialog {
 
     private String selectedTerritory;
     private String[] trritories;
@@ -105,9 +104,9 @@ public class ChooserDialog {
     public static final String TXT_LEGAL_CODE_PD = "txtLegalCodePD";
 
     /**
-     * Creates a new instance of ChooserDialog
+     * Creates a new instance of LicenseChooserDialog
      */
-    public ChooserDialog(CcOOoAddin addin, XComponentContext m_xContext) {
+    public LicenseChooserDialog(CcOOoAddin addin, XComponentContext m_xContext) {
         this.addin = addin;
         this.m_xContext = m_xContext;
     }
@@ -137,7 +136,8 @@ public class ChooserDialog {
         this.xMultiServiceFactory = (XMultiServiceFactory) UnoRuntime.queryInterface(
                 XMultiServiceFactory.class, dlgLicenseSelector);
 
-        ///////////////////////////////////////tabs
+        //tabs
+        //CC
         Object ccButton = xMultiServiceFactory.createInstance(
                 "com.sun.star.awt.UnoControlButtonModel");
         XPropertySet xPSetCCButton = createAWTControl(ccButton, BTN_CC,
@@ -150,6 +150,7 @@ public class ChooserDialog {
         xPSetCCButton.setPropertyValue("FontDescriptor", fontDes);
         xPSetCCButton.setPropertyValue("State", (short) 1);
 
+        //CC0
         Object cc0Button = xMultiServiceFactory.createInstance(
                 "com.sun.star.awt.UnoControlButtonModel");
         XPropertySet xPSetCC0Button = createAWTControl(cc0Button, BTN_CC0,
@@ -162,6 +163,7 @@ public class ChooserDialog {
         xPSetCC0Button.setPropertyValue("FontDescriptor", fontDes);
         xPSetCC0Button.setPropertyValue("State", (short) 0);
 
+        //PD
         Object pdButton = xMultiServiceFactory.createInstance(
                 "com.sun.star.awt.UnoControlButtonModel");
         XPropertySet xPSetPDButton = createAWTControl(pdButton, BTN_PUBLICDOMAIN,
@@ -178,6 +180,7 @@ public class ChooserDialog {
                 "com.sun.star.awt.UnoControlGroupBoxModel");
         XPropertySet xpsBox = createAWTControl(
                 oGBResults, "box", null, new Rectangle(2, 15, 206, 243), 0);
+        //create tabs
         crateCC0LicenseTab();
         createCCLicenseTab();
         cratePDLicenseTab();
@@ -220,10 +223,7 @@ public class ChooserDialog {
 
         XListBox cmbJList = (XListBox) UnoRuntime.queryInterface(
                 XListBox.class, xControlCont.getControl(CMB_JURISDICTION));
-
-        long time = new Date().getTime();
         this.setJurisdictionList(Store.get().jurisdictions());
-        System.out.println("Dialog setJurisdictionList" + (new Date().getTime() - time));
 
         Iterator<Jurisdiction> it;
         it = this.getJurisdictionList().iterator();
@@ -257,14 +257,15 @@ public class ChooserDialog {
         addListners(XCheckBox.class, CHK_YES_CC0, new AcceptListener(this));
         addListners(XCheckBox.class, CHK_YES_PD, new AcceptListener(this));
 
-        // add an action listener to the Faq buttons
+        // add an action listeners to buttons
         addListners(XButton.class, BTN_FAQ, new FaqClickListener(this, this.m_xContext));
-        addListners(XButton.class, BTN_OK, new FinishClickListener(this, this.addin));
+        addListners(XButton.class, BTN_OK, new OKClickListener(this));
         addListners(XButton.class, BTN_CANCEL, new CancelClickListener(this));
         addListners(XButton.class, BTN_CC, new CCClickListener(this));
         addListners(XButton.class, BTN_CC0, new CC0ClickListener(this));
         addListners(XButton.class, BTN_PUBLICDOMAIN, new PDClickListener(this));
 
+        // Set the initial license
         if (this.addin.getProgramWrapper().getDocumentLicense() != null) {
             this.setSelectedLicense(this.addin.getProgramWrapper().getDocumentLicense());
         } else {
@@ -330,7 +331,7 @@ public class ChooserDialog {
 
     private void createCCLicenseTab() throws Exception {
 
-        ///////////////////////////////////// create the current license information
+        //create the current license information
         Object lblSelectedLicenseLabel = xMultiServiceFactory.createInstance(
                 "com.sun.star.awt.UnoControlFixedTextModel");
         createAWTControl(lblSelectedLicenseLabel, LBL_SELECTED_LICENSE_LABEL,
@@ -342,7 +343,7 @@ public class ChooserDialog {
                 null, new Rectangle(60, 20, 145, 30), 1);
         xpsSelectedLicense.setPropertyValue("MultiLine", true);
 
-        /////////////////////////////////////Allow commercial uses of your work?
+        //Allow commercial uses of your work?
         Object lblAllowCommercialUse = xMultiServiceFactory.createInstance(
                 "com.sun.star.awt.UnoControlFixedTextModel");
         createAWTControl(lblAllowCommercialUse, LBL_ALLOW_COMERCIAL_USE,
@@ -362,8 +363,7 @@ public class ChooserDialog {
                 _("util.No"), new Rectangle(20, 75, 30, 12), 1);
         xpsRadioCommercialNo.setPropertyValue("State", new Short((short) 0));
 
-        ///////////////////////////////////Allow modifications of your work?
-
+        //Allow modifications of your work?
         Object lblAllowModifications = xMultiServiceFactory.createInstance(
                 "com.sun.star.awt.UnoControlFixedTextModel");
         createAWTControl(lblAllowModifications, LBL_ALLOW_MODIFICATIONS,
@@ -389,7 +389,7 @@ public class ChooserDialog {
                 _("util.No"), new Rectangle(20, 135, 30, 12), 1);
         xpsRadioModificationsNo.setPropertyValue("State", new Short((short) 0));
 
-        // create the jurisdiction drop-down list
+        //Create the jurisdiction drop-down list
         Object lblJurisdictionList = xMultiServiceFactory.createInstance(
                 "com.sun.star.awt.UnoControlFixedTextModel");
         XPropertySet xpsLblJurisdictionList =
@@ -426,7 +426,7 @@ public class ChooserDialog {
 
     private void crateCC0LicenseTab() throws Exception {
 
-        ///////////////////////////////////Public domian waring
+        //CC0 warning
         Object lblWarning = xMultiServiceFactory.createInstance(
                 "com.sun.star.awt.UnoControlFixedTextModel");
         XPropertySet xpsLblWarning = createAWTControl(lblWarning, LBL_INSTRUCTIONS_CC0,
@@ -455,6 +455,7 @@ public class ChooserDialog {
                 new Rectangle(10, 110, 190, 30), 2);
         xpsChkWaive.setPropertyValue("MultiLine", true);
 
+        //Legal code
         String cc0LegalCode = ReadFile.read(getClass().getResourceAsStream(
                 "/org/creativecommons/license/legalcodes/cc0"));
         Object txtDeed = xMultiServiceFactory.createInstance(
@@ -469,11 +470,13 @@ public class ChooserDialog {
         Object chkYes = xMultiServiceFactory.createInstance(
                 "com.sun.star.awt.UnoControlCheckBoxModel");
         XPropertySet xpsChkYes = createAWTControl(chkYes, CHK_YES_CC0,
-                "I have read and understand the terms and intended legal effect of CC0, "
-                + "and hereby voluntarily elect to apply it to this work.",
+//                "I have read and understand the terms and intended legal effect of CC0, "
+//                + "and hereby voluntarily elect to apply it to this work.",
+                _("license.zero.confirm_reading"),
                 new Rectangle(10, 210, 190, 20), 2);
         xpsChkYes.setPropertyValue("MultiLine", true);
 
+        //Territory
         Object lblJurisdictionList = xMultiServiceFactory.createInstance(
                 "com.sun.star.awt.UnoControlFixedTextModel");
         XPropertySet xpsLblJurisdictionList =
@@ -490,7 +493,7 @@ public class ChooserDialog {
 
     private void cratePDLicenseTab() throws Exception {
 
-        ///////////////////////////////////Public domian waring
+        //Public domian waring
         Object lblWarning = xMultiServiceFactory.createInstance(
                 "com.sun.star.awt.UnoControlFixedTextModel");
         XPropertySet xpsLblWarning = createAWTControl(lblWarning, "pdwarning",
@@ -512,6 +515,7 @@ public class ChooserDialog {
         String pdLegalCode = ReadFile.read(getClass().getResourceAsStream(
                 "/org/creativecommons/license/legalcodes/pd"));
 
+        //Legal code
         Object txtDeed = xMultiServiceFactory.createInstance(
                 "com.sun.star.awt.UnoControlEditModel");
         XPropertySet xpsTxtDeed = createAWTControl(txtDeed, TXT_LEGAL_CODE_PD, null,
@@ -526,26 +530,33 @@ public class ChooserDialog {
         XPropertySet xpsChkYes = createAWTControl(chkYes, CHK_YES_PD,
                 //                "I have read and understand the terms and intended legal effect of "
                 //                + "this tool, and hereby voluntarily elect to apply it to this work.",
-                _("license.zero.confirm_reading"),
+                _("license.pdc.confirm_reading"),
                 new Rectangle(10, 210, 190, 30), 3);
         xpsChkYes.setPropertyValue("MultiLine", true);
 
     }
 
-    private void setInfoImage(Rectangle rect, String pos, String title, int step) {
+    /**
+     *  Set "i" image for tips on each license option.
+     * @param rect Rectangle
+     * @param item For which option
+     * @param title
+     * @param step Tab number
+     */
+    private void setInfoImage(Rectangle rect, String item, String title, int step) {
         try {
             Object oICModel = null;
-            if (getNameContainer().hasByName("ImageControl" + pos)) {
+            if (getNameContainer().hasByName("ImageControl" + item)) {
                 try {
-                    XControl xImageControl = xControlCont.getControl("ImageControl" + pos);
+                    XControl xImageControl = xControlCont.getControl("ImageControl" + item);
                     if (xImageControl != null) {
                         xImageControl.dispose();
                     }
-                    getNameContainer().removeByName("ImageControl" + pos);
+                    getNameContainer().removeByName("ImageControl" + item);
                 } catch (NoSuchElementException ex) {
-                    Logger.getLogger(ChooserDialog.class.getName()).log(Level.SEVERE, null, ex);
+                    Logger.getLogger(LicenseChooserDialog.class.getName()).log(Level.SEVERE, null, ex);
                 } catch (WrappedTargetException ex) {
-                    Logger.getLogger(ChooserDialog.class.getName()).log(Level.SEVERE, null, ex);
+                    Logger.getLogger(LicenseChooserDialog.class.getName()).log(Level.SEVERE, null, ex);
                 }
             }
             oICModel = xMultiServiceFactory.createInstance("com.sun.star.awt.UnoControlImageControlModel");
@@ -560,18 +571,18 @@ public class ChooserDialog {
             xpsImageControl.setPropertyValue("Border", (short) 0);
 
             xpsImageControl.setPropertyValue("Height", new Integer(rect.height));
-            xpsImageControl.setPropertyValue("Name", "ImageControl" + pos);
+            xpsImageControl.setPropertyValue("Name", "ImageControl" + item);
             xpsImageControl.setPropertyValue("PositionX", new Integer(rect.x));
             xpsImageControl.setPropertyValue("PositionY", new Integer(rect.y));
             xpsImageControl.setPropertyValue("Width", new Integer(rect.width));
             xpsImageControl.setPropertyValue("Step", step);
 
-            getNameContainer().insertByName("ImageControl" + pos, oICModel);
+            getNameContainer().insertByName("ImageControl" + item, oICModel);
             xpsImageControl.setPropertyValue("HelpText", title);
             xpsImageControl.setPropertyValue("Graphic", xGraphic);
 
         } catch (Exception ex) {
-            Logger.getLogger(ChooserDialog.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(LicenseChooserDialog.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
@@ -589,6 +600,9 @@ public class ChooserDialog {
         }
     }
 
+    /*
+     * Add AWT control components to the dialog.
+     */
     private XPropertySet createAWTControl(Object objControl, String ctrlName,
             String ctrlCaption, Rectangle posSize, int step) throws Exception {
 
@@ -639,7 +653,7 @@ public class ChooserDialog {
                     this.getNameContainer().getByName(controlName));
             xPSetList.setPropertyValue("State", (b ? new Short((short) 1) : new Short((short) 0))); // b.booleanValue());
         } catch (Exception ex) {
-            Logger.getLogger(ChooserDialog.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(LicenseChooserDialog.class.getName()).log(Level.SEVERE, null, ex);
         }
 
     }
@@ -656,6 +670,9 @@ public class ChooserDialog {
         }
     } // getRadioButtonValue
 
+    /*
+     * Set license type according to the tab selected.
+     */
     public void setLicenseType(int type) {
         String[] btnArray = new String[]{BTN_CC, BTN_CC0, BTN_PUBLICDOMAIN};
         try {
@@ -693,7 +710,7 @@ public class ChooserDialog {
 
             xPSetDialog.setPropertyValue("Step", type);
         } catch (Exception ex) {
-            Logger.getLogger(ChooserDialog.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(LicenseChooserDialog.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
@@ -733,17 +750,17 @@ public class ChooserDialog {
                 return licenseChooser.selectPDTools(null, 3);
             } else {
                 return licenseChooser.selectLicense(this.getRadioButtonValue(
-                        ChooserDialog.RDO_ALLOW_MODIFICATIONS_YES).booleanValue()
+                        LicenseChooserDialog.RDO_ALLOW_MODIFICATIONS_YES).booleanValue()
                         || this.getRadioButtonValue(
-                        ChooserDialog.RDO_ALLOW_MODIFICATIONS_SHARE_ALIKE).booleanValue(),
+                        LicenseChooserDialog.RDO_ALLOW_MODIFICATIONS_SHARE_ALIKE).booleanValue(),
                         this.getRadioButtonValue(
-                        ChooserDialog.RDO_ALLOW_COMERCIAL_NO).booleanValue(),
+                        LicenseChooserDialog.RDO_ALLOW_COMERCIAL_NO).booleanValue(),
                         this.getRadioButtonValue(
-                        ChooserDialog.RDO_ALLOW_MODIFICATIONS_SHARE_ALIKE).booleanValue(),
+                        LicenseChooserDialog.RDO_ALLOW_MODIFICATIONS_SHARE_ALIKE).booleanValue(),
                         this.getSelectedJurisdiction());
             }
         } catch (Exception ex) {
-            Logger.getLogger(ChooserDialog.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(LicenseChooserDialog.class.getName()).log(Level.SEVERE, null, ex);
         }
         return null;
 
@@ -751,15 +768,15 @@ public class ChooserDialog {
 
     public void setSelectedLicense(License selected) {
         // update the user interface to match this selection
-        this.setCRadioButtonValue(ChooserDialog.RDO_ALLOW_COMERCIAL_YES,
+        this.setCRadioButtonValue(LicenseChooserDialog.RDO_ALLOW_COMERCIAL_YES,
                 !selected.prohibitCommercial());
-        this.setCRadioButtonValue(ChooserDialog.RDO_ALLOW_COMERCIAL_NO,
+        this.setCRadioButtonValue(LicenseChooserDialog.RDO_ALLOW_COMERCIAL_NO,
                 selected.prohibitCommercial());
-        this.setCRadioButtonValue(ChooserDialog.RDO_ALLOW_MODIFICATIONS_YES,
+        this.setCRadioButtonValue(LicenseChooserDialog.RDO_ALLOW_MODIFICATIONS_YES,
                 selected.allowRemix() && !selected.requireShareAlike());
-        this.setCRadioButtonValue(ChooserDialog.RDO_ALLOW_MODIFICATIONS_SHARE_ALIKE,
+        this.setCRadioButtonValue(LicenseChooserDialog.RDO_ALLOW_MODIFICATIONS_SHARE_ALIKE,
                 selected.requireShareAlike());
-        this.setCRadioButtonValue(ChooserDialog.RDO_ALLOW_MODIFICATIONS_NO,
+        this.setCRadioButtonValue(LicenseChooserDialog.RDO_ALLOW_MODIFICATIONS_NO,
                 !selected.allowRemix());
 
         this.setSelectedJurisdiction(selected.getJurisdiction());
@@ -793,5 +810,5 @@ public class ChooserDialog {
     public void close() {
         this.xDialog.endExecute();
     }
-} // ChooserDialog
+} // LicenseChooserDialog
 

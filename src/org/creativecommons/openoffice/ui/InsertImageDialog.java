@@ -86,7 +86,7 @@ public abstract class InsertImageDialog {
     public int locationMagesy;//100
 
     /**
-     * Creates a new instance of ChooserDialog
+     * Creates a new instance of InsertImageDialog
      */
     public InsertImageDialog(CcOOoAddin addin, XComponentContext m_xContext,
             int positionWidthHeight, int locationMagesy, int btnPrvNextY) {
@@ -105,6 +105,9 @@ public abstract class InsertImageDialog {
      */
     public abstract void showDialog(boolean defaultSearch) throws com.sun.star.uno.Exception;
 
+    /**
+     * Add AWT control components to the dialog.
+     */
     protected XPropertySet createAWTControl(Object objControl, String ctrlName,
             String ctrlCaption, Rectangle posSize) throws Exception {
 
@@ -225,6 +228,12 @@ public abstract class InsertImageDialog {
 
     protected abstract void createImageControl(Image img, Rectangle rect, String pos);
 
+    /**
+     * Set the flyer image before loding the image.
+     * @param rect Rectangle
+     * @param pos Position
+     * @param loadingImageFile Location URI
+     */
     protected void createImageLoad(Rectangle rect, String pos, String loadingImageFile) {
 
         if (!isLoadable) {
@@ -292,6 +301,10 @@ public abstract class InsertImageDialog {
 
     }
 
+    /**
+     *
+     * @return Search tags array
+     */
     public String[] GetTags() {
         Object oTags = xControlCont.getControl(TXT_TAGS);
         XControl txtTags = (XControl) UnoRuntime.queryInterface(XControl.class, oTags);
@@ -321,6 +334,11 @@ public abstract class InsertImageDialog {
         showNextPage(progressValue);
     }
 
+    /**
+     * Enable AWT control items.
+     * @param controlName
+     * @param enable
+     */
     public void enableControl(String controlName, boolean enable) {
         try {
             if (getNameContainer().hasByName(controlName)) {
@@ -335,6 +353,10 @@ public abstract class InsertImageDialog {
         }
     }
 
+    /**
+     * Set progress bar progress value
+     * @param step
+     */
     public void setProgressValue(int step) {
 
         if (!getNameContainer().hasByName(PB_NAME)) {
@@ -356,8 +378,12 @@ public abstract class InsertImageDialog {
     public abstract XPopupMenu executePopupMenu(Image img, Integer positionX, Integer positionY,
             XWindowPeer xImagePeer);
 
-    // creates a UNO graphic object that can be used to be assigned
-    // to the property "Graphic" of a controlmodel
+    /**
+     * Creates a UNO graphic object that can be used to be assigned
+     * to the property "Graphic" of a controlmodel
+     * @param _sImageUrl
+     * @return graphic
+     */
     public XGraphic getGraphic(String _sImageUrl) {
 
         XGraphic xGraphic = null;
@@ -387,9 +413,6 @@ public abstract class InsertImageDialog {
 
     /**
      * Canges the mouse pointer.
-     *
-     * @param xContext
-     * @param xWindowPeer
      * @param nSystemPointer
      */
     public void setMousePointer(int nSystemPointer) {
@@ -479,7 +502,6 @@ public abstract class InsertImageDialog {
         showResults(currentList, 0);
         setProgressValue(100);
         enableControl(InsertImageDialog.BTN_SEARCH, true);
-        // enableControl(WikimediaDialog.BTN_NEXT, true);
         setMousePointer(SystemPointer.ARROW);
     }
 
@@ -510,6 +532,10 @@ public abstract class InsertImageDialog {
         this.xDialog.endExecute();
     }
 
+    /**
+     * Check the license selection and search input validity
+     * @return result
+     */
     public boolean IsInputValid() {
 
         if (this.GetTags().length == 0) {

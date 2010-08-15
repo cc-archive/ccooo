@@ -8,7 +8,7 @@
 package org.creativecommons.openoffice;
 
 /**
- *
+ * Constants used in the program.
  * @author Cassio
  */
 public interface Constants {

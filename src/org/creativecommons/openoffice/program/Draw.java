@@ -53,6 +53,9 @@ public class Draw extends OOoProgram {
         super(component, m_xContext);
     }
 
+    /*
+     * Insert pictures from the internet.
+     */
     public void insertPicture(Image img) {
 
         XDrawPage xPage = null;
@@ -183,6 +186,9 @@ public class Draw extends OOoProgram {
         return false;
     }
 
+    /**
+     * Create and insert an auto-text containing the license
+     */
     public void insertVisibleNotice() {
         XDrawPage xPage;
         XModel xModel = (XModel) UnoRuntime.queryInterface(XModel.class,
@@ -193,6 +199,10 @@ public class Draw extends OOoProgram {
         insertVisibleNotice(xPage);
     }
 
+    /**
+     * Create and insert an auto-text containing the license for the given draw page.
+     * @param xPage draw page to insert the text
+     */
     private void insertVisibleNotice(XDrawPage xPage) {
 
         License license = this.getDocumentLicense();
@@ -201,6 +211,7 @@ public class Draw extends OOoProgram {
 
             com.sun.star.beans.XPropertySet xPageProps = (com.sun.star.beans.XPropertySet)
                     UnoRuntime.queryInterface(com.sun.star.beans.XPropertySet.class, xPage);
+            //consider page margins and the page size when inserting the visible notice
             pageWidth = AnyConverter.toInt(xPageProps.getPropertyValue("Width"));
             pageHeight = AnyConverter.toInt(xPageProps.getPropertyValue("Height"));
             pageBorderBottom = AnyConverter.toInt(xPageProps.getPropertyValue("BorderBottom"));
@@ -244,7 +255,12 @@ public class Draw extends OOoProgram {
         }
     }
 
-    public void embedGraphic(String imgURL, XDrawPage xPage) {
+    /**
+     * Insert the license image.
+     * @param imgURL URL to the license image
+     * @param xPage Draw page sheet to insert the image
+     */
+    private void embedGraphic(String imgURL, XDrawPage xPage) {
 
         XNameContainer xBitmapContainer = null;
 
@@ -303,9 +319,14 @@ public class Draw extends OOoProgram {
 
     }
 
+    /**
+     * Update visible notices to current license.
+     */
     public void updateVisibleNotice() {
         ArrayList<XDrawPage> drawPages = new ArrayList<XDrawPage>();
         ArrayList<XShape> shapes = new ArrayList<XShape>();
+        
+        //search for vivible notices and remove them
         try {
             for (int i = 0; i < PageHelper.getDrawPageCount(this.getComponent()); i++) {
 
@@ -337,6 +358,7 @@ public class Draw extends OOoProgram {
             Logger.getLogger(Draw.class.getName()).log(Level.SEVERE, null, ex);
         }
 
+        //add new visible notices
         for (int i = 0; i < drawPages.size(); i++) {
             insertVisibleNotice(drawPages.get(i));
         }

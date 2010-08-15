@@ -13,13 +13,13 @@ import com.sun.star.lang.EventObject;
 import org.creativecommons.license.Jurisdiction;
 
 /**
- *
+ * Get the user selected jurisdiction.
  * @author nathan
  */
 public class JurisdictionSelectListener extends UpdateLicenseListener
         implements XItemListener {
 
-    public JurisdictionSelectListener(ChooserDialog dialog) {
+    public JurisdictionSelectListener(LicenseChooserDialog dialog) {
         super(dialog);
     }
 

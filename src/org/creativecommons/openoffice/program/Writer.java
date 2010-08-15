@@ -43,6 +43,9 @@ public class Writer extends OOoProgram {
         super(component, m_xContext);
     }
 
+    /*
+     * Insert pictures from the internet.
+     */
     public void insertPicture(Image img) {
 
         XTextDocument mxDoc = (XTextDocument) UnoRuntime.queryInterface(
@@ -124,7 +127,7 @@ public class Writer extends OOoProgram {
     /**
      * Embeds the license "button" into a Textdocument at the given cursor position
      *
-     * @param xMSF    the factory to create services from
+     * @param mxDocFactory    the factory to create services from
      * @param xCursor the cursor where to insert the graphic
      * @param imgURL  URL of the license button
      *
@@ -205,6 +208,9 @@ public class Writer extends OOoProgram {
         return false;
     }
 
+    /**
+     * Create and insert an auto-text containing the license
+     */
     public void insertVisibleNotice() {
 
         License license = this.getDocumentLicense();
@@ -294,7 +300,7 @@ public class Writer extends OOoProgram {
 
     } // insertVisibleNotice
 
-    protected XDependentTextField createUserTextField(
+    private XDependentTextField createUserTextField(
             final XMultiServiceFactory mxDocFactory,
             final XTextFieldsSupplier mxTextFields,
             final String field_name,
@@ -321,7 +327,7 @@ public class Writer extends OOoProgram {
         return xUserField;
     }
 
-    protected XPropertySet updateMasterField(final String field_name,
+    private XPropertySet updateMasterField(final String field_name,
             final String field_value, final XTextFieldsSupplier mxTextFields,
             final XMultiServiceFactory mxDocFactory)
             throws WrappedTargetException, com.sun.star.uno.Exception,
@@ -346,7 +352,7 @@ public class Writer extends OOoProgram {
         return xMasterPropSet;
     }
 
-    protected XPropertySet getMasterField(final String field_name,
+    private XPropertySet getMasterField(final String field_name,
             final XTextFieldsSupplier mxTextFields,
             final XMultiServiceFactory mxDocFactory)
             throws com.sun.star.lang.IllegalArgumentException,
@@ -377,6 +383,10 @@ public class Writer extends OOoProgram {
         return xMasterPropSet;
     }
 
+    /**
+     * Set the license text fields.
+     * @param license
+     */
     @Override
     public void setDocumentLicense(License license) {
         super.setDocumentLicense(license);
@@ -405,6 +415,9 @@ public class Writer extends OOoProgram {
         }
     }
 
+    /**
+     * Update visible notices to current license.
+     */
     public void updateVisibleNotice() {
         //TODO: method to change the visible notice
     }

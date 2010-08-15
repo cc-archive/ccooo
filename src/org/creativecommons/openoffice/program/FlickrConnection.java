@@ -33,9 +33,6 @@ public class FlickrConnection {
     private Flickr flickr = new Flickr(apiKEY);
     private SearchParameters currentSearch = null;
 
-    protected FlickrConnection() {
-    }
-
     public ArrayList<Image> searchPhotos(String[] tags, String licenseId) {
         imgList.removeAll(imgList);
         currentSearch = new SearchParameters();

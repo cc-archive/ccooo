@@ -11,9 +11,8 @@ import java.util.MissingResourceException;
 import java.util.ResourceBundle;
 
 /**
- *
+ * Get localized strings from the resource bundle.
  * @author akila
- * Get strings from the resource bundle
  */
 public class Util {
 
@@ -22,12 +21,17 @@ public class Util {
     public static void setLocale(Locale locale) {
         Util.locale = locale;
     }
-
-    public static String _(String s) {
+    
+    /**
+     * Get the localized string. If the string is not available returen the key.
+     * @param key Key of for the loacalized string
+     * @return Localized string
+     */
+    public static String _(String key) {
         try {
-            return ResourceBundle.getBundle("Messages", locale).getString(s);
+            return ResourceBundle.getBundle("Messages", locale).getString(key);
         } catch (MissingResourceException e) {
-            return s;
+            return key;
         }
     }
 }

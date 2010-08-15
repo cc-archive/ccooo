@@ -16,14 +16,14 @@ import com.sun.star.uno.UnoRuntime;
 import com.sun.star.uno.XComponentContext;
 
 /**
- *
+ * Go to Creative Commons FAQ site.
  * @author akila
  */
 class FaqClickListener implements XActionListener {
 
     private XComponentContext m_xContext = null;
 
-    public FaqClickListener(ChooserDialog chooserDialog, XComponentContext m_xContext) {
+    public FaqClickListener(LicenseChooserDialog chooserDialog, XComponentContext m_xContext) {
         this.m_xContext = m_xContext;
 
     } // OnFinishClick - public constructor

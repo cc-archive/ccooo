@@ -20,7 +20,7 @@ import com.sun.star.awt.MouseButton;
 import org.creativecommons.openoffice.ui.ImageButtonListener;
 
 /**
- *
+ * Listens to events on images
  * @author Husleag Mihai
  */
 public class FlickrImageButtonListener extends ImageButtonListener {

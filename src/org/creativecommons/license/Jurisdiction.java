@@ -22,7 +22,10 @@ public class Jurisdiction
     
     private String uri = null;
     
-    /** Creates a new instance of Jurisdiction */
+    /**
+     * Creates a new instance of Jurisdiction.
+     * @param uri
+     */
     public Jurisdiction(String uri) {
         this.uri = uri;
     } 
@@ -38,11 +41,18 @@ public class Jurisdiction
         return this.uri;
         
     } // toString
-
+    /**
+     * Returen the jurisdiction title.
+     * @return title
+     */
     public String getTitle() {
         return this.getTitle("en");
     }
-    
+    /**
+     * Returen the title for a specifed locale.
+     * @param lang locale of the title
+     * @return Title
+     */
     public String getTitle(String lang) {
         
         Literal title = Store.get().literal(this.uri, DC.title, lang);

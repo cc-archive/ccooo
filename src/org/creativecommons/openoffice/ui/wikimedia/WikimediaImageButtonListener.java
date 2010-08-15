@@ -17,7 +17,7 @@ import com.sun.star.awt.MouseButton;
 import org.creativecommons.openoffice.ui.ImageButtonListener;
 
 /**
- *
+ * Listens to events on images
  * @author akila
  */
 public class WikimediaImageButtonListener extends ImageButtonListener {

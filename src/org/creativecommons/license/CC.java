@@ -11,10 +11,8 @@ package org.creativecommons.license;
 import com.hp.hpl.jena.rdf.model.*;
 
 /**
- *
- * @author Nathan R. Yergler <nathan@creativecommons.org>
- *
  * CC vocabulary class for namespace http://creativecommons.org/ns#
+ * @author Nathan R. Yergler <nathan@creativecommons.org>
  *
  */
 public class CC {
