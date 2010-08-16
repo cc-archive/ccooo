@@ -1,6 +1,10 @@
 ccOpenOfficeOrg Add-In
 ----------------------
 
+LICENSE
+-------
+Licensed under the GNU LGPL License; see licenses/LICENSE for details
+
 0.0.3
 July 24 2007
 
@@ -14,6 +18,7 @@ Please report any problems or suggestions to the authors, Cassio Melo <cassio.uf
 
 0.7.0
 August 16 2010
+
 How to add localized strings
 ----------------------------
 * Get the .po files from code.creativecommons.org/svnroot/i18n/trunk/i18n/
@@ -35,4 +40,17 @@ Installation
 ------------
 * Ubuntu users will need to install the plugin using terminal.
 * To install use /usr/lib/openoffice/program/unopkg gui -f ccooo.oxt
+* Other users can install it through Extension Manager (Tools > Extension Manager > Add).
 * This version will not work in Mac OS X Snow Leopard (version 10.6).
+
+Source
+------
+* The current version of the source is avilable to checkout at
+    code.creativecommons.org/svnroot/ccooo/branches/akila-gsoc-2010/
+
+* To browse the code;
+    http://code.creativecommons.org/viewsvn/ccooo/branches/akila-gsoc-2010/
+
+---------------------------------------------
+More information of the Add-In can be found at
+    http://wiki.creativecommons.org/OpenOfficeOrg_Addin
