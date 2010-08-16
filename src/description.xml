@@ -8,8 +8,8 @@
         </simple-license>
     </registration>
     <icon>
-        <default xlink:href="images/CC_small.png"/>
-        <high-contrast xlink:href="images/CC_small.png"/>
+        <default xlink:href="images/CC_42.png"/>
+        <high-contrast xlink:href="images/CC_42.png"/>
     </icon>
     <publisher>
         <name lang="en" xlink:href="http://creativecommons.org/">Creative Commons</name>

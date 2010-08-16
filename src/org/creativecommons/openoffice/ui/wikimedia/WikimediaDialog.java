@@ -193,7 +193,7 @@ public class WikimediaDialog extends InsertImageDialog {
         createImageLoad(rect, pos, "file://" + this.getClass().
                 getProtectionDomain().getCodeSource().
                 getLocation().getPath().
-                replaceFirst("ccooo.jar", "images/wikimedia_commons_loading.png"));
+                replaceFirst("ccooo.jar", "images/loading.png"));
 
         try {
             String userName = "";

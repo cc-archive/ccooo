@@ -219,7 +219,7 @@
                 </prop>
                 <node oor:name="UserDefinedImages">
                     <prop oor:name="ImageSmallURL">
-                        <value>%origin%/images/CC_16.png</value>
+                        <value>%origin%/images/insert_image_16.png</value>
                     </prop>
                     <prop oor:name="ImageBigURL">
                         <value/>
@@ -276,7 +276,7 @@
                 </prop>
                 <node oor:name="UserDefinedImages">
                     <prop oor:name="ImageSmallURL">
-                        <value>%origin%/images/openclipartlogo.png</value>
+                        <value>%origin%/images/insert_image_16.png</value>
                     </prop>
                     <prop oor:name="ImageBigURL">
                         <value/>
@@ -295,7 +295,7 @@
                 </prop>
                 <node oor:name="UserDefinedImages">
                     <prop oor:name="ImageSmallURL">
-                        <value>%origin%/images/wikimedia_commons_20px.png</value>
+                        <value>%origin%/images/insert_image_16.png</value>
                     </prop>
                     <prop oor:name="ImageBigURL">
                         <value/>
@@ -314,7 +314,7 @@
                 </prop>
                 <node oor:name="UserDefinedImages">
                     <prop oor:name="ImageSmallURL">
-                        <value>%origin%/images/Picasa.png</value>
+                        <value>%origin%/images/insert_image_16.png</value>
                     </prop>
                     <prop oor:name="ImageBigURL">
                         <value/>

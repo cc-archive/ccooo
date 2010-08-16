@@ -190,7 +190,7 @@ public class PicasaDialog extends InsertImageDialog {
         createImageLoad(rect, pos, "file://" + this.getClass().
                 getProtectionDomain().getCodeSource().
                 getLocation().getPath().
-                replaceFirst("ccooo.jar", "images/Picasa_Loading.png"));
+                replaceFirst("ccooo.jar", "images/loading.png"));
 
         try {
             String userName = "";
