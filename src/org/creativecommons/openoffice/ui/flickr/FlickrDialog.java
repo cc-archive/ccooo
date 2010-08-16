@@ -31,7 +31,6 @@ import com.sun.star.graphic.XGraphic;
 import org.creativecommons.openoffice.*;
 import org.creativecommons.openoffice.program.Image;
 import com.sun.star.awt.XWindowPeer;
-import java.util.Date;
 import org.creativecommons.openoffice.program.FlickrConnection;
 import org.creativecommons.openoffice.ui.InsertImageDialog;
 import org.creativecommons.openoffice.ui.SavedSearchThread;

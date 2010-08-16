@@ -55,16 +55,20 @@ public class License {
      */
     public String getName() {
         try {
+            //CC
             return this.licenseStore.literal(this.license_uri, DC.title, "en").getString() + " "
                     + this.licenseStore.literal(this.license_uri, DCTerms.hasVersion, "").getString() + " "
                     + this.getJurisdiction().getTitle();
         } catch (NullPointerException ex) {
             try {
-                return this.licenseStore.literal(this.license_uri, DC.title, "en").getString();
-            } catch (NullPointerException e) {
+                //CC0
                 return "CC0" + " "
                         + this.licenseStore.literal(this.license_uri,
                         DCTerms.hasVersion, "").getString() + " " + "Universal";
+
+            } catch (NullPointerException e) {
+                //PD
+                return this.licenseStore.literal(this.license_uri, DC.title, "en").getString();
             }
         }
     }

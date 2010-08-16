@@ -267,7 +267,7 @@ public class Writer extends OOoProgram {
 
             } else if (license.getName().equals("Public Domain")) {
                 mxDocText.insertControlCharacter(docCursor, ControlCharacter.PARAGRAPH_BREAK, false);
-                mxDocText.insertString(docCursor, "This document in the ", false);
+                mxDocText.insertString(docCursor, "This document is in the ", false);
                 mxDocText.insertTextContent(docCursor, licenseNameField, false);
                 mxDocText.insertString(docCursor, ". The summary of the Legal Code is available at ", false);
                 mxDocText.insertTextContent(docCursor, licenseURLField, false);

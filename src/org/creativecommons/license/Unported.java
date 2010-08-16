@@ -19,6 +19,7 @@ public class Unported implements IJurisdiction {
      */
     public Unported() {
     }
+
     /**
      * Returen the title for "en" locale
      * @return Title
@@ -26,6 +27,7 @@ public class Unported implements IJurisdiction {
     public String getTitle() {
         return this.getTitle("en");
     }
+    
     /**
      * Returen the title for a given locale
      * @param lang Locale

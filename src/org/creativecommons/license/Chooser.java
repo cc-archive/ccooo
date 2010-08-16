@@ -16,7 +16,7 @@ import com.hp.hpl.jena.query.ResultSet;
  */
 public class Chooser {
 
-    Store licenseStore;
+    private Store licenseStore;
 
     /**
      * Creates a new instance of Chooser
@@ -131,6 +131,7 @@ public class Chooser {
 
         return queryString;
     } // makeLicenseQuery
+    
     /**
      * Select the appropriate public deomain tool from the RDF.
      * @param territory Selected territory

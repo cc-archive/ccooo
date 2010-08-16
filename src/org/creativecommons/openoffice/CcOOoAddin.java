@@ -77,11 +77,13 @@ public final class CcOOoAddin extends WeakBase
         com.sun.star.frame.XDispatch,
         com.sun.star.task.XJob {
 
-    private final XComponentContext m_xContext;
-    private com.sun.star.frame.XFrame m_xFrame;
     private static final String m_implementationName = CcOOoAddin.class.getName();
     private static final String[] m_serviceNames = {
         "com.sun.star.frame.ProtocolHandler"};
+    protected XMultiComponentFactory xMultiComponentFactory = null;
+    protected XMultiComponentFactory mxRemoteServiceManager = null;
+    private final XComponentContext m_xContext;
+    private com.sun.star.frame.XFrame m_xFrame;
     private XComponentContext mxComponentContext = null;
     private XTextDocument mxTextDoc = null;
     private XMultiServiceFactory mxDocFactory = null;
@@ -89,8 +91,6 @@ public final class CcOOoAddin extends WeakBase
     private XText mxDocText = null;
     private XTextCursor mxDocCursor = null;
     private XComponent xCurrentComponent = null;
-    protected XMultiComponentFactory xMultiComponentFactory = null;
-    protected XMultiComponentFactory mxRemoteServiceManager = null;
     private FlickrDialog pictureFlickrDialog = null;
     private OpenClipArtDialog openClipArtDialog = null;
     private WikimediaDialog wikimediaDialog = null;
@@ -98,7 +98,6 @@ public final class CcOOoAddin extends WeakBase
 
     /**
      * Constructs a new instance
-     *
      * @param context the XComponentContext
      */
     public CcOOoAddin(XComponentContext context) {
@@ -110,7 +109,6 @@ public final class CcOOoAddin extends WeakBase
             this.xMultiComponentFactory = this.m_xContext.getServiceManager();
 
             //set the locale for UI
-
             Object oProvider =
                     xMultiComponentFactory.createInstanceWithContext("com.sun.star.configuration.ConfigurationProvider", m_xContext);
             XMultiServiceFactory xConfigurationServiceFactory =
@@ -132,7 +130,7 @@ public final class CcOOoAddin extends WeakBase
         }
     }
 
-    // Generated method stubs
+    //******* Generated method stubs ********//
     public static XSingleComponentFactory __getComponentFactory(String sImplementationName) {
         XSingleComponentFactory xFactory = null;
 
@@ -151,41 +149,6 @@ public final class CcOOoAddin extends WeakBase
     // com.sun.star.lang.XServiceInfo:
     public String getImplementationName() {
         return m_implementationName;
-    }
-
-    public XComponent getCurrentComponent() {
-        return this.xCurrentComponent;
-    }
-
-    protected IVisibleNotice getProgramWrapper(XComponent component) {
-
-        XServiceInfo xServiceInfo = (XServiceInfo) UnoRuntime.queryInterface(
-                XServiceInfo.class, this.getCurrentComponent());
-
-        if (xServiceInfo.supportsService("com.sun.star.sheet.SpreadsheetDocument")) {
-            return new Calc(this.getCurrentComponent(), m_xContext);
-
-        } else if (xServiceInfo.supportsService("com.sun.star.text.TextDocument")) {
-            return new Writer(this.getCurrentComponent(), m_xContext);
-
-        } else if (xServiceInfo.supportsService("com.sun.star.presentation.PresentationDocument")) {
-            return new Draw(this.getCurrentComponent(), m_xContext);
-
-        } else if (xServiceInfo.supportsService("com.sun.star.drawing.DrawingDocument")) {
-            return new Draw(this.getCurrentComponent(), m_xContext);
-        }
-
-        return null;
-    }
-
-    public IVisibleNotice getProgramWrapper() {
-        return this.getProgramWrapper(this.getCurrentComponent());
-    }
-
-    public XMultiServiceFactory getMSFactory() {
-        return (XMultiServiceFactory) UnoRuntime.queryInterface(
-                XMultiServiceFactory.class, mxRemoteServiceManager);
-        //return this.mxFactory;
     }
 
     public boolean supportsService(String sService) {
@@ -247,7 +210,6 @@ public final class CcOOoAddin extends WeakBase
         // add your own code here
     }
 
-    // End of generated method stubs
     // com.sun.star.frame.XDispatch:
     public void dispatch(com.sun.star.util.URL aURL,
             com.sun.star.beans.PropertyValue[] aArguments) {
@@ -272,6 +234,36 @@ public final class CcOOoAddin extends WeakBase
             }
         } // if CcOOoAddin protocol
     } // dispatch
+    //********* End of generated method stubs ************//
+
+    public XComponent getCurrentComponent() {
+        return this.xCurrentComponent;
+    }
+
+    public IVisibleNotice getProgramWrapper() {
+        return this.getProgramWrapper(this.getCurrentComponent());
+    }
+
+    private IVisibleNotice getProgramWrapper(XComponent component) {
+
+        XServiceInfo xServiceInfo = (XServiceInfo) UnoRuntime.queryInterface(
+                XServiceInfo.class, this.getCurrentComponent());
+
+        if (xServiceInfo.supportsService("com.sun.star.sheet.SpreadsheetDocument")) {
+            return new Calc(this.getCurrentComponent(), m_xContext);
+
+        } else if (xServiceInfo.supportsService("com.sun.star.text.TextDocument")) {
+            return new Writer(this.getCurrentComponent(), m_xContext);
+
+        } else if (xServiceInfo.supportsService("com.sun.star.presentation.PresentationDocument")) {
+            return new Draw(this.getCurrentComponent(), m_xContext);
+
+        } else if (xServiceInfo.supportsService("com.sun.star.drawing.DrawingDocument")) {
+            return new Draw(this.getCurrentComponent(), m_xContext);
+        }
+
+        return null;
+    }
 
     public void selectLicense() {
 
@@ -305,7 +297,10 @@ public final class CcOOoAddin extends WeakBase
 
     } // selectLicense
 
-    public void insertStatement() {
+    /**
+     * Insert Visible notice
+     */
+    private void insertStatement() {
 
         if (this.getProgramWrapper().getDocumentLicense() == null) {
             this.selectLicense();
@@ -315,7 +310,7 @@ public final class CcOOoAddin extends WeakBase
 
     } // insertVisibleNotice
 
-    public void insertFlickrImage() {
+    private void insertFlickrImage() {
 
         try {
 
@@ -343,7 +338,7 @@ public final class CcOOoAddin extends WeakBase
         }
     } // insertFlickrImage
 
-    public void insertOpenClipArt() {
+    private void insertOpenClipArt() {
 
         try {
 
@@ -373,7 +368,7 @@ public final class CcOOoAddin extends WeakBase
 
     } // insertOpenClipArt
 
-    public void insertWikimediaImage() {
+    private void insertWikimediaImage() {
 
         try {
 
@@ -401,7 +396,7 @@ public final class CcOOoAddin extends WeakBase
         }
     } // insertWikimediaImage
 
-    public void insertPicasaImage() {
+    private void insertPicasaImage() {
 
         try {
 
@@ -430,90 +425,10 @@ public final class CcOOoAddin extends WeakBase
     } // insertPicasaImage
 
     /**
-     * Creates an infobox with the title and text given
-     *
-     * @param title The title of the dialog.
-     * @param msg The text of the dialog.
-     *
-     */
-    private void createInfoBox(String title, String msg) {
-        XMessageBoxFactory factory;
-        try {
-            factory = (XMessageBoxFactory) UnoRuntime.queryInterface(
-                    XMessageBoxFactory.class,
-                    this.xMultiComponentFactory.createInstanceWithContext(
-                    "com.sun.star.awt.Toolkit", m_xContext));
-
-            Rectangle ret = new Rectangle();
-            WindowDescriptor wd;
-
-            XWindowPeer parent = (XWindowPeer) UnoRuntime.queryInterface(
-                    XWindowPeer.class, m_xFrame.getContainerWindow());
-            //This document is already licensed.\n\nWould you like do proceed anyway?"
-            XMessageBox box = factory.createMessageBox(parent, ret, "infobox",
-                    MessageBoxButtons.BUTTONS_OK, title, msg);
-
-            box.execute();
-        } catch (com.sun.star.uno.Exception ex) {
-            ex.printStackTrace();
-        }
-
-    }
-
-    /**
-     * Creates a querybox with the title and text given
-     *
-     * @param title The title of the dialog.
-     * @param msg The text of the dialog.
-     *
-     * @return short Returns the answer code of the querybox (1 - OK , 0 - Cancel)
-     *
-     */
-    private short createQueryBox(String title, String msg) {
-        XMessageBoxFactory factory;
-        try {
-            factory = (XMessageBoxFactory) UnoRuntime.queryInterface(
-                    XMessageBoxFactory.class,
-                    this.xMultiComponentFactory.createInstanceWithContext(
-                    "com.sun.star.awt.Toolkit", m_xContext));
-
-            Rectangle ret = new Rectangle();
-            WindowDescriptor wd;
-
-            XWindowPeer parent = (XWindowPeer) UnoRuntime.queryInterface(
-                    XWindowPeer.class, m_xFrame.getContainerWindow());
-            // TODO put listeners to the OK and Cancel buttons!
-            XMessageBox box = factory.createMessageBox(parent, ret, "querybox",
-                    MessageBoxButtons.BUTTONS_OK_CANCEL, title, msg);
-
-            return box.execute();
-
-        } catch (com.sun.star.uno.Exception ex) {
-            ex.printStackTrace();
-        }
-
-        return -1; // Fail
-
-    }
-
-    /**
-     *  Get the remote office context
-     */
-    private XMultiComponentFactory getRemoteServiceManager()
-            throws java.lang.Exception {
-        if (xMultiComponentFactory == null && mxRemoteServiceManager == null) {
-
-            mxRemoteServiceManager = m_xContext.getServiceManager();
-        }
-        return mxRemoteServiceManager;
-    }
-
-    /**
      * Updates the Desktop current component in case of opening, creating or swapping
      * to other document
      */
     public void updateCurrentComponent() {
-
 
         XComponent ret = null;
         Object desktop;
@@ -534,6 +449,31 @@ public final class CcOOoAddin extends WeakBase
 
     }
 
+    /**
+     *  Get the remote office context
+     */
+    private XMultiComponentFactory getRemoteServiceManager()
+            throws java.lang.Exception {
+        if (xMultiComponentFactory == null && mxRemoteServiceManager == null) {
+
+            mxRemoteServiceManager = m_xContext.getServiceManager();
+        }
+        return mxRemoteServiceManager;
+    }
+
+    public XMultiServiceFactory getMSFactory() {
+        return (XMultiServiceFactory) UnoRuntime.queryInterface(
+                XMultiServiceFactory.class, mxRemoteServiceManager);
+        //return this.mxFactory;
+    }
+
+    /**
+     * Execute the job for document events (In here, OnLoad and OnNew)
+     * @param args
+     * @return result of the job
+     * @throws IllegalArgumentException
+     * @throws com.sun.star.uno.Exception
+     */
     public Object execute(NamedValue[] args) throws IllegalArgumentException,
             com.sun.star.uno.Exception {
         NamedValue[] lEnvironment = null;
@@ -585,7 +525,7 @@ public final class CcOOoAddin extends WeakBase
         //running as a therad will stop the
         //unresponsive 2 second period when loading document
         StoreThread th = new StoreThread();
-        th.setPriority(Thread.MIN_PRIORITY);
+        th.setPriority(Thread.MIN_PRIORITY); //less intrrpution on other threads
         th.start();
 
         //Display license information when opening CC licensed documents
@@ -610,5 +550,71 @@ public final class CcOOoAddin extends WeakBase
             e.printStackTrace();
         }
         return com.sun.star.uno.Any.complete(new NamedValue[0]);
+    }
+
+    /**
+     * Creates an infobox with the title and text given
+     *
+     * @param title The title of the dialog.
+     * @param msg The text of the dialog.
+     *
+     */
+    private void createInfoBox(String title, String msg) {
+        XMessageBoxFactory factory;
+        try {
+            factory = (XMessageBoxFactory) UnoRuntime.queryInterface(
+                    XMessageBoxFactory.class,
+                    this.xMultiComponentFactory.createInstanceWithContext(
+                    "com.sun.star.awt.Toolkit", m_xContext));
+
+            Rectangle ret = new Rectangle();
+            WindowDescriptor wd;
+
+            XWindowPeer parent = (XWindowPeer) UnoRuntime.queryInterface(
+                    XWindowPeer.class, m_xFrame.getContainerWindow());
+            //This document is already licensed.\n\nWould you like do proceed anyway?"
+            XMessageBox box = factory.createMessageBox(parent, ret, "infobox",
+                    MessageBoxButtons.BUTTONS_OK, title, msg);
+
+            box.execute();
+        } catch (com.sun.star.uno.Exception ex) {
+            ex.printStackTrace();
+        }
+
+    }
+
+    /**
+     * Creates a querybox with the title and text given
+     *
+     * @param title The title of the dialog.
+     * @param msg The text of the dialog.
+     *
+     * @return short Returns the answer code of the querybox (1 - OK , 0 - Cancel)
+     */
+    private short createQueryBox(String title, String msg) {
+        XMessageBoxFactory factory;
+        try {
+            factory = (XMessageBoxFactory) UnoRuntime.queryInterface(
+                    XMessageBoxFactory.class,
+                    this.xMultiComponentFactory.createInstanceWithContext(
+                    "com.sun.star.awt.Toolkit", m_xContext));
+
+            Rectangle ret = new Rectangle();
+            WindowDescriptor wd;
+
+            XWindowPeer parent = (XWindowPeer) UnoRuntime.queryInterface(
+                    XWindowPeer.class, m_xFrame.getContainerWindow());
+            // TODO put listeners to the OK and Cancel buttons!
+            XMessageBox box = factory.createMessageBox(parent, ret, "querybox",
+                    MessageBoxButtons.BUTTONS_OK_CANCEL, title, msg);
+
+            return box.execute();
+
+        } catch (com.sun.star.uno.Exception ex) {
+            ex.printStackTrace();
+        }
+
+        return -1; // Fail
+
     }
 }

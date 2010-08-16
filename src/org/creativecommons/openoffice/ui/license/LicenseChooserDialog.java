@@ -58,20 +58,6 @@ import static org.creativecommons.openoffice.util.Util._;
  */
 public class LicenseChooserDialog {
 
-    private String selectedTerritory;
-    private String[] trritories;
-    private XMultiServiceFactory xMultiServiceFactory = null;
-    protected XComponentContext m_xContext = null;
-    protected XMultiComponentFactory xMultiComponentFactory = null;
-    private XNameContainer xNameCont = null;
-    private XControlContainer xControlCont = null;
-    private XDialog xDialog = null;
-    private XPropertySet xPSetDialog, xPSetFinishButton;
-    private XListBox cmbTList;
-    private CcOOoAddin addin = null;
-    private List<Jurisdiction> jurisdictionList = null;
-    private IJurisdiction selectedJurisdiction = null;
-    private boolean cancelled = true;
     // TODO put these labels in a properties file
     public static final String BTN_OK = "finishbt";
     public static final String finishButtonLabel = "OK";
@@ -102,6 +88,21 @@ public class LicenseChooserDialog {
     public static final String CMB_TERRITORY = "cmbTerritory";
     public static final String TXT_LEGAL_CODE_CC0 = "txtLegalCodeCC0";
     public static final String TXT_LEGAL_CODE_PD = "txtLegalCodePD";
+
+    private String selectedTerritory;
+    private String[] trritories;
+    private XMultiServiceFactory xMultiServiceFactory = null;
+    protected XComponentContext m_xContext = null;
+    protected XMultiComponentFactory xMultiComponentFactory = null;
+    private XNameContainer xNameCont = null;
+    private XControlContainer xControlCont = null;
+    private XDialog xDialog = null;
+    private XPropertySet xPSetDialog, xPSetFinishButton;
+    private XListBox cmbTList;
+    private CcOOoAddin addin = null;
+    private List<Jurisdiction> jurisdictionList = null;
+    private IJurisdiction selectedJurisdiction = null;
+    private boolean cancelled = true;
 
     /**
      * Creates a new instance of LicenseChooserDialog

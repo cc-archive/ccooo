@@ -38,25 +38,6 @@ import com.sun.star.beans.PropertyValue;
  */
 public abstract class InsertImageDialog {
 
-    private int btnPrvNextY;
-    protected XMultiServiceFactory xMultiServiceFactory = null;
-    protected XComponentContext m_xContext = null;
-    protected XMultiComponentFactory xMultiComponentFactory = null;
-    protected XNameContainer xNameCont = null;
-    protected XControlContainer xControlCont = null;
-    protected XDialog xDialog = null;
-    protected XControl xControl;
-    protected XWindowPeer xWindowPeer;
-    protected CcOOoAddin addin = null;
-    protected int currentPositionInList = 0;
-    protected ArrayList<Image> currentList = null;
-    protected Image selectedImage = null;
-    protected Collection flickrLicenses = null;
-    protected String savedTags;
-    protected int currentPage = 0;
-    protected boolean isLoadable = false;
-    protected Image loadingImage = null;
-    protected SearchClickListener searchClickListener = null;
     public static final String LBL_TAGS = "lblTags";
     public static final String TXT_TAGS = "txtTags";
     public static final String BTN_SEARCH = "btnSearch";
@@ -79,12 +60,34 @@ public abstract class InsertImageDialog {
     public static final int DIALOGY = 100;
     public static final int DIALOGWIDTH = 240;
     public static final int DIALOGHEIHT = 375;
+
+    public int positionWidthHeight;//50
+    public int locationMagesy;//100
+    
+    private int btnPrvNextY;
+    protected XMultiServiceFactory xMultiServiceFactory = null;
+    protected XComponentContext m_xContext = null;
+    protected XMultiComponentFactory xMultiComponentFactory = null;
+    protected XNameContainer xNameCont = null;
+    protected XControlContainer xControlCont = null;
+    protected XDialog xDialog = null;
+    protected XControl xControl;
+    protected XWindowPeer xWindowPeer;
+    protected CcOOoAddin addin = null;
+    protected int currentPositionInList = 0;
+    protected ArrayList<Image> currentList = null;
+    protected Image selectedImage = null;
+    protected Collection flickrLicenses = null;
+    protected String savedTags;
+    protected int currentPage = 0;
+    protected boolean isLoadable = false;
+    protected Image loadingImage = null;
+    protected SearchClickListener searchClickListener = null;
+
     private short savedCommercialStatus;
     private short savedUpdateStatus;
     private short savedShareAlikeStatus;
-    public int positionWidthHeight;//50
-    public int locationMagesy;//100
-
+    
     /**
      * Creates a new instance of InsertImageDialog
      */

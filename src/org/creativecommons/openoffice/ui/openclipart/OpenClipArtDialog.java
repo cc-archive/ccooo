@@ -294,7 +294,6 @@ public class OpenClipArtDialog extends InsertImageDialog {
         showResults(currentList, 0);
         setProgressValue(100);
         enableControl(OpenClipArtDialog.BTN_SEARCH, true);
-        // enableControl(OpenClipArtDialog.BTN_NEXT, true);
         setMousePointer(SystemPointer.ARROW);
     }
 

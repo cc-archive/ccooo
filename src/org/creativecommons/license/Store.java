@@ -22,7 +22,6 @@ import com.hp.hpl.jena.rdf.model.StmtIterator;
 import com.hp.hpl.jena.vocabulary.RDF;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Date;
 import java.util.List;
 
 /**
@@ -31,8 +30,8 @@ import java.util.List;
  */
 public class Store {
 
-    private static Store _instance = null;
     private Model model;
+    private static Store _instance = null;
 
     public static Store get() {
         if (Store._instance == null) {
@@ -53,10 +52,7 @@ public class Store {
         this.model.read(this.getClass().getResource("/org/creativecommons/license/rdf/index.rdf").toString());
         this.model.read(this.getClass().getResource("/org/creativecommons/license/rdf/jurisdictions.rdf").toString());
     } // private Store()
-
-    protected Model getModel() {
-        return model;
-    }
+    
     /**
      * Get the jurisdictions
      * @return Jurisdictions list
@@ -75,6 +71,10 @@ public class Store {
         return result;
 
     } // public List jurisdictions
+
+    protected Model getModel() {
+        return model;
+    }
 
     /**
      * Query the RDF
