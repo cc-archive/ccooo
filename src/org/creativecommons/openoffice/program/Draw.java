@@ -30,7 +30,6 @@ import com.sun.star.uno.AnyConverter;
 import com.sun.star.uno.UnoRuntime;
 import com.sun.star.uno.XComponentContext;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.creativecommons.license.License;
@@ -293,9 +292,7 @@ public class Draw extends OOoProgram {
 
             // helper-stuff to let OOo create an internal name of the graphic
             // that can be used later (internal name consists of various checksums)
-            long time = new Date().getTime();
             xBitmapContainer.insertByName("imgID", imgURL);
-            System.out.println("\ninsertByName " + (new Date().getTime() - time));
             Object obj = xBitmapContainer.getByName("imgID");
             internalURL = AnyConverter.toString(obj);
 

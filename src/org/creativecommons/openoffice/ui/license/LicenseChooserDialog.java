@@ -725,7 +725,6 @@ public class LicenseChooserDialog {
     public void setSelectedTerritory(int selecion) {
         if (selecion > 0) {
             selectedTerritory = trritories[selecion - 1];
-            System.out.println(selectedTerritory);
         } else {
             selectedTerritory = null;
         }

@@ -154,8 +154,6 @@ public class WikimediaConnection {
                         if (img.getLicenseCode().equals(licenses[i])) {
                             imgList.add(img);
                             System.out.println(imgUrlMainPage);
-                            System.out.println(licenseCode);
-                            System.out.println(licenseNumber);
                             break;
                         }
                     }

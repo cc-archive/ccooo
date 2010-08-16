@@ -74,7 +74,6 @@ public class Writer extends OOoProgram {
 
             // helper-stuff to let OOo create an internal name of the graphic
             // that can be used later (internal name consists of various checksums)
-            System.out.println(img.getSelectedImageURL());
             String sName = PageHelper.createUniqueName(xBitmapContainer, img.getPhotoID());
             xBitmapContainer.insertByName(sName, img.getSelectedImageURL());
 
@@ -259,7 +258,6 @@ public class Writer extends OOoProgram {
                 mxDocText.insertTextContent(docCursor, licenseURLField, false);
                 mxDocText.insertString(docCursor, ".", false);
                 if (license.getTerritory() != null) {
-                    System.out.println("writer");
                     XDependentTextField territory = createUserTextField(mxDocFactory,
                             mxTextFields, "Territory", license.getTerritory());
                     mxDocText.insertString(docCursor, "This work is published from ", false);

@@ -27,7 +27,6 @@ import com.sun.star.uno.XComponentContext;
 import com.sun.star.graphic.XGraphic;
 import org.creativecommons.openoffice.*;
 import org.creativecommons.openoffice.program.Image;
-import java.util.Date;
 import org.creativecommons.openoffice.ui.InsertImageDialog;
 import org.creativecommons.openoffice.ui.SavedSearchThread;
 
@@ -52,7 +51,6 @@ public class WikimediaDialog extends InsertImageDialog {
     public void showDialog(boolean defaultSearch) throws com.sun.star.uno.Exception {
 
         try {
-            long time = new Date().getTime();
             // get the service manager from the component context
             this.xMultiComponentFactory = this.m_xContext.getServiceManager();
 
@@ -160,7 +158,6 @@ public class WikimediaDialog extends InsertImageDialog {
             xWindow.setVisible(false);
             xControl.createPeer(xToolkit, null);
             xWindowPeer = xControl.getPeer();
-            System.out.println("Flicker Dialog Showing All " + (new Date().getTime() - time));
             if (defaultSearch) {
                 SavedSearchThread thread = new SavedSearchThread(this);
                 thread.start();

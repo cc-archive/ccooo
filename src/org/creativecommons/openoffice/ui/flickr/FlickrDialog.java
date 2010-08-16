@@ -57,7 +57,6 @@ public class FlickrDialog extends InsertImageDialog {
     public void showDialog(boolean defaultSearch) throws com.sun.star.uno.Exception {
 
         try {
-            long time = new Date().getTime();
             // get the service manager from the component context
             this.xMultiComponentFactory = this.m_xContext.getServiceManager();
 
@@ -163,7 +162,6 @@ public class FlickrDialog extends InsertImageDialog {
             xWindow.setVisible(false);
             xControl.createPeer(xToolkit, null);
             xWindowPeer = xControl.getPeer();
-            System.out.println("Flicker Dialog Showing All " + (new Date().getTime() - time));
             if (defaultSearch) {
                 SavedSearchThread thread = new SavedSearchThread(this);
                 thread.start();
